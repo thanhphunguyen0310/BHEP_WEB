@@ -1,0 +1,74 @@
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #eaeef6;
+  width: 100%;
+  height: max-content;
+  border-bottom: 0.5px solid #8a8d8d;
+  z-index: 1000; // Ensure the header is above other content
+
+  .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 100px;
+
+      .logo {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5px 10px;
+          text-decoration: none;
+          direction: row;
+
+          img {
+              width: 90px;
+              height: 90px;
+          }
+
+          .ant-typography {
+              margin: 0;
+              color: #3058A6;
+              font-size: 52px;
+              font-weight: bold;
+          }
+      }
+      
+      .menu-items {
+          background-color: #eaeef6;
+          display: flex;
+          width: 55%;
+          justify-content: space-between;
+          font-size: 18px;
+          font-weight: 500;
+          border-bottom: none;
+
+          .item {
+              display: flex;
+              align-items: center;
+          }
+      }
+
+      .button {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .login-button,
+          .regist-button {
+              width: 120px;
+              margin-right: 10px;
+          }
+
+          .regist-button {
+              margin-right: 0;
+          }
+      }
+  }
+}

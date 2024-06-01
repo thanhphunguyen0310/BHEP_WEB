@@ -1,0 +1,13 @@
+.store-container{
+    background-color: #F5FEFE;
+    width: 100vw;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .search-bar{
+        height: 96px;
+        background-color: #9CE3FA;
+    }
+
+}
