@@ -1,20 +1,17 @@
-import { Button, Carousel, Input, Row, Typography } from "antd";
+import { Button, Carousel, Input, Row, Spin } from "antd";
 import { SearchOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
-import { doctorData } from "../data";
 import "../styles/Doctor.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { getHighRateDoctor } from "../configs/api/doctorApi";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
 import DoctorBanner2 from "../assets/img/doctor-banner2.png";
 import DoctorBanner3 from "../assets/img/doctor-banner3.png";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchHighRateDoctors } from "../store/doctorsSlice";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
+import debounce from "lodash/debounce";
 
 const Doctors = () => {
   const navigate = useNavigate();
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
@@ -43,23 +40,44 @@ const Doctors = () => {
         return "Không xác định";
     }
   };
-  const dispatch = useDispatch();
-  const { highRateDoctors, status, error } = useSelector(
-    (state) => state.doctors
-  );
+
+  const [allDoctors, setAllDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchHighRateDoctors());
+    const fetchTopRatedDoctors = async () => {
+      try {
+        const doctors = await getHighRateDoctor();
+        setAllDoctors(doctors);
+        setFilteredDoctors(doctors);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching top rated doctors:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchTopRatedDoctors();
+  }, []);
+
+  const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D");
+  };
+
+  const handleSearch = useCallback(debounce((value) => {
+    if (!value) {
+      setFilteredDoctors(allDoctors);
+      return;
     }
-  }, [dispatch, status]);
+    const lowercasedValue = removeAccents(value.toLowerCase());
+    const filtered = allDoctors.filter(doctor =>
+      removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+      removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+    );
+    setFilteredDoctors(filtered);
+  }, 300), [allDoctors]);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (status === "failed") {
-    return <div>Error: {error}</div>;
-  }
   return (
     <>
       {/* // banner doctor */}
@@ -93,7 +111,8 @@ const Doctors = () => {
           allowClear
           enterButton="Tìm kiếm"
           size="large"
-          onSearch={onSearch}
+          onSearch={handleSearch}
+          onChange={(e) => handleSearch(e.target.value)}
         />
       </Row>
       {/* doctor outstanding list */}
@@ -101,24 +120,28 @@ const Doctors = () => {
         <h1>Bác sĩ nổi bật</h1>
         <div className="doctor-content">
           <div className="doctor-items">
-            {highRateDoctors.map((doctor) => (
-              <Link
-                to={`/doctor-detail/${doctor.id}`}
-                key={doctor.id}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <div key={doctor.id}>
-                  <DoctorCard
-                    avatar={doctor.avatar}
-                    fullName={doctor.fullName}
-                    specialistId={getSpecialistState(doctor.specialistId)}
-                    description={doctor.description}
-                    rate={doctor.rate}
-                    workPlace={doctor.workPlace}
-                  />
-                </div>
-              </Link>
-            ))}
+            {loading ? (
+              <Spin />
+            ) : (
+              filteredDoctors.map((doctor) => (
+                <Link
+                  to={`/doctor-detail/${doctor.id}`}
+                  key={doctor.id}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <div key={doctor.id}>
+                    <DoctorCard
+                      avatar={doctor.avatar}
+                      fullName={doctor.fullName}
+                      specialistId={getSpecialistState(doctor.specialistId)}
+                      description={doctor.description}
+                      rate={doctor.rate}
+                      workPlace={doctor.workPlace}
+                    />
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
           <div className="doctor-button">
             <Button

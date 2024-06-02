@@ -1,13 +1,17 @@
-.store-container{
-    background-color: #F5FEFE;
-    width: 100vw;
-    height: max-content;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    .search-bar{
-        height: 96px;
-        background-color: #9CE3FA;
-    }
-
-}
+.store-container {
+    background-color: #F5FEFE; // Change this to the color you want
+    padding: 20px; // Add some padding if needed
+  }
+  
+  .search-bar {
+    // Your existing styles
+  }
+  
+  .category-container {
+    // Your existing styles
+  }
+  
+  .category-content {
+    // Your existing styles
+  }
+  

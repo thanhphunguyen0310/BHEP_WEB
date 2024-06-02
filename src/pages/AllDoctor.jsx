@@ -18,20 +18,15 @@ import { SearchOutlined, StarFilled } from "@ant-design/icons";
 import "../styles/AllDoctor.scss";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAllDoctors } from "../store/doctorsSlice";
-
+import { getDoctor } from "../configs/api/doctorApi";
 const { Meta } = Card;
 
 const AllDoctor = () => {
-  const dispatch = useDispatch();
-  const { allDoctors, status, error } = useSelector((state) => state.doctors);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const pageSize = 8; // Số lượng bác sĩ trên mỗi trang
-  // const startIndex = (currentPage - 1) * pageSize;
-  // const endIndex = startIndex + pageSize;
-  // const currentDoctors = allDoctors.slice(startIndex, endIndex);
-  
+  const [doctorData, setDoctorData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalDoctors, setTotalDoctors] = useState(0);
+  const pageSize = 8; // Number of doctors per page
+
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
@@ -62,22 +57,22 @@ const AllDoctor = () => {
   };
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchAllDoctors({ pageIndex: 1, pageSize: 10 }));
-    }
-  }, [dispatch, status]);
+    const fetchDoctors = async (pageIndex) => {
+      try {
+        const doctorData = await getDoctor(pageIndex, pageSize);
+        setDoctorData(doctorData.items);
+        setTotalDoctors(doctorData.totalCount);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
 
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
+    fetchDoctors(currentPage);
+  }, [currentPage]);
 
-  if (status === 'failed') {
-    return <div>Error: {error}</div>;
-  }
-
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
-  // };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
@@ -122,7 +117,7 @@ const AllDoctor = () => {
         </div>
         <div className="all-doctor">
           <div className="doctor-card-list">
-            {allDoctors.map((doctor) => (
+            {doctorData.map((doctor) => (
               <Link
                 to={`/doctor-detail/${doctor.id}`}
                 key={doctor.id}
@@ -205,10 +200,7 @@ const AllDoctor = () => {
                         />
                       </Col>
                       <Col>
-                        <p style={{ margin: 0 }}>
-                          {" "}
-                          Bệnh viện Nhân dân Gia Định
-                        </p>
+                        <p style={{ margin: 0 }}>Bệnh viện Nhân dân Gia Định</p>
                       </Col>
                     </Row>
                   </div>
@@ -217,8 +209,8 @@ const AllDoctor = () => {
             ))}
           </div>
         </div>
-         {/* Pagination */}
-         <Row
+        {/* Pagination */}
+        <Row
           className="pagination"
           justify={"end"}
           style={{
@@ -226,13 +218,13 @@ const AllDoctor = () => {
             padding: "20px 0px",
           }}
         >
-           {/* <Pagination
+          <Pagination
             current={currentPage}
             pageSize={pageSize}
             total={totalDoctors}
             onChange={handlePageChange}
             style={{ textAlign: 'center', marginTop: '20px' }}
-          /> */}
+          />
         </Row>
       </div>
     </>
@@ -240,3 +232,4 @@ const AllDoctor = () => {
 };
 
 export default AllDoctor;
+

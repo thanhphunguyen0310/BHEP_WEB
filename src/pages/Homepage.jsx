@@ -8,10 +8,9 @@ import { productData, responsiveProductCart } from "../data";
 import CommunityBanner from "../assets/img/community-banner.png";
 import LOGO from "../assets/img/LOGO.png";
 import { Button } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchHighRateDoctors } from '../store/doctorsSlice';
+import {getHighRateDoctor} from "../configs/api/doctorApi"
 const Homepage = () => {
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
@@ -41,34 +40,19 @@ const Homepage = () => {
         return "Không xác định";
     }
   };
-  const dispatch = useDispatch();
-  const { highRateDoctors, status, error } = useSelector((state) => state.doctors);
+  const [topRatedDoctors, setTopRatedDoctors] = useState([]);
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchHighRateDoctors());
-    }
-  }, [dispatch, status]);
+    const fetchTopRatedDoctors = async () => {
+      try {
+        const doctors = await getHighRateDoctor();
+        setTopRatedDoctors(doctors);
+      } catch (error) {
+        console.error("Error fetching top rated doctors:", error);
+      }
+    };
 
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
-
-  if (status === 'failed') {
-    return <div>Error: {error}</div>;
-  }
-  // const [topRatedDoctors, setTopRatedDoctors] = useState([]);
-  // useEffect(() => {
-  //   const fetchTopRatedDoctors = async () => {
-  //     try {
-  //       const doctors = await getHighRateDoctor();
-  //       setTopRatedDoctors(doctors);
-  //     } catch (error) {
-  //       console.error("Error fetching top rated doctors:", error);
-  //     }
-  //   };
-
-  //   fetchTopRatedDoctors();
-  // }, []);
+    fetchTopRatedDoctors();
+  }, []);
 
   return (
     <>
@@ -103,7 +87,7 @@ const Homepage = () => {
         <h1>Bác sĩ hàng đầu</h1>
         <div className="doctor-content">
           <div className="doctor-items">
-            {highRateDoctors.map((doctor) => (
+            {topRatedDoctors.map((doctor) => (
               <Link
                 to={`/doctor-detail/${doctor.id}`}
                 key={doctor.id}

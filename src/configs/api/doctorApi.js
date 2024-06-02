@@ -14,7 +14,12 @@ export const getHighRateDoctor = async () => {
 
 export const getDoctor = async (pageIndex, pageSize) => {
   try {
-    const response = await apiClient.get(`/User/Doctors?pageIndex=${pageIndex}&pageSize=${pageSize}`);
+    const response = await apiClient.get("/User/Doctors", {
+      params: {
+        pageIndex,
+        pageSize,
+      },
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching data:", error);
