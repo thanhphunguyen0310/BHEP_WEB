@@ -3,7 +3,7 @@ import { SearchOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
 import "../styles/Doctor.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { getHighRateDoctor } from "../configs/api/doctorApi";
+import { getHighRateDoctor, getDoctor } from "../configs/api/doctorApi";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
 import DoctorBanner2 from "../assets/img/doctor-banner2.png";
 import DoctorBanner3 from "../assets/img/doctor-banner3.png";
@@ -44,21 +44,33 @@ const Doctors = () => {
   const [allDoctors, setAllDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  // get top doctor
+  const fetchTopRatedDoctors = async () => {
+    try {
+      const topDoctors = await getHighRateDoctor();
+      // setAllDoctors(topDoctors);
+      setFilteredDoctors(topDoctors);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching top rated doctors:", error);
+      setLoading(false);
+    }
+  };
+  // get all doctor
+  const fetchDoctors = async () => {
+    try {
+      const res = await getDoctor();
+      const doctors = res.items
+      setAllDoctors(doctors);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching top rated doctors:", error);
+      setLoading(false);
+    }
+  }
   useEffect(() => {
-    const fetchTopRatedDoctors = async () => {
-      try {
-        const doctors = await getHighRateDoctor();
-        setAllDoctors(doctors);
-        setFilteredDoctors(doctors);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching top rated doctors:", error);
-        setLoading(false);
-      }
-    };
-
     fetchTopRatedDoctors();
+    fetchDoctors();
   }, []);
 
   const removeAccents = (str) => {
@@ -71,11 +83,12 @@ const Doctors = () => {
       return;
     }
     const lowercasedValue = removeAccents(value.toLowerCase());
-    const filtered = allDoctors.filter(doctor =>
+    const filtered = allDoctors .filter(doctor =>
       removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
       removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
     );
     setFilteredDoctors(filtered);
+    console.log(filtered, "tim kiem")
   }, 300), [allDoctors]);
 
   return (

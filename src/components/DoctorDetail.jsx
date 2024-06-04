@@ -230,7 +230,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Đánh giá</p>
+                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail.rates[0].rate.toFixed(1)}</p>
                     </Col>
                   </Row>
                 </Col>

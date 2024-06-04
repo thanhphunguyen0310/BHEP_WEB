@@ -4,7 +4,7 @@ export const getHighRateDoctor = async () => {
   try {
     const response = await apiClient.get("/User/Doctors");
     const doctors = response.data.data.items;
-    const highRateDoctors = doctors.filter(doctors => doctors.rate >= 0);
+    const highRateDoctors = doctors.filter(doctors => doctors.rate >= 4.5);
     return highRateDoctors
   } catch (error) {
     console.error("Error fetching data:", error);
