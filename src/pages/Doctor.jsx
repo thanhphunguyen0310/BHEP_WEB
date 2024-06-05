@@ -2,8 +2,8 @@ import { Button, Carousel, Input, Row, Spin } from "antd";
 import { SearchOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
 import "../styles/Doctor.scss";
-import { Link, useNavigate } from "react-router-dom";
-import { getHighRateDoctor, getDoctor } from "../configs/api/doctorApi";
+import { Link, useNavigate, Outlet } from "react-router-dom";
+import { getDoctor } from "../configs/api/doctorApi";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
 import DoctorBanner2 from "../assets/img/doctor-banner2.png";
 import DoctorBanner3 from "../assets/img/doctor-banner3.png";
@@ -12,6 +12,7 @@ import debounce from "lodash/debounce";
 
 const Doctors = () => {
   const navigate = useNavigate();
+
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
@@ -41,71 +42,77 @@ const Doctors = () => {
     }
   };
 
+  const [topDoctors, setTopDoctors] = useState([]);
   const [allDoctors, setAllDoctors] = useState([]);
-  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [displayedDoctors, setDisplayedDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-  // get top doctor
-  const fetchTopRatedDoctors = async () => {
+
+  const fetchDoctors = async (pageIndex = 1, pageSize = 10) => {
     try {
-      const topDoctors = await getHighRateDoctor();
-      // setAllDoctors(topDoctors);
-      setFilteredDoctors(topDoctors);
+      let res;
+      const doctors = [];
+      let currentPage = pageIndex;
+      do {
+        res = await getDoctor(currentPage, pageSize);
+        doctors.push(...res.items);
+        currentPage++;
+      } while (currentPage <= Math.ceil(res.totalCount / pageSize));
+      const highRateDoctors = doctors.filter((doctor) => doctor.rate >= 4.5);
+      setTopDoctors(highRateDoctors);
+      setAllDoctors(doctors);
+      setDisplayedDoctors(highRateDoctors);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching top rated doctors:", error);
+      console.error("Error fetching doctors:", error);
       setLoading(false);
     }
   };
-  // get all doctor
-  const fetchDoctors = async () => {
-    try {
-      const res = await getDoctor();
-      const doctors = res.items
-      setAllDoctors(doctors);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching top rated doctors:", error);
-      setLoading(false);
-    }
-  }
+
   useEffect(() => {
-    fetchTopRatedDoctors();
     fetchDoctors();
   }, []);
 
   const removeAccents = (str) => {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D");
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
   };
 
-  const handleSearch = useCallback(debounce((value) => {
-    if (!value) {
-      setFilteredDoctors(allDoctors);
-      return;
-    }
-    const lowercasedValue = removeAccents(value.toLowerCase());
-    const filtered = allDoctors.filter(doctor =>
-      removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-      removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
-    );
-    setFilteredDoctors(filtered);
-    console.log(filtered, "tim kiem")
-  }, 300), [allDoctors]);
+  const handleSearch = useCallback(
+    debounce((value) => {
+      if (!value) {
+        setDisplayedDoctors(topDoctors);
+        return;
+      }
+      const lowercasedValue = removeAccents(value.toLowerCase());
+      const filteredDoctors = allDoctors.filter(
+        (doctor) =>
+          removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+          removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+      );
+      setDisplayedDoctors(filteredDoctors);
+    }, 300),
+    [allDoctors, topDoctors]
+  );
 
   return (
     <>
-      {/* // banner doctor */}
+      {/* Banner doctor */}
       <Carousel style={{ width: "100vw" }} infinite={false}>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner1} />
+          <img style={{ width: "100vw" }} src={DoctorBanner1} alt="Doctor Banner 1" />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner2} />
+          <img style={{ width: "100vw" }} src={DoctorBanner2} alt="Doctor Banner 2" />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner3} />
+          <img style={{ width: "100vw" }} src={DoctorBanner3} alt="Doctor Banner 3" />
         </div>
       </Carousel>
-      {/* search doctor */}
+
+      {/* Search doctor */}
       <Row
         justify={"center"}
         align={"middle"}
@@ -128,7 +135,8 @@ const Doctors = () => {
           onChange={(e) => handleSearch(e.target.value)}
         />
       </Row>
-      {/* doctor outstanding list */}
+
+      {/* Doctor outstanding list */}
       <div className="doctor">
         <h1>Bác sĩ nổi bật</h1>
         <div className="doctor-content">
@@ -136,7 +144,7 @@ const Doctors = () => {
             {loading ? (
               <Spin />
             ) : (
-              filteredDoctors.map((doctor) => (
+              displayedDoctors.map((doctor) => (
                 <Link
                   to={`/doctor-detail/${doctor.id}`}
                   key={doctor.id}
@@ -168,6 +176,7 @@ const Doctors = () => {
           </div>
         </div>
       </div>
+      <Outlet />
     </>
   );
 };

@@ -21,11 +21,12 @@
       flex-wrap: wrap;
   
       .doctor-items {
+        align-items: center;
         display: flex;
         flex-wrap: wrap;
-        width: 65%;
-        gap: 20px;
-        justify-content: space-between;
+        width: 75%;
+        gap: 20px 20px;
+        justify-content: flex-start;
       }
   
       .doctor-button {

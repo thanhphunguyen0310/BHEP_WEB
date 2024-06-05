@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Homepage from '../pages/Homepage';
 import Category from '../pages/Category';
 import Community from './../pages/Community';
@@ -19,12 +18,18 @@ export const  publicRoutes = [
     {path: "/", component: Homepage},
     {path: "/category", component: Category},
     {path: "/store", component: Store},
+    {path: "/product-detail/:id", component: ProductDetail },
+    // { 
+    //     path: "/doctor", 
+    //     component: Doctor,
+    //     children: [
+    //       { path: "doctor-detail/:id", component: DoctorDetail, layout: DefaultLayout },
+    //     ]
+    //   },
     {path: "/doctor", component: Doctor },
     {path: "/all-doctor", component: AllDoctor },
     {path: "/doctor-detail/:id", component: DoctorDetail },
     {path: "/community", component: Community },
-    {path: "/product-detail/:id", component: ProductDetail },
-
 ]
 
 export const  customerRoutes = [

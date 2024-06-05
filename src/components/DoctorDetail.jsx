@@ -138,7 +138,7 @@ const DoctorDetail = () => {
               alignItems: "center",
             }}
           >
-            <Avatar src={DoctorBanner1} size={160} shape="square" />
+            <Avatar src={doctorDetail.avatar} size={160} shape="square" />
           </Col>
 
           <Col style={{ padding: "24px 20px" }} span={16}>
@@ -212,7 +212,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Lượt đặt</p>
+                      <p style={{ margin: 0 }}>Lượt đặt: </p>
                     </Col>
                   </Row>
 
@@ -230,7 +230,8 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail.rates[0].rate.toFixed(1)}</p>
+                      <p style={{ margin: 0 }}>Đánh giá:</p>
+                      {/* {doctorDetail.rates[0].rate.toFixed(1)} */}
                     </Col>
                   </Row>
                 </Col>

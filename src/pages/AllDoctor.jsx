@@ -16,13 +16,16 @@ import stethoscope from "../assets/icon/stethoscope.svg";
 import hospital from "../assets/icon/hospital.svg";
 import { SearchOutlined, StarFilled } from "@ant-design/icons";
 import "../styles/AllDoctor.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getDoctor } from "../configs/api/doctorApi";
+import debounce from "lodash/debounce";
+
 const { Meta } = Card;
 
 const AllDoctor = () => {
-  const [doctorData, setDoctorData] = useState([]);
+  const [allDoctors, setAllDoctors] = useState([]);
+  const [displayedDoctors, setDisplayedDoctors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const pageSize = 8; // Number of doctors per page
@@ -56,23 +59,59 @@ const AllDoctor = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchDoctors = async (pageIndex) => {
-      try {
-        const doctorData = await getDoctor(pageIndex, pageSize);
-        setDoctorData(doctorData.items);
-        setTotalDoctors(doctorData.totalCount);
-      } catch (error) {
-        console.error("Error fetching doctors:", error);
-      }
-    };
+  const fetchDoctors = async () => {
+    try {
+      let res;
+      const doctors = [];
+      let currentPage = 1;
+      do {
+        res = await getDoctor(currentPage, pageSize);
+        doctors.push(...res.items);
+        currentPage++;
+      } while (currentPage <= Math.ceil(res.totalCount / pageSize));
+      setAllDoctors(doctors);
+      setDisplayedDoctors(doctors.slice(0, pageSize));
+      setTotalDoctors(doctors.length);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
 
-    fetchDoctors(currentPage);
-  }, [currentPage]);
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    setDisplayedDoctors(allDoctors.slice((page - 1) * pageSize, page * pageSize));
   };
+
+  const removeAccents = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
+
+  const handleSearch = useCallback(
+    debounce((value) => {
+      if (!value) {
+        setDisplayedDoctors(allDoctors.slice(0, pageSize)); // Reset to initial list
+        setTotalDoctors(allDoctors.length); // Update total doctors count
+        return;
+      }
+      const lowercasedValue = removeAccents(value.toLowerCase());
+      const filteredDoctors = allDoctors.filter(
+        (doctor) =>
+          removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+          removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+      );
+      setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
+      setTotalDoctors(filteredDoctors.length);
+    }, 300),
+    [allDoctors]
+  );
 
   return (
     <>
@@ -108,6 +147,8 @@ const AllDoctor = () => {
           allowClear
           enterButton="Tìm kiếm"
           size="large"
+          onSearch={handleSearch}
+          onChange={(e) => handleSearch(e.target.value)}
         />
       </Row>
 
@@ -117,7 +158,7 @@ const AllDoctor = () => {
         </div>
         <div className="all-doctor">
           <div className="doctor-card-list">
-            {doctorData.map((doctor) => (
+            {displayedDoctors.map((doctor) => (
               <Link
                 to={`/doctor-detail/${doctor.id}`}
                 key={doctor.id}
@@ -232,4 +273,3 @@ const AllDoctor = () => {
 };
 
 export default AllDoctor;
-
