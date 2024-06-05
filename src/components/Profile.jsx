@@ -1,10 +1,12 @@
 import { Menu } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
   const dispatch = useDispatch();
+  const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
+  console.log(userRole)
 
   const handleLogout = () => {
     dispatch(logout());
@@ -12,6 +14,11 @@ const Profile = () => {
 
   return (
     <Menu>
+      {userRole === 3 && (
+        <Menu.Item key="workspace">
+          <Link to="/workspace">Bàn làm việc</Link>
+        </Menu.Item>
+      )}
       <Menu.Item key="profile">
         <Link to="/profile">Hồ sơ</Link>
       </Menu.Item>

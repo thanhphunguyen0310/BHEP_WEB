@@ -66,8 +66,7 @@ const NavBar = () => {
             <Dropdown overlay={<Profile />} placement="bottomRight">
               <Avatar
                 size="large"
-                // src={auth?.user?.data?.user?.avatar}
-                src={AVATAR}
+                src={auth?.user?.data?.user?.avatar}
                 alt={auth?.user?.data?.user?.fullName}
                 onError={handleAvatarError}
                 style={{ cursor: 'pointer' }}
