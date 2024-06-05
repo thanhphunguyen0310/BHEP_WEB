@@ -51,7 +51,6 @@ const Homepage = () => {
         console.error("Error fetching top rated doctors:", error);
       }
     };
-
     fetchTopRatedDoctors();
   }, []);
 

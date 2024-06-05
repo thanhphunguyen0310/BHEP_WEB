@@ -13,6 +13,7 @@ import AppointmentHistory_Doctor from '../pages/doctor/AppointmentHistory_Doctor
 import AppointmentHistory from "../pages/customer/AppointmentHistory";
 import AllDoctor from "../pages/AllDoctor";
 import DoctorDetail from "../components/DoctorDetail";
+import ProductDetail from "../components/ProductDetail";
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -22,6 +23,8 @@ export const  publicRoutes = [
     {path: "/all-doctor", component: AllDoctor },
     {path: "/doctor-detail/:id", component: DoctorDetail },
     {path: "/community", component: Community },
+    {path: "/product-detail/:id", component: ProductDetail },
+
 ]
 
 export const  customerRoutes = [

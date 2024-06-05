@@ -16,6 +16,7 @@ export const productData = [
         name: 'Gói Dịch vụ Cơ bản',
         description: "Dùng cho cá nhân",
         price: "399.000 VNĐ",
+        rating: 4.5,
         image: basicService3month
     },
     {
@@ -23,6 +24,7 @@ export const productData = [
         name: 'Gói Dịch vụ Cơ bản',
         description: "Dùng cho cá nhân",
         price: "5499.000 VNĐ",
+        rating: 4.6,
         image: basicService6month
     },
     {
@@ -30,6 +32,7 @@ export const productData = [
         name: 'Gói Dịch vụ Gia Đình',
         description: "Dùng cho gia đình",
         price: "679.000 VNĐ",
+        rating: 4.6,
         image: familyService12month
     },
     {
@@ -37,6 +40,7 @@ export const productData = [
         name: 'Spirit',
         description: "Thiết bị đo lường Spirit",
         price: "599.000 VNĐ",
+        rating: 4.6,
         image: spiritDevice
     },
 ];

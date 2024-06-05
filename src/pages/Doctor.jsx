@@ -83,7 +83,7 @@ const Doctors = () => {
       return;
     }
     const lowercasedValue = removeAccents(value.toLowerCase());
-    const filtered = allDoctors .filter(doctor =>
+    const filtered = allDoctors.filter(doctor =>
       removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
       removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
     );
