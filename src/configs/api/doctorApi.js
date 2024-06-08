@@ -36,6 +36,7 @@ export const getDoctorDetail = async (id) => {
     throw error;
   }
 };
+
 export const getScheduleByDate = async (date) => {
   try {
     const response = await apiClient.get(`/Schedule/date/${date}`);
@@ -45,3 +46,24 @@ export const getScheduleByDate = async (date) => {
     throw error;
   }
 };
+
+export const createDoctorSchedule = async (employeeId, schedules) => {
+  try {
+      const schedule = await apiClient.post(`/Schedule`, {
+          employeeId: employeeId,
+          schedules: schedules
+      });
+      return schedule;
+      } catch (error) {
+          throw new Error(error.message);
+  }
+};
+
+export const getDoctorSchedule = async (employeeId) => {
+  try {
+      const schedule = await apiClient.get(`/Schedule/employee/${employeeId}`);
+      return schedule.data.data.weekSchedule;
+  } catch (error) {
+      throw new Error(error.message);
+  }
+}

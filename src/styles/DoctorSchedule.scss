@@ -25,25 +25,74 @@
     .doctor-schedule-form {
       .form-item {
         margin-bottom: 24px;
-  
-        .ant-form-item-label > label {
-          font-size: 16px;
-          font-weight: 500;
-          color: #555;
-        }
-  
+    
         .date-picker,
         .time-picker {
-          width: 100%;
+          width: 100%; // Sử dụng 100% để kích thước bằng với kích thước của container mẹ
           height: 40px;
           font-size: 16px;
           border-radius: 4px;
-  
+    
           .ant-picker-input > input {
             font-size: 16px;
           }
         }
       }
     }
+    
+    
+    
   }
+  .schedule-summary {
+    width: 80%;
+    .ant-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .schedule-item {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      align-items: flex-start; // Đảm bảo các mục con căn lề theo chiều ngang
+      margin-bottom: 10px;
+  
+      .date {
+        width: 100%;
+        font-weight: bold;
+        white-space: nowrap; // Ngăn ngừa ngày và giờ xuống dòng
+        overflow: hidden;
+        text-overflow: ellipsis; // Hiển thị dấu chấm nếu nội dung quá dài
+      }
+  
+      .time {
+        width: 80%;
+        display: flex;
+        flex-wrap: wrap; // Đảm bảo các thời gian xuống dòng khi cần
+      
+        > * {
+          margin-right: 10px; // Tạo khoảng cách giữa các thời gian
+          margin-bottom: 10px; // Đảm bảo các thời gian xuống dòng
+        }
+      
+        > :last-child {
+          margin-right: 0; // Loại bỏ margin phía sau của mục cuối cùng
+          margin-bottom: 0; // Loại bỏ margin dưới của mục cuối cùng
+        }
+      }
+      
+  
+      .time > :not(:last-child) {
+        margin-right: 10px; // Tạo khoảng cách giữa các thời gian
+      }
+  
+      .time > :last-child {
+        margin-right: 0; // Loại bỏ margin phía sau của mục cuối cùng
+      }
+    }
+  }
+  
+  
+
   

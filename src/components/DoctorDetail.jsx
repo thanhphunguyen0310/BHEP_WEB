@@ -78,6 +78,7 @@ const DoctorDetail = () => {
     try {
       const data = await getScheduleByDate(formattedDate);
       setSchedule(data.weekSchedule);
+      console.log(data.weekSchedule)
     } catch (error) {
       console.error("Error fetching schedule:", error);
     }
