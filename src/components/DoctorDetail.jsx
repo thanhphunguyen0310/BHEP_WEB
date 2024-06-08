@@ -5,12 +5,15 @@ import {
   Carousel,
   Col,
   DatePicker,
+  Dropdown,
   Image,
   List,
+  Menu,
   Row,
   Typography,
 } from "antd";
 import dayjs from "dayjs";
+import viLocale from "dayjs/locale/vi";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import "../styles/DoctorDetail.scss";
 import { getDoctorDetail, getScheduleByDate } from "../configs/api/doctorApi";
@@ -23,9 +26,15 @@ import briefcase from "../assets/icon/briefcase.svg";
 import star from "../assets/icon/star.svg";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import moment from "moment";
 
 dayjs.extend(customParseFormat);
+dayjs.locale(viLocale);
 const dateFormat = "DD-MM-YYYY";
+// format dddd, upercase
+const formatDay = (date) => {
+  return date.format("dddd").replace(/^\w/, (c) => c.toUpperCase());
+};
 const DoctorDetail = () => {
   const data = [
     "(1986 - 1994) Bác sĩ nội khoa truyền nhiễm,Bệnh viện Nhân Dân Gia Định",
@@ -71,14 +80,15 @@ const DoctorDetail = () => {
   const maxDate = today.add(7, "day");
   const [selectedDate, setSelectedDate] = useState(today);
   const [schedule, setSchedule] = useState([]);
-  const [doctorDetail, setDoctorDetail] = useState("")
+  const [doctorDetail, setDoctorDetail] = useState("");
+
   const handleDateChange = async (date) => {
     setSelectedDate(date);
     const formattedDate = date.format(dateFormat);
     try {
       const data = await getScheduleByDate(formattedDate);
       setSchedule(data.weekSchedule);
-      console.log(data.weekSchedule)
+      console.log(data.weekSchedule);
     } catch (error) {
       console.error("Error fetching schedule:", error);
     }
@@ -159,7 +169,7 @@ const DoctorDetail = () => {
               >
                 {doctorDetail.description} {doctorDetail.fullName}
               </Typography.Title>
-             
+
               <Row align={"middle"}>
                 <Col span={12}>
                   <Row
@@ -245,7 +255,11 @@ const DoctorDetail = () => {
       <Row
         className="schedule-container"
         justify={"center"}
-        style={{ width: "100vw", backgroundColor: "#D7ECFF", padding:"24px 0px" }}
+        style={{
+          width: "100vw",
+          backgroundColor: "#D7ECFF",
+          padding: "24px 0px",
+        }}
       >
         <Row
           className="time-booking"
@@ -270,17 +284,34 @@ const DoctorDetail = () => {
               <Typography.Title level={5}>Lịch hẹn</Typography.Title>
             </Col>
             <Col span={12}>
-              <DatePicker
-                size={"middle"}
-                defaultValue={today}
-                format={dateFormat}
-                disabledDate={(current) =>
-                  current &&
-                  (current < today.startOf("day") ||
-                    current > maxDate.endOf("day"))
+              <Dropdown
+                placement="bottomLeft"
+                arrow
+                style={{ border: "1px solid #d9d9d9", borderRadius: "2px" }}
+                overlay={
+                  <Menu>
+                    {[...Array(7)].map((_, index) => {
+                      const date = today.clone().add(index, "days");
+                      return (
+                        <Menu.Item
+                          key={index}
+                          onClick={() => handleDateChange(date)}
+                        >
+                          {formatDay(date)}, {date.format("DD-MM-YYYY")}
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu>
                 }
-                onChange={handleDateChange}
-              />
+                trigger={["click"]}
+              >
+                <a
+                  className="ant-dropdown-link"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {formatDay(selectedDate)}, {selectedDate.format("DD-MM-YYYY")}
+                </a>
+              </Dropdown>
             </Col>
           </Row>
           <Row
@@ -318,9 +349,7 @@ const DoctorDetail = () => {
             </Row>
           </Row>
           <Row style={{ width: "90%" }} justify={"end"} className="booking-btn">
-              <Button>
-                Đặt lịch ngay
-              </Button>
+            <Button>Đặt lịch ngay</Button>
           </Row>
         </Row>
       </Row>
@@ -328,7 +357,7 @@ const DoctorDetail = () => {
       <Row
         className="doctor-experience-container"
         justify={"center"}
-        style={{ width: "100vw", padding:"24px 0px" }}
+        style={{ width: "100vw", padding: "24px 0px" }}
       >
         <Row
           className="doctor-experience-content"
@@ -364,7 +393,7 @@ const DoctorDetail = () => {
               dataSource={data}
               renderItem={(item) => (
                 <List.Item>
-                  <Typography.Text>{item}</Typography.Text> 
+                  <Typography.Text>{item}</Typography.Text>
                 </List.Item>
               )}
             />
