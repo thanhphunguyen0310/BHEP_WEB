@@ -61,7 +61,7 @@ export const createDoctorSchedule = async (employeeId, schedules) => {
 
 export const getDoctorSchedule = async (employeeId) => {
   try {
-      const schedule = await apiClient.get(`/Schedule/employee/${employeeId}`);
+      const schedule = await apiClient.get(`/Schedule/Employee/${employeeId}`);
       return schedule.data.data.weekSchedule;
   } catch (error) {
       throw new Error(error.message);

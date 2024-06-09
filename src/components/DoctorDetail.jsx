@@ -1,10 +1,8 @@
 import {
   Avatar,
   Button,
-  Card,
   Carousel,
   Col,
-  DatePicker,
   Dropdown,
   Image,
   List,
@@ -12,11 +10,13 @@ import {
   Row,
   Typography,
 } from "antd";
+import "../styles/DoctorDetail.scss";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import viLocale from "dayjs/locale/vi";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import "../styles/DoctorDetail.scss";
-import { getDoctorDetail, getScheduleByDate } from "../configs/api/doctorApi";
+import { getDoctorDetail, getDoctorSchedule } from "../configs/api/doctorApi";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
 import DoctorBanner2 from "../assets/img/doctor-banner2.png";
 import DoctorBanner3 from "../assets/img/doctor-banner3.png";
@@ -26,11 +26,14 @@ import briefcase from "../assets/icon/briefcase.svg";
 import star from "../assets/icon/star.svg";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import moment from "moment";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.locale(viLocale);
+
 const dateFormat = "DD-MM-YYYY";
+const vietnamTimezone = "Asia/Ho_Chi_Minh";
 // format dddd, upercase
 const formatDay = (date) => {
   return date.format("dddd").replace(/^\w/, (c) => c.toUpperCase());
@@ -76,35 +79,45 @@ const DoctorDetail = () => {
     }
   };
   const { id } = useParams();
-  const today = dayjs();
-  const maxDate = today.add(7, "day");
+  //set timezone VietNam
+  const today = dayjs().tz(vietnamTimezone);
   const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [doctorDetail, setDoctorDetail] = useState("");
 
   const handleDateChange = async (date) => {
-    setSelectedDate(date);
-    const formattedDate = date.format(dateFormat);
+    const localDate = date.tz(vietnamTimezone);
+    setSelectedDate(localDate);
+    console.log(localDate, "ngày đã chọn");
+
     try {
-      const data = await getScheduleByDate(formattedDate);
-      setSchedule(data.weekSchedule);
-      console.log(data.weekSchedule);
+      const doctorTime = await getDoctorSchedule(id);
+      const filteredSchedule = doctorTime.filter((appointment) =>
+        dayjs(appointment.date, dateFormat).isSame(date, "day")
+      );
+      setSchedule(filteredSchedule);
     } catch (error) {
       console.error("Error fetching schedule:", error);
     }
   };
 
+  const fetchDoctorDetail = async () => {
+    try {
+      const doctorData = await getDoctorDetail(id);
+      setDoctorDetail(doctorData.data);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
+
+  const handleTimeSlotSelect = (slot) => {
+    console.log(slot)
+    setSelectedTimeSlot(slot, "slot đã chọn");
+  };
   useEffect(() => {
-    const fetchDoctorDetail = async () => {
-      try {
-        const doctorData = await getDoctorDetail(id);
-        console.log(doctorData.data);
-        setDoctorDetail(doctorData.data);
-      } catch (error) {
-        console.error("Error fetching doctors:", error);
-      }
-    };
     fetchDoctorDetail();
+    handleDateChange(today);
   }, [id]);
 
   return (
@@ -276,28 +289,47 @@ const DoctorDetail = () => {
         >
           <Row
             className="header-time-picker"
-            align={"middle"}
-            justify={"center"}
-            style={{ width: "70%" }}
+            align={"center"}
+            style={{ flexWrap: "wrap", width: "70%", alignItems: "center" }}
           >
             <Col span={4}>
-              <Typography.Title level={5}>Lịch hẹn</Typography.Title>
+              <Typography.Title
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "650",
+                  marginBottom: "0",
+                }}
+              >
+                Lịch hẹn
+              </Typography.Title>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Dropdown
+                className="custom-dropdown"
                 placement="bottomLeft"
                 arrow
-                style={{ border: "1px solid #d9d9d9", borderRadius: "2px" }}
                 overlay={
                   <Menu>
                     {[...Array(7)].map((_, index) => {
-                      const date = today.clone().add(index, "days");
+                      const date = today
+                        .clone()
+                        .add(index, "days")
+                        .tz(vietnamTimezone);
+                      const isToday = date.isSame(today, "day");
                       return (
                         <Menu.Item
                           key={index}
                           onClick={() => handleDateChange(date)}
+                          className={isToday ? "highlight-today" : ""}
                         >
-                          {formatDay(date)}, {date.format("DD-MM-YYYY")}
+                          <Row
+                            gutter={[8, 8]}
+                            align={"middle"}
+                            justify={"center"}
+                          >
+                            <Col span={7}>{formatDay(date)}</Col>
+                            <Col span={8}>{date.format("DD-MM-YYYY")}</Col>
+                          </Row>
                         </Menu.Item>
                       );
                     })}
@@ -309,7 +341,25 @@ const DoctorDetail = () => {
                   className="ant-dropdown-link"
                   onClick={(e) => e.preventDefault()}
                 >
-                  {formatDay(selectedDate)}, {selectedDate.format("DD-MM-YYYY")}
+                  <Row
+                    style={{
+                      border: "1px solid #d9d9d9",
+                      width: "fit-content",
+                      padding: "4px 11px",
+                      borderRadius: "2px",
+                      transition: "border .3s,box-shadow .3s",
+                    }}
+                    gutter={[8, 8]}
+                    align={"middle"}
+                    justify={"start"}
+                  >
+                    <Col style={{ fontWeight: "650", fontSize: "16px" }}>
+                      {formatDay(selectedDate)},
+                    </Col>
+                    <Col style={{ fontWeight: "650", fontSize: "16px" }}>
+                      {selectedDate.format("DD-MM-YYYY")}
+                    </Col>
+                  </Row>
                 </a>
               </Dropdown>
             </Col>
@@ -317,33 +367,32 @@ const DoctorDetail = () => {
           <Row
             className="time-picker"
             align={"middle"}
-            justify={"center"}
+            justify={"start"}
             style={{ width: "100%", marginTop: "16px" }}
           >
-            <Row style={{ width: "80%" }} align={"top"}>
+            <Row
+              style={{
+                marginLeft: "100px",
+                padding: "0px 110px",
+                display: "flex",
+                flexWrap: "wrap",
+              }}
+              align={"top"}
+              justify={"start"}
+              gutter={[8, 8]}
+            >
               {schedule.length > 0 ? (
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 4,
-                    lg: 4,
-                    xl: 6,
-                    xxl: 3,
-                  }}
-                  dataSource={schedule[0].time}
-                  renderItem={(time) => (
-                    <List.Item>
-                      <Card size="small">
-                        <p>{time}</p>
-                      </Card>
-                    </List.Item>
-                  )}
-                />
+                schedule[0].time.map((time, index) => (
+                  <Col key={index}>
+                    <Button
+                    type={selectedTimeSlot === time ? "primary" : "default"}
+                    onClick={() => handleTimeSlotSelect(time)}
+                    >{time}</Button>
+                  </Col>
+                ))
               ) : (
                 <Typography.Text>
-                  No schedule available for the selected date
+                  Bác sĩ chưa làm việc vào ngày này
                 </Typography.Text>
               )}
             </Row>
@@ -373,9 +422,9 @@ const DoctorDetail = () => {
             </Typography.Title>
             <p>
               Giám đốc Phòng khám Tổ hợp Y tế Mediplus Nguyên Phó Giám đốc Bệnh
-              viện Nhân Dân Gia ĐịnhHơn 30 năm kinh nghiệm khám và điều trị các
-              bệnh nội cơ xương khớp Bác sĩ nhận khám bệnh nhân từ 16 tuổi trở
-              lên
+              viện Nhân Dân Gia Định. Hơn 30 năm kinh nghiệm khám và điều trị
+              các bệnh nội cơ xương khớp Bác sĩ nhận khám bệnh nhân từ 16 tuổi
+              trở lên
             </p>
           </Row>
           <Row
