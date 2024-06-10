@@ -45,7 +45,6 @@ const Homepage = () => {
     const fetchTopRatedDoctors = async () => {
       try {
         const doctors = await getHighRateDoctor();
-        console.log(doctors)
         setTopRatedDoctors(doctors);
       } catch (error) {
         console.error("Error fetching top rated doctors:", error);

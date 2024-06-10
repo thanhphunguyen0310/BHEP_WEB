@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import LoginForm from "../models/LoginForm";
 import RegistForm from "../models/RegisterForm";
 import Profile from "./Profile";
-import AVATAR from "../assets/img/avatar.jpg"
 
 const NavBar = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
@@ -52,24 +51,28 @@ const NavBar = () => {
             Công cụ <CaretDownOutlined />
           </Menu.Item>
           <Menu.Item className="item">
-            <Link to="/store">Cửa hàng <CaretDownOutlined /></Link>
+            <Link to="/store">
+              Cửa hàng <CaretDownOutlined />
+            </Link>
           </Menu.Item>
           <Menu.Item className="item">
             Cộng đồng <CaretDownOutlined />
           </Menu.Item>
-          <Menu.Item >
-            <Link to="/doctor">Tìm bác sĩ <CaretDownOutlined /></Link>
+          <Menu.Item>
+            <Link to="/doctor">
+              Tìm bác sĩ <CaretDownOutlined />
+            </Link>
           </Menu.Item>
         </Menu>
         <div className="button">
-          {auth.user ? (
+          {auth.user?.isSuccess ? (
             <Dropdown overlay={<Profile />} placement="bottomRight">
               <Avatar
                 size="large"
                 src={auth?.user?.data?.user?.avatar}
                 alt={auth?.user?.data?.user?.fullName}
                 onError={handleAvatarError}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               />
             </Dropdown>
           ) : (
@@ -94,7 +97,11 @@ const NavBar = () => {
           )}
         </div>
         {showLoginForm && (
-          <LoginForm closeForm={closeForm} openRegistForm={openRegistForm} showLoginForm={showLoginForm} />
+          <LoginForm
+            closeForm={closeForm}
+            openRegistForm={openRegistForm}
+            showLoginForm={showLoginForm}
+          />
         )}
         {showRegistForm && (
           <RegistForm closeForm={closeForm} openLoginForm={openLoginForm} />

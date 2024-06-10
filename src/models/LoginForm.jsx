@@ -1,12 +1,11 @@
-import { Modal, Button, Form, Input, Checkbox } from 'antd';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../store/authSlice';
+import { Modal, Button, Form, Input, Checkbox,message } from "antd";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../store/authSlice";
 import LOGO from "../assets/img/LOGO.png";
 import "../styles/LoginForm.scss";
 
 const LoginForm = ({ closeForm, openRegistForm }) => {
-  
   const [isOpen, setIsOpen] = useState(true);
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -23,9 +22,19 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
   };
 
   const onFinish = (values) => {
-    setIsOpen(false);
-    closeForm();
-    dispatch(login(values));
+    try {
+      dispatch(login(values)).then((response) => {
+        if(response.error){
+          message.error("Sai email hoặc mật khẩu!")
+        }else{
+          setIsOpen(false);
+          closeForm();
+        }
+        console.log(response)
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -52,8 +61,8 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
               label="Email"
               name="email"
               rules={[
-                { required: true, message: 'Nhập Email!' },
-                { type: 'email', message: 'Email không hợp lệ!' },
+                { required: true, message: "Nhập Email!" },
+                { type: "email", message: "Email không hợp lệ!" },
               ]}
             >
               <Input />
@@ -62,9 +71,7 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
             <Form.Item
               label="Mật khẩu"
               name="password"
-              rules={[
-                { required: true, message: 'Nhập mật khẩu!' },
-              ]}
+              rules={[{ required: true, message: "Nhập mật khẩu!" }]}
             >
               <Input.Password />
             </Form.Item>
@@ -79,7 +86,7 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
               </a>
             </Form.Item>
 
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+            <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
               Đăng nhập
             </Button>
             <Form.Item>
@@ -88,7 +95,6 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
               </span>
             </Form.Item>
           </Form>
-          {auth.status === 'failed' && <p style={{ color: 'red' }}>{auth.error}</p>}
         </div>
       </div>
     </Modal>

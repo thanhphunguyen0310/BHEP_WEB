@@ -7,8 +7,7 @@ const initialState = {
   error: null,
 };
 
-export const login = createAsyncThunk(
-  'auth/login',
+export const login = createAsyncThunk('auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await loginApi(credentials);

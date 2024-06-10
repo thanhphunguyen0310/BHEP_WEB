@@ -9,7 +9,11 @@ import {
   message,
 } from "antd";
 import Calendar from "react-calendar";
-import moment from "moment";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import viLocale from "dayjs/locale/vi";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import "../../styles/DoctorSchedule.scss";
 import "react-calendar/dist/Calendar.css";
 import {
@@ -17,6 +21,11 @@ import {
   getDoctorSchedule,
 } from "../../configs/api/doctorApi";
 import { useSelector } from "react-redux";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
+dayjs.locale(viLocale);
 
 const DoctorSchedule = ({ visible, onOk, onCancel }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -26,8 +35,9 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
 
   const employeeId = useSelector((state) => state.auth?.user?.data?.user?.id);
 
-  const today = moment().startOf("day");
-
+  const vietnamTimezone = "Asia/Ho_Chi_Minh";
+  const today = dayjs().tz(vietnamTimezone).startOf("day");
+  // get data
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -35,25 +45,16 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
         const formattedSchedules = fetchedSchedules.reduce((acc, schedule) => {
           const dateStr = schedule.date;
           const timeRanges = schedule.time.map((timeRange) => {
-            const [startTime, endTime] = timeRange.split(" - ");
             return {
-              range: [
-                moment(
-                  dateStr + " " + startTime,
-                  "DD-MM-YYYY HH:mm"
-                ).toISOString(),
-                moment(
-                  dateStr + " " + endTime,
-                  "DD-MM-YYYY HH:mm"
-                ).toISOString(),
-              ],
+              range: timeRange.split("-"),
             };
           });
           acc[dateStr] = timeRanges;
+
           return acc;
         }, {});
         setSchedules(formattedSchedules);
-        setExistingSchedules(formattedSchedules); // Save existing schedules separately
+        setExistingSchedules(formattedSchedules);
       } catch (error) {
         message.error("Có lỗi xảy ra khi lấy lịch làm việc: " + error.message);
       }
@@ -75,16 +76,18 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
 
   const addTimeRange = () => {
     if (timeRange && timeRange.length === 2) {
-      const dateStr = moment(selectedDate).format("DD-MM-YYYY");
+      const dateStr = dayjs(selectedDate).format("DD-MM-YYYY");
       const newRange = {
-        range: [timeRange[0].toISOString(), timeRange[1].toISOString()],
+        range: [
+          dayjs(timeRange[0]).tz(vietnamTimezone).format("HH:mm"),
+          dayjs(timeRange[1]).tz(vietnamTimezone).format("HH:mm"),
+        ],
       };
-
       const existingRanges = schedules[dateStr] || [];
       const isDuplicate = existingRanges.some(
         (existingRange) =>
-          moment(existingRange.range[0]).isSame(newRange.range[0]) &&
-          moment(existingRange.range[1]).isSame(newRange.range[1])
+          existingRange.range[0] == newRange.range[0] &&
+          existingRange.range[1] == newRange.range[1]
       );
 
       if (isDuplicate) {
@@ -98,6 +101,7 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
           ? [...prevSchedules[dateStr], newRange]
           : [newRange],
       }));
+
       setCurrentRange(null);
     } else {
       message.warning("Vui lòng chọn một khoảng thời gian hợp lệ.");
@@ -122,46 +126,41 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
       return;
     }
 
-    const newSchedules = Object.entries(schedules).reduce(
-      (acc, [date, ranges]) => {
-        const existingRanges = existingSchedules[date] || [];
-        const newRanges = ranges.filter((range) => {
-          return !existingRanges.some(
-            (existingRange) =>
-              moment(existingRange.range[0]).isSame(range.range[0]) &&
-              moment(existingRange.range[1]).isSame(range.range[1])
-          );
-        });
-        if (newRanges.length > 0) {
-          acc[date] = newRanges;
-        }
-        return acc;
-      },
-      {}
-    );
+    const dateStr = dayjs(selectedDate).format("DD-MM-YYYY");
+    const selectedDateSchedules = schedules[dateStr] || [];
+
+    const newSchedules = selectedDateSchedules.filter((range) => {
+      const existingRanges = existingSchedules[dateStr] || [];
+      return !existingRanges.some(
+        (existingRange) =>
+          dayjs(existingRange.range[0]).isSame(range.range[0]) &&
+          dayjs(existingRange.range[1]).isSame(range.range[1])
+      );
+    });
 
     if (Object.keys(newSchedules).length === 0) {
       message.warning("Không có lịch mới nào được tạo.");
       return;
     }
 
-    const formattedSchedules = Object.entries(newSchedules).map(
-      ([date, ranges]) => ({
-        date: date,
-        time: ranges.map((range) => {
-          const startTime = moment(range.range[0]).format("HH:mm");
-          const endTime = moment(range.range[1]).format("HH:mm");
-          return `${startTime} - ${endTime}`;
+    const formattedSchedules = [
+      {
+        date: dateStr,
+        time: newSchedules.map((range) => {
+          const startTime = range.range[0];
+          const endTime = range.range[1];
+
+          return `${startTime}-${endTime}`;
         }),
-      })
-    );
+      },
+    ];
 
     try {
       const response = await createDoctorSchedule(
         employeeId,
         formattedSchedules
       );
-      if (response.isSuccess) {
+      if (response.data.isSuccess) {
         message.success("Tạo lịch làm việc thành công!");
         setSelectedDate(null);
         setCurrentRange(null);
@@ -183,9 +182,9 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
   };
 
   const filteredSchedules = Object.entries(schedules)
-    .filter(([date]) => moment(date, "DD-MM-YYYY").isSameOrAfter(today))
+    // .filter(([date]) => dayjs(date, "DD-MM-YYYY").isSameOrAfter(today))
     .sort(([dateA], [dateB]) =>
-      moment(dateA, "DD-MM-YYYY").diff(moment(dateB, "DD-MM-YYYY"))
+      dayjs(dateA, "DD-MM-YYYY").diff(dayjs(dateB, "DD-MM-YYYY"))
     )
     .reduce((acc, [date, ranges]) => {
       acc[date] = ranges;
@@ -209,17 +208,19 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
       >
         <Form layout="vertical" className="doctor-schedule-form">
           <Form.Item
+            className="calender"
             label={<Typography.Text strong>Chọn ngày</Typography.Text>}
           >
             <Calendar
+              style={{ width: "100%" }}
               onChange={onDateChange}
               value={selectedDate}
-              tileDisabled={({ date }) => moment(date).isBefore(today)}
+              tileDisabled={({ date }) => dayjs(date).isBefore(today)}
               locale="vi-VN"
             />
           </Form.Item>
           {selectedDate && (
-            <div style={{width:"80%"}}>
+            <div className="time-display">
               <Form.Item
                 label={<Typography.Text strong>Chọn thời gian</Typography.Text>}
               >
@@ -233,41 +234,45 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
                   Thêm khoảng thời gian
                 </Button>
               </Form.Item>
-              <List
-                size="small"
-                bordered
-                dataSource={
-                  schedules[moment(selectedDate).format("DD-MM-YYYY")] || []
-                }
-                renderItem={(schedule, index) => (
-                  <List.Item
-                    actions={[
-                      <Button
-                        key="delete-btn"
-                        type="link"
-                        onClick={() =>
-                          removeTimeRange(
-                            moment(selectedDate).format("DD-MM-YYYY"),
-                            index
-                          )
-                        }
-                      >
-                        Xóa
-                      </Button>,
-                    ]}
-                  >
-                    {`${moment(schedule.range[0]).format("HH:mm")} - ${moment(
-                      schedule.range[1]
-                    ).format("HH:mm")}`}
-                  </List.Item>
-                )}
-                style={{ marginTop: "20px" }}
-              />
+              <div className="time-selected">
+                <List
+                  size="small"
+                  bordered
+                  dataSource={
+                    selectedDate &&
+                    schedules[dayjs(selectedDate).format("DD-MM-YYYY")]
+                  }
+                  renderItem={(schedule, index) => (
+                    <List.Item
+                      actions={[
+                        <Button
+                          key="delete-btn"
+                          type="link"
+                          onClick={() =>
+                            removeTimeRange(
+                              dayjs(selectedDate).format("DD-MM-YYYY"),
+                              index
+                            )
+                          }
+                        >
+                          Xóa
+                        </Button>,
+                      ]}
+                    >
+                      {schedule.range[0]}
+                      {"-"}
+                      {schedule.range[1]}
+                    </List.Item>
+                  )}
+                />
+              </div>
             </div>
           )}
         </Form>
         <div className="schedule-summary">
-          <Typography.Title level={4}>Lịch làm việc đã chọn:</Typography.Title>
+          <Typography.Title style={{ width: "70%" }} level={5} strong>
+            Lịch làm việc đã chọn:
+          </Typography.Title>
           <List
             dataSource={Object.entries(filteredSchedules)}
             renderItem={([date, ranges]) => (
@@ -276,8 +281,9 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
                 <div className="time">
                   {ranges.map((schedule, index) => (
                     <Typography.Text key={index}>
-                      {moment(schedule.range[0]).format("HH:mm")} -{" "}
-                      {moment(schedule.range[1]).format("HH:mm")}{" "}
+                      {schedule.range[0]}
+                      {"-"}
+                      {schedule.range[1]}
                     </Typography.Text>
                   ))}
                 </div>
