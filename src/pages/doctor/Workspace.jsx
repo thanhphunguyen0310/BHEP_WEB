@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Card, Col, Row, Typography } from "antd";
 import Calendar from "../../assets/icon/calendar.svg";
@@ -26,7 +26,6 @@ const Workspace = () => {
   };
 
   const handleOk = () => {
-    // Xử lý khi bấm OK, ví dụ: gọi API để lưu thông tin lịch làm việc
     setIsModalVisible(false);
   };
 
@@ -124,7 +123,7 @@ const Workspace = () => {
         </Row>
       </div>
       <DoctorSchedule
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
       />

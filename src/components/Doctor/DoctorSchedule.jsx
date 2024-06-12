@@ -28,7 +28,7 @@ dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.locale(viLocale);
 
-const DoctorSchedule = ({ visible, onOk, onCancel }) => {
+const DoctorSchedule = ({ open, onOk, onCancel }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeRange, setCurrentRange] = useState(null);
   const [schedules, setSchedules] = useState({});
@@ -60,10 +60,10 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
       }
     };
 
-    if (visible) {
+    if (open) {
       fetchSchedules();
     }
-  }, [visible, employeeId]);
+  }, [open, employeeId]);
 
   const onDateChange = (date) => {
     setSelectedDate(date);
@@ -189,7 +189,7 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
     return scheduleDate.isAfter(today) || scheduleDate.isSame(today, 'day');
   })
     .sort(([dateA], [dateB]) =>
-      dayjs(dateA, "DD-MM-YYYY").diff(dayjs(dateB, "DD-MM-YYYY"))
+      dayjs(dateB, "DD-MM-YYYY").diff(dayjs(dateA, "DD-MM-YYYY"))
     )
     .reduce((acc, [date, ranges]) => {
       acc[date] = ranges;
@@ -203,7 +203,7 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
             Tạo lịch làm việc
           </Typography.Title>
         }
-        visible={visible}
+        open={open}
         onOk={handleOk}
         onCancel={handleCancel}
         width={500}

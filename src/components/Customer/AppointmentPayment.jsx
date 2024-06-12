@@ -10,6 +10,8 @@ const AppointmentPayment = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
+  const price = useSelector((state) => state?.appointment?.price);
+
   const getPaymentMethod = (selectedPaymentMethod) => {
     switch (selectedPaymentMethod) {
       case 1:
@@ -36,17 +38,18 @@ const AppointmentPayment = () => {
       );
     }
   };
-  const handleConfirmPayment = async() => {
+  const handleConfirmPayment = async () => {
     try {
-      const payment = await makePayment(
-        userId,
-        price,
-      );
-      if (selectedPaymentMethod) {
-        setIsModalVisible(false);
+      const payment = await makePayment(userId, price);
+      if (payment?.data?.isSuccess) {
+        const paymentUrl = payment?.data?.data?.paymentUrl;
+        console.log(paymentUrl)
+        window.location.href = paymentUrl;
       } else {
         message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
       }
+      console.log(payment)
+      setIsModalVisible(false);
     } catch (error) {
       console.error("Error making appointment:", error);
       message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");

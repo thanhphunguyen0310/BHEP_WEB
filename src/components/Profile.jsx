@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 const Profile = () => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
-  console.log(userRole)
-
+  
   const handleLogout = () => {
     dispatch(logout());
   };

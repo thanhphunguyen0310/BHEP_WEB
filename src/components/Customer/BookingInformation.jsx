@@ -18,8 +18,9 @@ import {
   MdOutlineAccessTimeFilled,
 } from "react-icons/md";
 import "../../styles/BookingInformation.scss";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
+import { setAppointment } from "../../store/appointmentSlice"
 
 const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
   const [symptom, setSymptom] = useState([]);
@@ -27,6 +28,7 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
   const [note, setNote] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const dispatch = useDispatch();
   const location = useLocation();
   const { doctor, schedule } = location.state || {};
 
@@ -42,14 +44,26 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
   const gender = useSelector((state) => state.auth?.user?.data?.user?.gender);
 
   const handleConfirm = () => {
+
     setIsModalVisible(true);
   };
   const handleNoteChange = (e) => {
     setNote(e.target.value);
   };
   const handleOk = async () => {
+    const appointmentData = {
+      userId: userId,
+      doctorId: parseInt(doctor.id),
+      date: schedule.date,
+      time: schedule.time,
+      price: doctor.price,
+      note: note,
+      selectedSymptom: selectedSymptom,
+    };
+    dispatch(setAppointment(appointmentData));
     // try {
     //   const appointment = await makeAppointment(
+    //  appointmentData
     //     userId,
     //     parseInt(doctor.id),
     //     schedule.date,

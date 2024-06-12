@@ -3,6 +3,7 @@ import { loginApi } from '../configs/api/authApi';
 
 const initialState = {
   user: null,
+  isLoggedIn: false,
   status: 'idle',
   error: null,
 };
@@ -24,6 +25,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.isLoggedIn = false;
     },
   },
   extraReducers: (builder) => {
@@ -34,6 +36,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload;
+        state.isLoggedIn = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';

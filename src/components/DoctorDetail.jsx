@@ -123,7 +123,6 @@ const DoctorDetail = () => {
   const fetchDoctorDetail = async () => {
     try {
       const doctorData = await getDoctorDetail(id);
-      console.log(doctorData.data)
       setDoctorDetail(doctorData.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -149,7 +148,6 @@ const DoctorDetail = () => {
         fullName: doctorDetail?.fullName,
         price: doctorDetail?.workProfile?.price
       };
-      console.log(doctor, schedule);
       navigate('/booking-appointment', { state: { doctor, schedule } });
     } else {
       message.error('Bạn chưa chọn lịch hẹn');
