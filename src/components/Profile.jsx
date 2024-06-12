@@ -19,6 +19,11 @@ const Profile = () => {
           <Link to="/workspace">Bàn làm việc</Link>
         </Menu.Item>
       )}
+      {userRole === 1 && (
+        <Menu.Item key="manage">
+          <Link to="/manage">Quản lí</Link>
+        </Menu.Item>
+      )}
       <Menu.Item key="profile">
         <Link to="/profile">Hồ sơ</Link>
       </Menu.Item>

@@ -25,10 +25,8 @@ const Workspace = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = (selectedDate, selectedTime) => {
+  const handleOk = () => {
     // Xử lý khi bấm OK, ví dụ: gọi API để lưu thông tin lịch làm việc
-    console.log("Selected Date:", selectedDate);
-    console.log("Selected Time:", selectedTime);
     setIsModalVisible(false);
   };
 

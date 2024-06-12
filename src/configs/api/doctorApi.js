@@ -67,3 +67,15 @@ export const getDoctorSchedule = async (employeeId) => {
       throw new Error(error.message);
   }
 }
+
+export const updateDoctorSchedule = async (employeeId, date) => {
+  try {
+    const schedule = await apiClient.put(`/Schedule`, {
+        employeeId: employeeId,
+        date: date
+    });
+    return schedule;
+    } catch (error) {
+        throw new Error(error.message);
+}
+}

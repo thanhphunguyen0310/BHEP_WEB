@@ -18,6 +18,7 @@ import "../../styles/DoctorSchedule.scss";
 import "react-calendar/dist/Calendar.css";
 import {
   createDoctorSchedule,
+  updateDoctorSchedule,
   getDoctorSchedule,
 } from "../../configs/api/doctorApi";
 import { useSelector } from "react-redux";
@@ -37,7 +38,7 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
 
   const vietnamTimezone = "Asia/Ho_Chi_Minh";
   const today = dayjs().tz(vietnamTimezone).startOf("day");
-  // get data
+  // get schedule data
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -50,7 +51,6 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
             };
           });
           acc[dateStr] = timeRanges;
-
           return acc;
         }, {});
         setSchedules(formattedSchedules);
@@ -89,7 +89,7 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
           existingRange.range[0] == newRange.range[0] &&
           existingRange.range[1] == newRange.range[1]
       );
-
+      // check date exist
       if (isDuplicate) {
         message.warning("Thời gian này đã được tạo.");
         return;
@@ -133,8 +133,10 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
       const existingRanges = existingSchedules[dateStr] || [];
       return !existingRanges.some(
         (existingRange) =>
-          dayjs(existingRange.range[0]).isSame(range.range[0]) &&
-          dayjs(existingRange.range[1]).isSame(range.range[1])
+          existingRange.range[0] == range.range[0] &&
+          existingRange.range[1] == range.range[1]
+        // dayjs(existingRange.range[0]).isSame(range.range[0]) &&
+        // dayjs(existingRange.range[1]).isSame(range.range[1])
       );
     });
 
@@ -182,7 +184,10 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
   };
 
   const filteredSchedules = Object.entries(schedules)
-    // .filter(([date]) => dayjs(date, "DD-MM-YYYY").isSameOrAfter(today))
+  .filter(([date]) => {
+    const scheduleDate = dayjs(date, "DD-MM-YYYY");
+    return scheduleDate.isAfter(today) || scheduleDate.isSame(today, 'day');
+  })
     .sort(([dateA], [dateB]) =>
       dayjs(dateA, "DD-MM-YYYY").diff(dayjs(dateB, "DD-MM-YYYY"))
     )
@@ -190,7 +195,6 @@ const DoctorSchedule = ({ visible, onOk, onCancel }) => {
       acc[date] = ranges;
       return acc;
     }, {});
-
   return (
     <>
       <Modal

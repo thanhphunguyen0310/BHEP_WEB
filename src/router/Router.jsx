@@ -14,28 +14,26 @@ import AllDoctor from "../pages/AllDoctor";
 import DoctorDetail from "../components/DoctorDetail";
 import ProductDetail from "../components/ProductDetail";
 import DoctorSchedule from "../components/Doctor/DoctorSchedule";
+import BookingAppointment from '../pages/customer/BookingAppointment';
+import AppointmentPayment from '../components/Customer/AppointmentPayment';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
     {path: "/category", component: Category},
     {path: "/store", component: Store},
     {path: "/product-detail/:id", component: ProductDetail },
-    // { 
-    //     path: "/doctor", 
-    //     component: Doctor,
-    //     children: [
-    //       { path: "doctor-detail/:id", component: DoctorDetail, layout: DefaultLayout },
-    //     ]
-    //   },
     {path: "/doctor", component: Doctor },
     {path: "/all-doctor", component: AllDoctor },
     {path: "/doctor-detail/:id", component: DoctorDetail },
     {path: "/community", component: Community },
+    {path: "/booking-appointment", component: BookingAppointment},
+    {path: "/booking-payment", component: AppointmentPayment},
 ]
 
 export const  customerRoutes = [
     {path: "/health-records", component: HealthRecord},
     {path: "/history-appointment", component: AppointmentHistory},
+    
 ]
 
 export const  doctorRoutes = [

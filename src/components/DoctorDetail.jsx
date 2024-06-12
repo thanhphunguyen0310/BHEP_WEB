@@ -9,6 +9,7 @@ import {
   Menu,
   Row,
   Typography,
+  message,
 } from "antd";
 import "../styles/DoctorDetail.scss";
 import dayjs from "dayjs";
@@ -25,12 +26,13 @@ import hospital from "../assets/icon/hospital.svg";
 import briefcase from "../assets/icon/briefcase.svg";
 import star from "../assets/icon/star.svg";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.locale(viLocale);
+
 
 const dateFormat = "DD-MM-YYYY";
 const vietnamTimezone = "Asia/Ho_Chi_Minh";
@@ -38,7 +40,14 @@ const vietnamTimezone = "Asia/Ho_Chi_Minh";
 const formatDay = (date) => {
   return date.format("dddd").replace(/^\w/, (c) => c.toUpperCase());
 };
+const formatPrice = (price) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
+};
 const DoctorDetail = () => {
+  const navigate = useNavigate();
   const data = [
     "(1986 - 1994) Bác sĩ nội khoa truyền nhiễm,Bệnh viện Nhân Dân Gia Định",
     "(1994 - 1997) Phó trưởng phòng Kế hoach tổng hợp, Bác sĩ tim mach, Bệnh viện Nhân Dân Gia Định",
@@ -78,6 +87,17 @@ const DoctorDetail = () => {
         return "Không xác định";
     }
   };
+  const getMajorState = (majorId) => {
+    switch (majorId) {
+      case 1:
+        return "BS ngoại khoa";
+      case 2:
+        return "BS nội khoa";
+      default:
+        return " ";
+    }
+  };
+
   const { id } = useParams();
   //set timezone VietNam
   const today = dayjs().tz(vietnamTimezone);
@@ -89,8 +109,6 @@ const DoctorDetail = () => {
   const handleDateChange = async (date) => {
     const localDate = date.tz(vietnamTimezone);
     setSelectedDate(localDate);
-    console.log(localDate, "ngày đã chọn");
-
     try {
       const doctorTime = await getDoctorSchedule(id);
       const filteredSchedule = doctorTime.filter((appointment) =>
@@ -101,10 +119,11 @@ const DoctorDetail = () => {
       console.error("Error fetching schedule:", error);
     }
   };
-
+  // get doctor data
   const fetchDoctorDetail = async () => {
     try {
       const doctorData = await getDoctorDetail(id);
+      console.log(doctorData.data)
       setDoctorDetail(doctorData.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -112,14 +131,31 @@ const DoctorDetail = () => {
   };
 
   const handleTimeSlotSelect = (slot) => {
-    console.log(slot)
-    setSelectedTimeSlot(slot, "slot đã chọn");
+    setSelectedTimeSlot(slot);
   };
   useEffect(() => {
     fetchDoctorDetail();
     handleDateChange(today);
   }, [id]);
-
+  const handleBookingAppointment = () => {
+    if (selectedDate && selectedTimeSlot) {
+      const schedule = {
+        date: selectedDate.format(dateFormat),
+        time: selectedTimeSlot
+      };
+      const doctor = {
+        id,
+        workPlace: doctorDetail?.workProfile?.workPlace,
+        fullName: doctorDetail?.fullName,
+        price: doctorDetail?.workProfile?.price
+      };
+      console.log(doctor, schedule);
+      navigate('/booking-appointment', { state: { doctor, schedule } });
+    } else {
+      message.error('Bạn chưa chọn lịch hẹn');
+    }
+  };
+  
   return (
     <>
       {/* banner doctor */}
@@ -135,7 +171,7 @@ const DoctorDetail = () => {
         </div>
       </Carousel>
       {/* doctor infor */}
-      <Row
+        <Row
         justify={"center"}
         style={{ backgroundColor: "#D7ECFF", width: "100vw" }}
       >
@@ -173,6 +209,7 @@ const DoctorDetail = () => {
                 flexDirection: "column",
               }}
             >
+              <Row style={{display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
               <Typography.Title
                 style={{
                   marginBottom: "0px",
@@ -180,9 +217,12 @@ const DoctorDetail = () => {
                   fontWeight: "500",
                 }}
               >
-                {doctorDetail.description} {doctorDetail.fullName}
+              {getMajorState(doctorDetail?.workProfile?.majorId)} {doctorDetail?.fullName}
               </Typography.Title>
-
+              <Typography.Text style={{fontSize:"20px", fontWeight:"500", color:"#3058A6"}}>
+                {formatPrice(doctorDetail?.workProfile?.price)}
+              </Typography.Text>
+                </Row>
               <Row align={"middle"}>
                 <Col span={12}>
                   <Row
@@ -199,7 +239,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Tim mạch</p>
+                      <p style={{ margin: 0 }}>{getSpecialistState(doctorDetail?.workProfile?.specialistId)}</p>
                     </Col>
                   </Row>
 
@@ -217,7 +257,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Bệnh viện Nhân dân Gia Định</p>
+                      <p style={{ margin: 0 }}>{doctorDetail?.workProfile?.workPlace}</p>
                     </Col>
                   </Row>
                 </Col>
@@ -236,7 +276,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Lượt đặt: </p>
+                      <p style={{ margin: 0 }}>Lượt đặt: {doctorDetail?.rate}</p>
                     </Col>
                   </Row>
 
@@ -254,8 +294,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Đánh giá:</p>
-                      {/* {doctorDetail.rates[0].rate.toFixed(1)} */}
+                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail?.workProfile?.appointmentDone}</p>
                     </Col>
                   </Row>
                 </Col>
@@ -385,9 +424,11 @@ const DoctorDetail = () => {
                 schedule[0].time.map((time, index) => (
                   <Col key={index}>
                     <Button
-                    type={selectedTimeSlot === time ? "primary" : "default"}
-                    onClick={() => handleTimeSlotSelect(time)}
-                    >{time}</Button>
+                      type={selectedTimeSlot === time ? "primary" : "default"}
+                      onClick={() => handleTimeSlotSelect(time)}
+                    >
+                      {time}
+                    </Button>
                   </Col>
                 ))
               ) : (
@@ -398,7 +439,7 @@ const DoctorDetail = () => {
             </Row>
           </Row>
           <Row style={{ width: "90%" }} justify={"end"} className="booking-btn">
-            <Button>Đặt lịch ngay</Button>
+            <Button onClick={handleBookingAppointment}>Đặt lịch ngay</Button>
           </Row>
         </Row>
       </Row>
@@ -454,49 +495,3 @@ const DoctorDetail = () => {
 };
 
 export default DoctorDetail;
-{
-  /* <Col
-style={{
-  justifyContent: "flex-end",
-  display: "flex",
-  alignItems: "center",
-}}
-span={8}
->
-<Avatar src={DoctorBanner1} size={140} shape="square" />
-</Col>
-<Col style={{ justifyContent: "center", display: "flex", flexDirection:"column", alignItems:"flex-start" }} span={8}>
-<Typography.Title level={5}>Bác sĩ Trường Sơn</Typography.Title>
-<Row style={{padding:"10px 0px"}} align="middle" gutter={8}>
-<Col>
-  <Image
-    height={"20px"}
-    width={"20px"}
-    preview={false}
-    src={stethoscope}
-  />
-</Col>
-<Col>
-  <p style={{ margin: 0 }}>Tim mạch</p>
-</Col>
-</Row>
-
-<Row style={{padding:"10px 0px"}} align="middle" gutter={8}>
-<Col>
-  <Image
-    height={"20px"}
-    width={"20px"}
-    preview={false}
-    src={hospital}
-  />
-</Col>
-<Col>
-  <p style={{ margin: 0 }}>Bệnh viện Nhân dân Gia Định</p>
-</Col>
-</Row>
-
-</Col>
-<Col style={{ justifyContent: "center", display: "flex" }} span={8}>
-a
-</Col> */
-}

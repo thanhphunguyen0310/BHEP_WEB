@@ -30,7 +30,6 @@ const LoginForm = ({ closeForm, openRegistForm }) => {
           setIsOpen(false);
           closeForm();
         }
-        console.log(response)
       });
     } catch (error) {
       console.log(error);
