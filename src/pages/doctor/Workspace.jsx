@@ -8,8 +8,10 @@ import Chat from "../../assets/icon/chat.svg";
 import Question from "../../assets/icon/question.svg";
 import DoctorSchedule from "../../components/Doctor/DoctorSchedule";
 import "../../styles/Workspace.scss";
+import { useNavigate } from "react-router-dom";
 
 const Workspace = () => {
+  const navigate = useNavigate();
   const doctorName = useSelector(
     (state) => state.auth?.user?.data?.user?.fullName
   );
@@ -82,7 +84,7 @@ const Workspace = () => {
                   <Typography.Title level={4}>
                     Lịch hẹn với bệnh nhân
                   </Typography.Title>
-                  <Button type="primary">Xem lịch hẹn</Button>
+                  <Button type="primary" onClick={() => {navigate(`/list-appointment`)}}>Xem lịch hẹn</Button>
                 </div>
               </Card>
             </Col>

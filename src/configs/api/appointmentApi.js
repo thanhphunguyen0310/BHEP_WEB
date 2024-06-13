@@ -47,3 +47,12 @@ export const makePayment = async (userId, price) => {
     throw new Error(error.message);
   }
 }
+
+export const getPaymentStatus = async (id) => {
+  try {
+    const response = await apiClient.get(`/Payment/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

@@ -9,9 +9,14 @@ import { FormOutlined, MoneyCollectOutlined, FileDoneOutlined } from "@ant-desig
 const BookingAppointment = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [paymentId, setPaymentId] = useState(null);
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
+  };
+  const handlePaymentSuccess = (id) => {
+    setPaymentId(id);
+    setCurrentStep(2); 
   };
   const setConfirmationStatus = (status) => {
     setIsConfirmed(status);
@@ -26,11 +31,12 @@ const BookingAppointment = () => {
     },
     {
       title: "Thanh toán",
-      content: <AppointmentPayment />,
+      content: <AppointmentPayment 
+      onPaymentSuccess={handlePaymentSuccess}/>,
     },
     {
       title: "Hoàn thành",
-      content: <AppointmentFinish />,
+      content: <AppointmentFinish paymentId={paymentId}/>,
     },
   ];
 
@@ -57,7 +63,7 @@ const BookingAppointment = () => {
               <Steps.Step title="Hoàn thành" icon={<FileDoneOutlined />} />
             </Steps>
             <Row className="content-body">
-              {steps[currentStep].content}
+              {steps[currentStep]?.content}
             </Row>
           </Row>
         </div>

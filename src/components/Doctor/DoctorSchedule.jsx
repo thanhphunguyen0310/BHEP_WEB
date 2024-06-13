@@ -128,19 +128,23 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
 
     const dateStr = dayjs(selectedDate).format("DD-MM-YYYY");
     const selectedDateSchedules = schedules[dateStr] || [];
+    console.log(selectedDateSchedules, "selectedDateSchedules")
+    const existingRanges = existingSchedules[dateStr] || [];
+    console.log(existingRanges, "existingRanges")
 
     const newSchedules = selectedDateSchedules.filter((range) => {
-      const existingRanges = existingSchedules[dateStr] || [];
+      // const existingRanges = existingSchedules[dateStr] || [];
       return !existingRanges.some(
         (existingRange) =>
           existingRange.range[0] == range.range[0] &&
           existingRange.range[1] == range.range[1]
-        // dayjs(existingRange.range[0]).isSame(range.range[0]) &&
-        // dayjs(existingRange.range[1]).isSame(range.range[1])
       );
     });
+    const allSchedules = [...existingRanges, ...newSchedules];
+    console.log(allSchedules, "allSchedules")
+ 
 
-    if (Object.keys(newSchedules).length === 0) {
+    if (Object.keys(allSchedules).length === 0) {
       message.warning("Không có lịch mới nào được tạo.");
       return;
     }
@@ -148,7 +152,7 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
     const formattedSchedules = [
       {
         date: dateStr,
-        time: newSchedules.map((range) => {
+        time: allSchedules.map((range) => {
           const startTime = range.range[0];
           const endTime = range.range[1];
 
@@ -156,18 +160,19 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
         }),
       },
     ];
-
+    const timeSlot = formattedSchedules[0].time;
+    console.log(timeSlot, "time slot")
     try {
-      const response = await createDoctorSchedule(
-        employeeId,
-        formattedSchedules
-      );
-      if (response.data.isSuccess) {
+      const response = existingSchedules[dateStr]
+        ? await updateDoctorSchedule(employeeId, dateStr, timeSlot)
+        : await createDoctorSchedule(employeeId, formattedSchedules);
+
+      if (response.isSuccess) {
         message.success("Tạo lịch làm việc thành công!");
         setSelectedDate(null);
         setCurrentRange(null);
         setSchedules({});
-        onOk(newSchedules);
+        onOk();
       } else {
         message.error(`Có lỗi xảy ra: ${response.message}`);
       }
@@ -184,10 +189,10 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
   };
 
   const filteredSchedules = Object.entries(schedules)
-  .filter(([date]) => {
-    const scheduleDate = dayjs(date, "DD-MM-YYYY");
-    return scheduleDate.isAfter(today) || scheduleDate.isSame(today, 'day');
-  })
+    .filter(([date]) => {
+      const scheduleDate = dayjs(date, "DD-MM-YYYY");
+      return scheduleDate.isAfter(today) || scheduleDate.isSame(today, "day");
+    })
     .sort(([dateA], [dateB]) =>
       dayjs(dateB, "DD-MM-YYYY").diff(dayjs(dateA, "DD-MM-YYYY"))
     )
@@ -248,6 +253,7 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
                   }
                   renderItem={(schedule, index) => (
                     <List.Item
+                      style={{ display: "flex", alignItems: "center" }}
                       actions={[
                         <Button
                           key="delete-btn"

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { makePayment } from "../../configs/api/appointmentApi"
 import { useSelector } from "react-redux";
 
-const AppointmentPayment = () => {
+const AppointmentPayment = ({ onPaymentSuccess }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
@@ -43,12 +43,12 @@ const AppointmentPayment = () => {
       const payment = await makePayment(userId, price);
       if (payment?.data?.isSuccess) {
         const paymentUrl = payment?.data?.data?.paymentUrl;
-        console.log(paymentUrl)
-        window.location.href = paymentUrl;
+        const paymentId = payment?.data?.data?.id;
+        window.open(paymentUrl, '_blank');
+        onPaymentSuccess(paymentId);
       } else {
         message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
       }
-      console.log(payment)
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error making appointment:", error);

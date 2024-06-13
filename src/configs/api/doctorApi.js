@@ -1,4 +1,5 @@
 import apiClient from "./index";
+import { dayjs } from 'dayjs';
 
 export const getHighRateDoctor = async () => {
   try {
@@ -68,13 +69,15 @@ export const getDoctorSchedule = async (employeeId) => {
   }
 }
 
-export const updateDoctorSchedule = async (employeeId, date) => {
+export const updateDoctorSchedule = async (employeeId, date, time) => {
   try {
-    const schedule = await apiClient.put(`/Schedule`, {
+    // const formattedDate = dayjs(date, "DD-MM-YYYY").format("DD-MM-YYYY"); 
+    const schedule = await apiClient.put(`/Schedule/${employeeId}/${date}`, {
         employeeId: employeeId,
-        date: date
+        date: date,
+        time: time,
     });
-    return schedule;
+    return schedule.data;
     } catch (error) {
         throw new Error(error.message);
 }

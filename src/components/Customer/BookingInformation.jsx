@@ -57,33 +57,34 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
       date: schedule.date,
       time: schedule.time,
       price: doctor.price,
+      description: "Description",
       note: note,
       selectedSymptom: selectedSymptom,
     };
     dispatch(setAppointment(appointmentData));
-    // try {
-    //   const appointment = await makeAppointment(
-    //  appointmentData
-    //     userId,
-    //     parseInt(doctor.id),
-    //     schedule.date,
-    //     schedule.time,
-    //     doctor.price,
-    //     "Description",
-    //     note,
-    //     selectedSymptom
-    //   );
-      // if (appointment) {
+    try {
+      const appointment = await makeAppointment(
+        // appointmentData
+        userId,
+        parseInt(doctor.id),
+        schedule.date,
+        schedule.time,
+        doctor.price,
+        "Description",
+        note,
+        selectedSymptom
+      );
+      if (appointment) {
         setIsModalVisible(false);
         setConfirmationStatus(true);
         onNextStep(); // Move to the next step
-    //   } else {
-    //     message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error making appointment:", error);
-    //   message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
-    // }
+      } else {
+        message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Error making appointment:", error);
+      message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
+    }
   };
 
   const handleCancel = () => {
