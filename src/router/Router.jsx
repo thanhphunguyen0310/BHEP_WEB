@@ -21,7 +21,7 @@ export const  publicRoutes = [
     {path: "/", component: Homepage},
     {path: "/category", component: Category},
     {path: "/store", component: Store},
-    {path: "/product-detail/:id", component: ProductDetail },
+    {path: "/product-detail/:type/:id", component: ProductDetail },
     {path: "/doctor", component: Doctor },
     {path: "/all-doctor", component: AllDoctor },
     {path: "/doctor-detail/:id", component: DoctorDetail },

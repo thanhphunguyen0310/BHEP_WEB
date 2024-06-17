@@ -24,7 +24,6 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
 
   const fetchAppointments = async () => {
     const res = await getAppointmentByUserId(userId);
-    console.log(res,"data")
     const sortedAppointments = res.data?.appointments.sort((a, b) => {
       const dateA = new Date(a.date.split("-").reverse().join("-"));
       const dateB = new Date(b.date.split("-").reverse().join("-"));

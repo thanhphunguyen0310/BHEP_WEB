@@ -44,3 +44,21 @@ export const getService = async (pageIndex, pageSize) => {
         throw error;
     }
 }
+export const getDeviceById = async (ProductId) => {
+    try {
+        const response = await apiClient.get(`/Product/${ProductId}`)
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+    }
+}
+export const getServiceById = async (ServiceId) => {
+    try {
+        const response = await apiClient.get(`/Service/${ServiceId}`)
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+    }
+}

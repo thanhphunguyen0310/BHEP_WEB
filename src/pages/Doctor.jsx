@@ -130,8 +130,8 @@ const Doctors = () => {
   };
   return (
     <>
-      {/* Banner doctor */}
-      <Carousel style={{ width: "100vw" }} infinite={false}>
+            {/* Banner doctor */}
+            <Carousel style={{ width: "100vw" }} infinite={false}>
         <div>
           <img
             style={{ width: "100vw" }}

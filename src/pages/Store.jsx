@@ -20,10 +20,9 @@ import category from "../assets/icon/category.svg";
 import "../styles/Store.scss";
 import { responsiveProductCart } from "./../data";
 import Carousel from "react-multi-carousel";
-import ProductCard from "../components/ProductCard";
 import { getDevice, getService } from "../configs/api/productApi";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Meta from "antd/es/card/Meta";
 
 const Store = () => {
@@ -40,8 +39,8 @@ const Store = () => {
         getService(),
       ]);
 
-      const devices = deviceRes.items;
-      const services = serviceRes.items;
+      const devices = deviceRes.items.map(item => ({ ...item, type: 'device' }));
+      const services = serviceRes.items.map(item => ({ ...item, type: 'service' }));
       setDevice(devices);
       setService(services);
       // Combine the arrays
@@ -58,19 +57,16 @@ const Store = () => {
   // filter device or service in all product
   const filterProductsByCategory = () => {
     if (selectedCategory === "device") {
-      return product.filter((item) => item.name === "Spirit");
+      return product.filter((item) => item.type === 'device' && item.name === "Spirit");
     } else if (selectedCategory === "service") {
       return product.filter(
-        (item) =>
-          (item.type === 1 && item.duration === 3) ||
-          (item.type === 2 && item.duration === 3)
+        (item) => item.type === 'service' && (item.duration === 3)
       );
     } else {
       return product.filter(
         (item) =>
           item.name === "Spirit" ||
-          (item.type === 1 && item.duration === 3) ||
-          (item.type === 2 && item.duration === 3)
+          (item.type === 'service' && item.duration === 3)
       );
     }
   };
@@ -85,9 +81,8 @@ const Store = () => {
     }
   };
   const handleProductClick = (product) => {
-    navigate(`/product-detail/${product.id}`);
+    navigate(`/product-detail/${product.type}/${product.id}`);
   };
-
   const formatDescription = (description, type) => {
     if (type === 2) {
       const splitDescription = description.split(". ");
