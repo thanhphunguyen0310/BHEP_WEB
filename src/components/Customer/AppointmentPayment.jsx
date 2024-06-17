@@ -1,26 +1,45 @@
 import { Button, Modal, Radio, Space, Typography, message } from "antd";
 import { MdPayment } from "react-icons/md";
-import { FaMoneyBillWave, FaCreditCard, FaRegCreditCard } from "react-icons/fa";
+import {
+  FaMoneyBillWave,
+  FaCreditCard,
+  FaRegCreditCard,
+  FaCoins,
+} from "react-icons/fa";
 import "../../styles/AppointmentPayment.scss"; // Import file for custom styling
 import { useState } from "react";
-import { makePayment } from "../../configs/api/appointmentApi"
+import { makePayment } from "../../configs/api/appointmentApi";
+import { makeAppointment } from "../../configs/api/appointmentApi";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentPayment = ({ onPaymentSuccess }) => {
+  const navigate = useNavigate();
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
+  const userId = useSelector((state) => state?.appointment?.userId);
+  const doctorId = useSelector((state) => state?.appointment?.doctorId);
+  const date = useSelector((state) => state?.appointment?.date);
+  const time = useSelector((state) => state?.appointment?.time);
   const price = useSelector((state) => state?.appointment?.price);
+  const description = useSelector((state) => state?.appointment?.description);
+  const note = useSelector((state) => state?.appointment?.note);
+  const selectedSymptom = useSelector(
+    (state) => state?.appointment?.selectedSymptom
+  );
 
   const getPaymentMethod = (selectedPaymentMethod) => {
     switch (selectedPaymentMethod) {
       case 1:
-        return "Thanh toán tiền mặt";
+        return "Thanh toán bằng BHEP coin";
       case 2:
-        return "Thanh toán bằng thẻ Visa / Mastercard";
+        return "Thanh toán tiền mặt";
       case 3:
-        return "Thanh toán bằng thẻ ATM nội địa";
+        return "Thanh toán bằng thẻ Visa / Mastercard";
       case 4:
+        return "Thanh toán bằng thẻ ATM nội địa";
+      case 5:
         return "Thanh toán bằng VNPay";
       default:
         return " ";
@@ -40,16 +59,22 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
   };
   const handleConfirmPayment = async () => {
     try {
-      const payment = await makePayment(userId, price);
-      if (payment?.data?.isSuccess) {
-        const paymentUrl = payment?.data?.data?.paymentUrl;
-        const paymentId = payment?.data?.data?.id;
-        window.open(paymentUrl, '_blank');
-        onPaymentSuccess(paymentId);
+      const appointment = await makeAppointment(
+        userId,
+        doctorId,
+        date,
+        time,
+        price,
+        description,
+        note,
+        selectedSymptom
+      );
+      if (appointment) {
+        onPaymentSuccess(appointment.data.id);
+        setIsModalVisible(false);
       } else {
         message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
       }
-      setIsModalVisible(false);
     } catch (error) {
       console.error("Error making appointment:", error);
       message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
@@ -63,7 +88,17 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
       <Typography.Title level={5}>Chọn hình thức thanh toán</Typography.Title>
       <Radio.Group onChange={handlePaymentMethodChange} className="radio-group">
         <Space direction="vertical">
-          <Radio disabled className="radio-option" value={1}>
+          <Radio className="radio-option" value={1}>
+            <FaCoins
+              style={{
+                color: "#e6f024",
+                fontSize: "20px",
+                marginRight: "10px",
+              }}
+            />{" "}
+            Thanh toán bằng BHEP coin
+          </Radio>
+          <Radio disabled className="radio-option" value={2}>
             <FaMoneyBillWave
               style={{
                 color: "#32a852",
@@ -73,7 +108,7 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
             />{" "}
             Thanh toán tiền mặt
           </Radio>
-          <Radio disabled className="radio-option" value={2}>
+          <Radio disabled className="radio-option" value={3}>
             <FaCreditCard
               style={{
                 color: "#a83242",
@@ -83,17 +118,17 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
             />{" "}
             Thanh toán bằng thẻ Visa / Mastercard
           </Radio>
-          <Radio disabled className="radio-option" value={3}>
+          <Radio disabled className="radio-option" value={4}>
             <FaRegCreditCard
               style={{
-                color: "#d6f525",
+                color: "#dc24f0",
                 fontSize: "20px",
                 marginRight: "10px",
               }}
             />{" "}
             Thanh toán bằng thẻ ATM nội địa
           </Radio>
-          <Radio className="radio-option" value={4}>
+          <Radio className="radio-option" value={5} disabled>
             <MdPayment
               style={{
                 color: "#2f81f5",
@@ -125,9 +160,25 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
           Bạn xác nhận thanh toán bằng hình thức{" "}
           <strong>{getPaymentMethod(selectedPaymentMethod)}</strong> chứ?
         </p>
+        <Typography.Paragraph type="warning">
+         BHEP coin sẽ được trừ tự động khi đơn hẹn được xác nhận
+        </Typography.Paragraph>
       </Modal>
     </div>
   );
 };
 
 export default AppointmentPayment;
+// const payment = await makePayment(userId, price);
+// console.log(payment,"payment")
+// const paymentUrl = payment?.data?.data?.paymentUrl;
+// window.location.replace(paymentUrl);
+// // if (payment?.data?.isSuccess) {
+// //   const paymentUrl = payment?.data?.data?.paymentUrl;
+// //   const paymentId = payment?.data?.data?.id;
+// //   window.open(paymentUrl, '_blank');
+// //   onPaymentSuccess(paymentId);
+// //   // onPaymentSuccess();
+// // } else {
+// //   message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
+// // }

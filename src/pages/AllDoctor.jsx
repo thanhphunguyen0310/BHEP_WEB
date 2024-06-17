@@ -7,6 +7,7 @@ import {
   Input,
   Pagination,
   Row,
+  Select,
   Typography,
 } from "antd";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
@@ -18,7 +19,7 @@ import { SearchOutlined, StarFilled } from "@ant-design/icons";
 import "../styles/AllDoctor.scss";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getDoctor } from "../configs/api/doctorApi";
+import { getDoctor, getSpecialist } from "../configs/api/doctorApi";
 import debounce from "lodash/debounce";
 
 const { Meta } = Card;
@@ -28,6 +29,9 @@ const AllDoctor = () => {
   const [displayedDoctors, setDisplayedDoctors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalDoctors, setTotalDoctors] = useState(0);
+  const [specialist, setSpecialist] = useState([]);
+  const [selectedSpecialist, setSelectedSpecialist] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
   const pageSize = 8; // Number of doctors per page
 
   const getSpecialistState = (specialistId) => {
@@ -36,8 +40,8 @@ const AllDoctor = () => {
         return "Nội khoa";
       case 2:
         return "Răng hàm mặt";
-      case 3:
-        return "Da liễu";
+      // case 3:
+      //   return "Da liễu";
       case 4:
         return "Tai mũi họng";
       case 5:
@@ -76,14 +80,24 @@ const AllDoctor = () => {
       console.error("Error fetching doctors:", error);
     }
   };
-
+  const fetchSpecialist = async () => {
+    try {
+      const response = await getSpecialist();
+      setSpecialist(response.data.items);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
   useEffect(() => {
     fetchDoctors();
+    fetchSpecialist();
   }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setDisplayedDoctors(allDoctors.slice((page - 1) * pageSize, page * pageSize));
+    setDisplayedDoctors(
+      allDoctors.slice((page - 1) * pageSize, page * pageSize)
+    );
   };
 
   const removeAccents = (str) => {
@@ -96,23 +110,47 @@ const AllDoctor = () => {
 
   const handleSearch = useCallback(
     debounce((value) => {
-      if (!value) {
-        setDisplayedDoctors(allDoctors.slice(0, pageSize)); // Reset to initial list
-        setTotalDoctors(allDoctors.length); // Update total doctors count
-        return;
-      }
       const lowercasedValue = removeAccents(value.toLowerCase());
-      const filteredDoctors = allDoctors.filter(
-        (doctor) =>
-          removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-          removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
-      );
-      setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
-      setTotalDoctors(filteredDoctors.length);
+  
+      if (!selectedSpecialist && !value) {
+        // Trường hợp không chọn chuyên khoa và không nhập từ khóa
+        setDisplayedDoctors(allDoctors.slice(0, pageSize));
+        setTotalDoctors(allDoctors.length);
+      } else if (selectedSpecialist && !value) {
+        // Trường hợp chỉ chọn chuyên khoa không nhập từ khóa
+        const filteredDoctors = allDoctors.filter(
+          (doctor) => doctor.specialistId === selectedSpecialist
+        );
+        setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
+        setTotalDoctors(filteredDoctors.length);
+      } else if (!selectedSpecialist && value) {
+        // Trường hợp chỉ nhập từ khóa không chọn chuyên khoa
+        const filteredDoctors = allDoctors.filter(
+          (doctor) =>
+            removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+            removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+        );
+        setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
+        setTotalDoctors(filteredDoctors.length);
+      } else {
+        // Trường hợp vừa chọn chuyên khoa vừa nhập từ khóa
+        const filteredDoctors = allDoctors.filter(
+          (doctor) =>
+            doctor.specialistId === selectedSpecialist &&
+            (removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+              removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue))
+        );
+        setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
+        setTotalDoctors(filteredDoctors.length);
+      }
     }, 300),
-    [allDoctors]
+    [allDoctors, selectedSpecialist, pageSize]
   );
-
+  
+  const handleSpecialistChange = (value) => {
+    setSelectedSpecialist(value);
+    handleSearch(searchValue);
+  };
   return (
     <>
       {/* banner doctor */}
@@ -149,6 +187,17 @@ const AllDoctor = () => {
           size="large"
           onSearch={handleSearch}
           onChange={(e) => handleSearch(e.target.value)}
+          addonBefore={
+            <Select
+              placeholder="Chuyên khoa"
+              style={{
+                width: 120,
+              }}
+              allowClear
+              onChange={handleSpecialistChange}
+              options={specialist.map((s) => ({ value: s.id, label: s.name }))}
+            />
+          }
         />
       </Row>
 
@@ -264,7 +313,7 @@ const AllDoctor = () => {
             pageSize={pageSize}
             total={totalDoctors}
             onChange={handlePageChange}
-            style={{ textAlign: 'center', marginTop: '20px' }}
+            style={{ textAlign: "center", marginTop: "20px" }}
           />
         </Row>
       </div>

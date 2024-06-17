@@ -20,6 +20,7 @@ import {
   createDoctorSchedule,
   updateDoctorSchedule,
   getDoctorSchedule,
+  deleteDoctorSchedule,
 } from "../../configs/api/doctorApi";
 import { useSelector } from "react-redux";
 
@@ -33,37 +34,12 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
   const [timeRange, setCurrentRange] = useState(null);
   const [schedules, setSchedules] = useState({});
   const [existingSchedules, setExistingSchedules] = useState({});
-
+  const [fetchedSchedules, setFetchedSchedules] = useState(null);
+  
   const employeeId = useSelector((state) => state.auth?.user?.data?.user?.id);
 
   const vietnamTimezone = "Asia/Ho_Chi_Minh";
   const today = dayjs().tz(vietnamTimezone).startOf("day");
-  // get schedule data
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      try {
-        const fetchedSchedules = await getDoctorSchedule(employeeId);
-        const formattedSchedules = fetchedSchedules.reduce((acc, schedule) => {
-          const dateStr = schedule.date;
-          const timeRanges = schedule.time.map((timeRange) => {
-            return {
-              range: timeRange.split("-"),
-            };
-          });
-          acc[dateStr] = timeRanges;
-          return acc;
-        }, {});
-        setSchedules(formattedSchedules);
-        setExistingSchedules(formattedSchedules);
-      } catch (error) {
-        message.error("Có lỗi xảy ra khi lấy lịch làm việc: " + error.message);
-      }
-    };
-
-    if (open) {
-      fetchSchedules();
-    }
-  }, [open, employeeId]);
 
   const onDateChange = (date) => {
     setSelectedDate(date);
@@ -118,6 +94,34 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
       return newSchedules;
     });
   };
+  // get schedule data
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const fetchedSchedules = await getDoctorSchedule(employeeId);
+        const formattedSchedules = fetchedSchedules.reduce((acc, schedule) => {
+          const dateStr = schedule.date;
+          const timeRanges = schedule.time.map((timeRange) => {
+            return {
+              range: timeRange.split("-"),
+            };
+          });
+          acc[dateStr] = timeRanges;
+          return acc;
+        }, {});
+        console.log(fetchedSchedules)
+        setFetchedSchedules(fetchedSchedules)
+        setSchedules(formattedSchedules);
+        setExistingSchedules(formattedSchedules);
+      } catch (error) {
+        message.error("Có lỗi xảy ra khi lấy lịch làm việc: " + error.message);
+      }
+    };
+
+    if (open) {
+      fetchSchedules();
+    }
+  }, [open, employeeId]);
 
   const handleOk = async () => {
     // check user need to choose time
@@ -128,10 +132,7 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
 
     const dateStr = dayjs(selectedDate).format("DD-MM-YYYY");
     const selectedDateSchedules = schedules[dateStr] || [];
-    console.log(selectedDateSchedules, "selectedDateSchedules")
     const existingRanges = existingSchedules[dateStr] || [];
-    console.log(existingRanges, "existingRanges")
-
     const newSchedules = selectedDateSchedules.filter((range) => {
       // const existingRanges = existingSchedules[dateStr] || [];
       return !existingRanges.some(
@@ -141,8 +142,6 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
       );
     });
     const allSchedules = [...existingRanges, ...newSchedules];
-    console.log(allSchedules, "allSchedules")
- 
 
     if (Object.keys(allSchedules).length === 0) {
       message.warning("Không có lịch mới nào được tạo.");
@@ -163,15 +162,30 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
     const timeSlot = formattedSchedules[0].time;
     console.log(timeSlot, "time slot")
     try {
-      const response = existingSchedules[dateStr]
-        ? await updateDoctorSchedule(employeeId, dateStr, timeSlot)
-        : await createDoctorSchedule(employeeId, formattedSchedules);
-
-      if (response.isSuccess) {
+      let response;
+      if (existingSchedules[dateStr]) {
+        response = await updateDoctorSchedule(employeeId, dateStr, timeSlot);
+      } else {
+        response = await createDoctorSchedule(employeeId, formattedSchedules);
+      }
+  
+      if (response) {
         message.success("Tạo lịch làm việc thành công!");
+        // Update schedules and existingSchedules after successful creation/update
+        const updatedSchedules = {
+          ...schedules,
+          [dateStr]: allSchedules,
+        };
+        const updatedExistingSchedules = {
+          ...existingSchedules,
+          [dateStr]: allSchedules,
+        };
+  
+        setSchedules(updatedSchedules);
+        setExistingSchedules(updatedExistingSchedules);
+  
         setSelectedDate(null);
         setCurrentRange(null);
-        setSchedules({});
         onOk();
       } else {
         message.error(`Có lỗi xảy ra: ${response.message}`);
@@ -188,6 +202,49 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
     onCancel();
   };
 
+  const handleDeleteSchedule = () => {
+    const dateStr = dayjs(selectedDate).format("DD-MM-YYYY");
+    const selectedSchedule = fetchedSchedules.find(schedule => schedule.date === dateStr);
+    const { id } = selectedSchedule;
+    // bắt lỗi lại
+    if (!selectedSchedule || !id) {
+      message.error("Không tìm thấy lịch làm việc để xóa.");
+      return;
+    }
+
+    // Show confirmation dialog before deleting the schedule
+    Modal.confirm({
+      title: 'Xác nhận xóa',
+      content: `Bạn có chắc muốn xóa lịch ${dateStr}?`,
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await deleteDoctorSchedule(id, employeeId);
+          message.success("Lịch làm việc đã được xóa thành công!");
+         // Update schedules and existingSchedules after deletion
+        const updatedSchedules = { ...schedules };
+        const updatedExistingSchedules = { ...existingSchedules };
+
+        // Remove the deleted schedule from schedules
+        if (updatedSchedules[dateStr]) {
+          delete updatedSchedules[dateStr];
+        }
+
+        // Remove the deleted schedule from existingSchedules
+        if (updatedExistingSchedules[dateStr]) {
+          delete updatedExistingSchedules[dateStr];
+        }
+
+        // Update state
+        setSchedules(updatedSchedules);
+        setExistingSchedules(updatedExistingSchedules);
+        } catch (error) {
+          message.error("Có lỗi xảy ra khi xóa lịch làm việc: " + error.message);
+        }
+      },
+    });
+  };
   const filteredSchedules = Object.entries(schedules)
     .filter(([date]) => {
       const scheduleDate = dayjs(date, "DD-MM-YYYY");
@@ -252,6 +309,7 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
                     schedules[dayjs(selectedDate).format("DD-MM-YYYY")]
                   }
                   renderItem={(schedule, index) => (
+                    <>
                     <List.Item
                       style={{ display: "flex", alignItems: "center" }}
                       actions={[
@@ -273,9 +331,18 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
                       {"-"}
                       {schedule.range[1]}
                     </List.Item>
+                    </>
                   )}
                 />
               </div>
+              <Button
+                onClick={handleDeleteSchedule}
+                type="primary"
+                danger
+                style={{ marginTop: "10px" }}
+              >
+                Xóa lịch làm việc này
+              </Button>
             </div>
           )}
         </Form>

@@ -9,21 +9,98 @@ import {
   Typography,
   Space,
   Card,
+  Button,
 } from "antd";
 import {
   ShoppingFilled,
   DownOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import category from "../assets/icon/category.svg";
 import "../styles/Store.scss";
-import { productData, responsiveProductCart } from "./../data";
+import { responsiveProductCart } from "./../data";
 import Carousel from "react-multi-carousel";
 import ProductCard from "../components/ProductCard";
-import { getAllProduct } from "../configs/api/productApi";
+import { getDevice, getService } from "../configs/api/productApi";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Meta from "antd/es/card/Meta";
 
 const Store = () => {
+  const [product, setProduct] = useState([]);
+  const [device, setDevice] = useState([]);
+  const [service, setService] = useState([]);
+  const [topRatedItems, setTopRatedItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const navigate = useNavigate();
+  const fetchAllData = async () => {
+    try {
+      const [deviceRes, serviceRes] = await Promise.all([
+        getDevice(),
+        getService(),
+      ]);
+
+      const devices = deviceRes.items;
+      const services = serviceRes.items;
+      setDevice(devices);
+      setService(services);
+      // Combine the arrays
+      const combinedData = [...devices, ...services];
+      setProduct(combinedData);
+      combinedData.sort((a, b) => b.rate - a.rate);
+      // Get top 5 items
+      const topItems = combinedData.slice(0, 3);
+      setTopRatedItems(topItems);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  // filter device or service in all product
+  const filterProductsByCategory = () => {
+    if (selectedCategory === "device") {
+      return product.filter((item) => item.name === "Spirit");
+    } else if (selectedCategory === "service") {
+      return product.filter(
+        (item) =>
+          (item.type === 1 && item.duration === 3) ||
+          (item.type === 2 && item.duration === 3)
+      );
+    } else {
+      return product.filter(
+        (item) =>
+          item.name === "Spirit" ||
+          (item.type === 1 && item.duration === 3) ||
+          (item.type === 2 && item.duration === 3)
+      );
+    }
+  };
+  // filter device or service in top product
+  const filterTopRatedItemsByCategory = () => {
+    if (selectedCategory === "device") {
+      return device.slice(0, 3);
+    } else if (selectedCategory === "service") {
+      return service.slice(0, 3);
+    } else {
+      return topRatedItems;
+    }
+  };
+  const handleProductClick = (product) => {
+    navigate(`/product-detail/${product.id}`);
+  };
+
+  const formatDescription = (description, type) => {
+    if (type === 2) {
+      const splitDescription = description.split(". ");
+      return splitDescription.slice(-2).join(". ");
+    }
+    return description;
+  };
+
+  useEffect(() => {
+    // fetchAllDevices();
+    // fetchAllServices();
+    fetchAllData();
+  }, []);
   const items = [
     {
       label: "Thấp đến cao",
@@ -34,21 +111,12 @@ const Store = () => {
       key: "2",
     },
   ];
-
-  const [product, setProduct] = useState([]);
-
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        const res = await getAllProduct();
-        console.log(res.items, ">>>>>");
-        setProduct(res.items);
-      } catch (error) {
-        console.error("Error fetching top rated doctors:", error);
-      }
-    };
-    fetchAllProducts();
-  }, []);
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
 
   return (
     <div className="store-container">
@@ -76,7 +144,9 @@ const Store = () => {
               alignItems: "center",
               justifyContent: "center",
               gap: "0px 10px",
+              cursor: "pointer",
             }}
+            onClick={() => setSelectedCategory("all")}
           >
             <Image style={{ width: "25px", height: "25px" }} src={category} />
             <Typography.Title
@@ -84,6 +154,7 @@ const Store = () => {
                 marginBottom: "0px",
                 fontSize: "25px",
                 fontWeight: "600",
+                cursor: "pointer",
               }}
             >
               Danh mục
@@ -104,6 +175,7 @@ const Store = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  cursor: "pointer",
                 }}
               >
                 <Typography.Title
@@ -112,6 +184,8 @@ const Store = () => {
                     fontSize: "25px",
                     fontWeight: "600",
                   }}
+                  className="category-item"
+                  onClick={() => setSelectedCategory("device")}
                 >
                   Thiết bị
                 </Typography.Title>
@@ -122,6 +196,7 @@ const Store = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  cursor: "pointer",
                 }}
               >
                 <Typography.Title
@@ -130,6 +205,8 @@ const Store = () => {
                     fontSize: "25px",
                     fontWeight: "600",
                   }}
+                  className="category-item"
+                  onClick={() => setSelectedCategory("service")}
                 >
                   Dịch vụ
                 </Typography.Title>
@@ -213,24 +290,43 @@ const Store = () => {
             slidesToSlide={1}
             swipeable
           >
-            {productData.map((item) => (
-              <Link
-              to={`/product-detail/${product.id}`}
-              key={product.id}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
+            {filterTopRatedItemsByCategory().map((item) => (
+              // <Link
+              //   to={`/product-detail/${item.id}`}
+              //   key={item.id}
+              //   style={{ textDecoration: "none", color: "inherit" }}
+              // >
               <div
                 key={item.id}
                 style={{ display: "flex", justifyContent: "center" }}
               >
-                <ProductCard
-                  name={item.name}
-                  image={item.image}
-                  price={item.price}
-                />
+                <Card
+                  hoverable
+                  style={{
+                    display:"flex",
+                    alignItems:"center",
+                    flexDirection:"column",
+                    width: 220,
+                  }}
+                  cover={
+                    <img
+                      alt="example"
+                      src={item.image}
+                      onClick={() => handleProductClick(item)}
+                    />
+                  }
+                >
+                  <Meta title={item.name} />
+                  <p style={{ padding: "10px 0px" }} className="price">
+                    {formatPrice(item.price)}
+                  </p>
+                  <Button style={{fontWeight:"600"}} size="large" type="primary" icon={<ShoppingCartOutlined />}>
+                    Thêm vào giỏ hàng
+                  </Button>
+                </Card>
               </div>
-              </Link>
-            ))}   
+              // </Link>
+            ))}
           </Carousel>
         </Row>
       </Row>
@@ -254,20 +350,32 @@ const Store = () => {
         >
           <Typography.Title level={6}>TẤT CẢ SẢN PHẨM</Typography.Title>
           <div className="product-card-list">
-            {product.map((product) => (
-              <Link
-                to={`/product-detail/${product.id}`}
-                key={product.id}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <div key={product.id}>
-                  <ProductCard
-                    name={product.name}
-                    image={product.image}
-                    price={product.price}
-                  />
-                </div>
-              </Link>
+            {filterProductsByCategory().map((product) => (
+              <div key={product.id}>
+                <Card
+                  hoverable
+                  style={{ width: 220,
+                    display:"flex",
+                    alignItems:"center",
+                    flexDirection:"column",
+                   }}
+                  cover={
+                    <img
+                      alt="example"
+                      src={product.image}
+                      onClick={() => handleProductClick(product)}
+                    />
+                  }
+                >
+                  <Meta title={product.name} />
+                  <p>
+                    {formatDescription(product.description, product.type)}
+                  </p>
+                  <Button style={{fontWeight:"600"}} size="large" type="primary" icon={<ShoppingCartOutlined />}>
+                    Thêm vào giỏ hàng
+                  </Button>
+                </Card>
+              </div>
             ))}
           </div>
         </Row>
@@ -277,3 +385,41 @@ const Store = () => {
 };
 
 export default Store;
+
+// const fetchAllDevices = async () => {
+//   try {
+//     const res = await getDevice();
+//     console.log(res.items, "thiet bi");
+//     setDevice(res.items);
+//   } catch (error) {
+//     console.error("Error fetching top rated doctors:", error);
+//   }
+// };
+
+// const fetchAllServices = async () => {
+//   try {
+//     const res = await getService();
+//     console.log(res.items, "dich vu");
+//     setService(res.items);
+//   } catch (error) {
+//     console.error("Error fetching top rated doctors:", error);
+//   }
+// };
+
+{
+  /* <ProductCard
+                  name={product.name}
+                  image={product.image}
+                  description={formatDescription(
+                    product.description,
+                    product.type
+                  )}
+                /> */
+}
+{
+  /* <ProductCard
+                  name={item.name}
+                  image={item.image}
+                  price={formatPrice(item.price)}
+                /> */
+}

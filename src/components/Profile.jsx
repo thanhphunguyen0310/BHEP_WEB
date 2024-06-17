@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const Profile = () => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
-  
+
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -21,6 +21,16 @@ const Profile = () => {
       {userRole === 1 && (
         <Menu.Item key="manage">
           <Link to="/manage">Quản lí</Link>
+        </Menu.Item>
+      )}
+      {userRole === 2 && (
+        <Menu.Item key="add-coin">
+          <Link to="/add-coin">Nạp coin</Link>
+        </Menu.Item>
+      )}
+      {userRole === 2 && (
+        <Menu.Item key="manage">
+          <Link to="/list-appointment">Lịch hẹn</Link>
         </Menu.Item>
       )}
       <Menu.Item key="profile">

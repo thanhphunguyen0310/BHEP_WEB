@@ -1,30 +1,17 @@
-import { Typography, Row, Col, Spin, Button, Result } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import { getPaymentStatus } from "../../configs/api/appointmentApi";
-import "../../styles/AppointmentFinish.scss";
+import { Result, Button, Spin } from "antd";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import queryString from "query-string";
+import { getPaymentStatus } from "../../configs/api/appointmentApi";
 
 const AppointmentFinish = ({ paymentId }) => {
+  const location = useLocation();
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkPaymentStatus = async () => {
-      const paymentStatus = await getPaymentStatus(paymentId);
-      if (paymentStatus.isSuccess) {
-        setIsPaymentComplete(true);
-      }
-      setLoading(false);
-    };
-
-    checkPaymentStatus();
-  }, [paymentId]);
-
   return (
     <>
-      {loading ? (
-        <Spin size="large" />
-      ) : isPaymentComplete ? (
+      {paymentId ? (
         <Result
           status="success"
           title="Đặt lịch thành công"
@@ -32,16 +19,16 @@ const AppointmentFinish = ({ paymentId }) => {
         />
       ) : (
         <Result
-          status="info"
-          title="Đang chờ bạn thanh toán"
-          subTitle="Vui lòng hoàn tất thanh toán để xác nhận đặt lịch khám."
+          status="error"
+          title="Đặt lịch không thành công"
+          subTitle="Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ."
           extra={[
             <Button
               type="primary"
               key="retry"
               onClick={() => window.location.reload()}
             >
-              Kiểm tra lại
+              Thử lại
             </Button>,
           ]}
         />
@@ -51,3 +38,31 @@ const AppointmentFinish = ({ paymentId }) => {
 };
 
 export default AppointmentFinish;
+
+// useEffect(() => {
+//   const query = queryString.parse(location.search);
+//   console.log(query)
+//   const paymentId = query.vnp_TxnRef; // Assuming vnp_TxnRef is the payment ID
+
+//   if (query.vnp_ResponseCode === "00" && query.vnp_TransactionStatus === "00") {
+//     // Payment is successful, update the state
+//     setIsPaymentComplete(true);
+//   } else {
+//     // Payment is not successful
+//     setIsPaymentComplete(false);
+//   }
+
+//   // You can also optionally check payment status from your backend using paymentId
+//   // For example:
+//   // getPaymentStatus(paymentId).then(response => {
+//   //   if (response?.data?.status === "completed") {
+//   //     setIsPaymentComplete(true);
+//   //   } else {
+//   //     setIsPaymentComplete(false);
+//   //   }
+//   // }).catch(error => {
+//   //   console.error("Error fetching payment status:", error);
+//   // });
+
+//   setLoading(false);
+// }, [location.search]);

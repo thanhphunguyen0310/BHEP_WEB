@@ -1,17 +1,17 @@
 import Footer from "../../Footer";
 import NavBar from "../../Header";
-
+import "./index.scss"
 const DefaultLayout = ({ children }) => {
   return (
     <>
-      <NavBar />
-      <div className="container">
-        <div style={{ marginTop: "100px"}} className="content">
-          {children}
-        </div>
+    <NavBar />
+    <div className="container">
+      <div className="content">
+        {children}
       </div>
       <Footer />
-    </>
+    </div>
+  </>
   );
 };
 

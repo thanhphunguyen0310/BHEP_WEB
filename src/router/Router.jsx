@@ -7,7 +7,7 @@ import HealthRecord from "../pages/customer/HealthRecord";
 import DoctorChat from "../pages/doctor/Chat";
 import DoctorChatLayout from "../components/Layout/DoctorLayout/Chat_Component";
 import Workspace from '../pages/doctor/Workspace';
-import ListAppointment from './../pages/doctor/ListAppointment';
+import ListAppointment from '../pages/ListAppointment';
 import AppointmentHistory_Doctor from '../pages/doctor/AppointmentHistory_Doctor';
 import AppointmentHistory from "../pages/customer/AppointmentHistory";
 import AllDoctor from "../pages/AllDoctor";

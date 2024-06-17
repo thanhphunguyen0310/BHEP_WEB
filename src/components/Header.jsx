@@ -68,7 +68,7 @@ const NavBar = () => {
           {auth.user?.isSuccess ? (
             <Dropdown overlay={<Profile />} placement="bottomRight">
               <Avatar
-                size="large"
+                className="avatar"
                 src={auth?.user?.data?.user?.avatar}
                 alt={auth?.user?.data?.user?.fullName}
                 onError={handleAvatarError}

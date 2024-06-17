@@ -69,6 +69,12 @@
           .regist-button {
               margin-right: 0;
           }
+          .avatar {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #3058a6; /* Màu và độ rộng border tùy chọn */
+            border-radius: 50%; /* Để làm tròn avatar */
+          }
       }
   }
 }

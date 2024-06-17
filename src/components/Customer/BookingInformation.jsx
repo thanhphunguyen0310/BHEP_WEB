@@ -8,9 +8,8 @@ import {
   Row,
   Select,
   Typography,
-  message,
 } from "antd";
-import { getSymptom, makeAppointment } from "../../configs/api/appointmentApi";
+import { getSymptom } from "../../configs/api/appointmentApi";
 import { useLocation } from "react-router-dom";
 import {
   MdAttachMoney,
@@ -34,23 +33,19 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
 
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
   const userAvt = useSelector((state) => state.auth?.user?.data?.user?.avatar);
-  const phoneNumber = useSelector(
-    (state) => state.auth?.user?.data?.user?.phoneNumber
-  );
+  const phoneNumber = useSelector((state) => state.auth?.user?.data?.user?.phoneNumber);
   const email = useSelector((state) => state.auth?.user?.data?.user?.email);
-  const fullName = useSelector(
-    (state) => state.auth?.user?.data?.user?.fullName
-  );
+  const fullName = useSelector((state) => state.auth?.user?.data?.user?.fullName);
   const gender = useSelector((state) => state.auth?.user?.data?.user?.gender);
 
   const handleConfirm = () => {
-
     setIsModalVisible(true);
   };
   const handleNoteChange = (e) => {
     setNote(e.target.value);
   };
   const handleOk = async () => {
+    // save appointment to redux
     const appointmentData = {
       userId: userId,
       doctorId: parseInt(doctor.id),
@@ -62,29 +57,9 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
       selectedSymptom: selectedSymptom,
     };
     dispatch(setAppointment(appointmentData));
-    try {
-      const appointment = await makeAppointment(
-        // appointmentData
-        userId,
-        parseInt(doctor.id),
-        schedule.date,
-        schedule.time,
-        doctor.price,
-        "Description",
-        note,
-        selectedSymptom
-      );
-      if (appointment) {
         setIsModalVisible(false);
         setConfirmationStatus(true);
         onNextStep(); // Move to the next step
-      } else {
-        message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
-      }
-    } catch (error) {
-      console.error("Error making appointment:", error);
-      message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
-    }
   };
 
   const handleCancel = () => {
@@ -227,6 +202,7 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
             </Typography.Paragraph>
             <Row className="information-content no-bg">
               <Input.TextArea
+                maxLength={200}
                 placeholder="Ghi chú cho bác sĩ"
                 size="large"
                 onChange={handleNoteChange}

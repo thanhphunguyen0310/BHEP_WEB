@@ -1,9 +1,9 @@
-import { Button, Carousel, Input, Row, Spin } from "antd";
-import { SearchOutlined, DoubleRightOutlined } from "@ant-design/icons";
+import { Button, Carousel, Input, Row, Select, Spin } from "antd";
+import { DoubleRightOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
 import "../styles/Doctor.scss";
 import { Link, useNavigate, Outlet } from "react-router-dom";
-import { getDoctor } from "../configs/api/doctorApi";
+import { getDoctor, getSpecialist } from "../configs/api/doctorApi";
 import DoctorBanner1 from "../assets/img/doctor-banner1.png";
 import DoctorBanner2 from "../assets/img/doctor-banner2.png";
 import DoctorBanner3 from "../assets/img/doctor-banner3.png";
@@ -43,9 +43,11 @@ const Doctors = () => {
   };
 
   const [topDoctors, setTopDoctors] = useState([]);
-  const [allDoctors, setAllDoctors] = useState([]);
   const [displayedDoctors, setDisplayedDoctors] = useState([]);
+  const [specialist, setSpecialist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSpecialist, setSelectedSpecialist] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
 
   const fetchDoctors = async (pageIndex = 1, pageSize = 10) => {
     try {
@@ -57,19 +59,30 @@ const Doctors = () => {
         doctors.push(...res.items);
         currentPage++;
       } while (currentPage <= Math.ceil(res.totalCount / pageSize));
-      const highRateDoctors = doctors.filter((doctor) => doctor.rate >= 4.5);
-      setTopDoctors(highRateDoctors);
-      setAllDoctors(doctors);
-      setDisplayedDoctors(highRateDoctors);
+
+      const sortedDoctors = doctors.sort((a, b) => b.rate - a.rate);
+      const topDoctors = sortedDoctors.slice(0, 8);
+
+      setTopDoctors(topDoctors);
+      setDisplayedDoctors(topDoctors);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setLoading(false);
     }
   };
+  const fetchSpecialist = async () => {
+    try {
+      const response = await getSpecialist();
+      setSpecialist(response.data.items);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
 
   useEffect(() => {
     fetchDoctors();
+    fetchSpecialist();
   }, []);
 
   const removeAccents = (str) => {
@@ -79,36 +92,66 @@ const Doctors = () => {
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
   };
-
+  // search function
   const handleSearch = useCallback(
     debounce((value) => {
-      if (!value) {
-        setDisplayedDoctors(topDoctors);
-        return;
-      }
       const lowercasedValue = removeAccents(value.toLowerCase());
-      const filteredDoctors = allDoctors.filter(
-        (doctor) =>
-          removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-          removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
-      );
-      setDisplayedDoctors(filteredDoctors);
+  
+      if (!selectedSpecialist) {
+        // Trường hợp không chọn chuyên khoa
+        const filteredDoctors = topDoctors.filter(
+          (doctor) =>
+            removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+            removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+        );
+        setDisplayedDoctors(filteredDoctors);
+      } else if (selectedSpecialist && !value) {
+        // Trường hợp chỉ chọn chuyên khoa mà không nhập từ khóa
+        const filteredDoctors = topDoctors.filter(
+          (doctor) => doctor.specialistId === selectedSpecialist
+        );
+        setDisplayedDoctors(filteredDoctors);
+      } else {
+        // Trường hợp chọn chuyên khoa và nhập từ khóa
+        const filteredDoctors = topDoctors.filter(
+          (doctor) =>
+            doctor.specialistId === selectedSpecialist &&
+            (removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
+              removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue))
+        );
+        setDisplayedDoctors(filteredDoctors);
+      }
     }, 300),
-    [allDoctors, topDoctors]
+    [selectedSpecialist, topDoctors]
   );
-
+  const handleSpecialistChange = (value) => {
+    setSelectedSpecialist(value);
+    handleSearch(searchValue);
+  };
   return (
     <>
       {/* Banner doctor */}
       <Carousel style={{ width: "100vw" }} infinite={false}>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner1} alt="Doctor Banner 1" />
+          <img
+            style={{ width: "100vw" }}
+            src={DoctorBanner1}
+            alt="Doctor Banner 1"
+          />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner2} alt="Doctor Banner 2" />
+          <img
+            style={{ width: "100vw" }}
+            src={DoctorBanner2}
+            alt="Doctor Banner 2"
+          />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner3} alt="Doctor Banner 3" />
+          <img
+            style={{ width: "100vw" }}
+            src={DoctorBanner3}
+            alt="Doctor Banner 3"
+          />
         </div>
       </Carousel>
 
@@ -119,20 +162,26 @@ const Doctors = () => {
         style={{ width: "100vw", height: "150px", backgroundColor: "#F5FEFE" }}
       >
         <Input.Search
-          prefix={
-            <SearchOutlined
-              style={{
-                color: "rgba(0,0,0,.25)",
-              }}
-            />
-          }
           style={{ width: "50%" }}
           placeholder="Tìm theo chuyên khoa, tên bác sĩ,..."
           allowClear
           enterButton="Tìm kiếm"
           size="large"
           onSearch={handleSearch}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => {
+            handleSearch(e.target.value);
+          }}
+          addonBefore={
+            <Select
+              placeholder="Chuyên khoa"
+              style={{
+                width: 120,
+              }}
+              allowClear
+              onChange={handleSpecialistChange}
+              options={specialist.map((s) => ({ value: s.id, label: s.name }))}
+            />
+          }
         />
       </Row>
 

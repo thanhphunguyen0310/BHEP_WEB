@@ -1,0 +1,17 @@
+.container {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Chiều cao tối thiểu bằng viewport height */
+    .content {
+      flex: 1; /* Nội dung chính mở rộng để điền đầy container */
+    }
+    
+  }
+  
+
+  /* Thêm margin-top: auto để Footer tự động dịch chuyển xuống dưới cùng */
+  .footer {
+    margin-top: auto;
+  }
+  
