@@ -2,16 +2,21 @@ import Banner from "./../components/Banner";
 import "../styles/Homepage.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import ProductCard from "../components/ProductCard";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
-import { productData, responsiveProductCart } from "../data";
+import { responsiveProductCart } from "../data";
 import CommunityBanner from "../assets/img/community-banner.png";
 import LOGO from "../assets/img/LOGO.png";
-import { Button } from "antd";
+import { Button, Card } from "antd";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {getHighRateDoctor} from "../configs/api/doctorApi"
+import { getDevice, getService } from "../configs/api/productApi";
+import Meta from "antd/es/card/Meta";
 const Homepage = () => {
+  const [topRatedItems, setTopRatedItems] = useState([]);
+  const [topRatedDoctors, setTopRatedDoctors] = useState([]);
+  const navigate = useNavigate();
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
@@ -40,19 +45,79 @@ const Homepage = () => {
         return "Không xác định";
     }
   };
-  const [topRatedDoctors, setTopRatedDoctors] = useState([]);
+  const fetchAllData = async () => {
+    try {
+      const [deviceRes, serviceRes] = await Promise.all([
+        getDevice(),
+        getService(),
+      ]); 
+
+      // Process devices
+      const devices = deviceRes.items.map((item) => ({
+        ...item,
+        category: "Devices",
+        type: "device",
+      }));
+
+      // Process services and categorize them
+      const services = serviceRes.items.map((item) => {
+        let category = "Services";
+        let type = "";
+
+        if (item.type === 1) {
+          type = 1; // Goi dich vu ca nhan
+        } else if (item.type === 2) {
+          type = 2; // Goi dich vu gia dinh
+        }
+
+        return { ...item, category, type };
+      });
+      // Combine all products into one array
+      const combinedData = [...devices, ...services];
+      // Sort by rate and get top rated items
+      combinedData.sort((a, b) => b.rate - a.rate);
+      const topItems = combinedData.slice(0, 5);
+      setTopRatedItems(topItems);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  // const handleAddToCart = () => {
+  //   const item = {
+  //            id: product.id,
+  //            name: product.name,
+  //            image: product.image,
+  //            price: product.price,
+  //            duration: product.duration,
+  //            type: type,
+  //            quantity: quantity, 
+  //   }
+  //   dispatch(
+  //       addToCart(item)
+  //     );
+  //   navigate("/cart");
+  // };
+  const fetchTopRatedDoctors = async () => {
+    try {
+      const doctors = await getHighRateDoctor();
+      setTopRatedDoctors(doctors);
+    } catch (error) {
+      console.error("Error fetching top rated doctors:", error);
+    }
+  };
+  const handleProductClick = (product) => {
+    navigate(`/product-detail/${product.type}/${product.id}`);
+  };
   useEffect(() => {
-    const fetchTopRatedDoctors = async () => {
-      try {
-        const doctors = await getHighRateDoctor();
-        setTopRatedDoctors(doctors);
-      } catch (error) {
-        console.error("Error fetching top rated doctors:", error);
-      }
-    };
+    fetchAllData();
     fetchTopRatedDoctors();
   }, []);
-
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
   return (
     <>
       <Banner />
@@ -62,20 +127,64 @@ const Homepage = () => {
           <h1>Sản phẩm nổi bật</h1>
           <Carousel
             className="carousel"
+            additionalTransfrom={0}
+            autoPlaySpeed={3000}
+            centerMode={false}
+            draggable
+            focusOnSelect={false}
+            infinite
+            keyBoardControl
+            minimumTouchDrag={80}
+            pauseOnHover
+            renderArrowsWhenDisabled={false}
+            renderButtonGroupOutside={false}
+            renderDotsOutside={false}
+            arrows
             responsive={responsiveProductCart}
-            infinite={true}
+            containerClass="carousel-container"
+            rewind={false}
+            rewindWithAnimation={false}
+            rtl={false}
+            shouldResetAutoplay
+            showDots={false}
+            slidesToSlide={1}
+            swipeable
           >
-            {productData.map((item) => (
+            {topRatedItems.map((item) => (
               <div
                 key={item.id}
                 style={{ display: "flex", justifyContent: "center" }}
               >
-                <ProductCard
-                  name={item.name}
-                  image={item.image}
-                  price={item.price}
-                  description={item.description}
-                />
+                <Card
+                  hoverable
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    width: 220,
+                  }}
+                  cover={
+                    <img
+                    style={{height: "108px", objectFit: "cover" }}
+                      alt="example"
+                      src={item.image}
+                      onClick={() => handleProductClick(item)}
+                    />
+                  }
+                >
+                  <Meta title={item.name} />
+                  <p style={{ padding: "10px 0px" }} className="price">
+                    {formatPrice(item.price)}
+                  </p>
+                  <Button
+                    style={{ fontWeight: "600" }}
+                    size="large"
+                    type="primary"
+                    icon={<ShoppingCartOutlined />}
+                  >
+                    Thêm vào giỏ hàng
+                  </Button>
+                </Card>
               </div>
             ))}
           </Carousel>

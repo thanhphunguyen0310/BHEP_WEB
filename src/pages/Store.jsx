@@ -1,21 +1,16 @@
 import {
   Avatar,
   Col,
-  Dropdown,
   Flex,
   Image,
   Input,
   Row,
   Typography,
-  Space,
   Card,
   Button,
+  Badge,
 } from "antd";
-import {
-  ShoppingFilled,
-  DownOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
+import { ShoppingFilled, ShoppingCartOutlined } from "@ant-design/icons";
 import category from "../assets/icon/category.svg";
 import "../styles/Store.scss";
 import { responsiveProductCart } from "./../data";
@@ -23,7 +18,9 @@ import Carousel from "react-multi-carousel";
 import { getDevice, getService } from "../configs/api/productApi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setProducts } from "../store/productSlice";
 import Meta from "antd/es/card/Meta";
+import { useDispatch, useSelector } from "react-redux";
 
 const Store = () => {
   const [product, setProduct] = useState([]);
@@ -32,6 +29,8 @@ const Store = () => {
   const [topRatedItems, setTopRatedItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state?.cart);
   const fetchAllData = async () => {
     try {
       const [deviceRes, serviceRes] = await Promise.all([
@@ -39,34 +38,62 @@ const Store = () => {
         getService(),
       ]);
 
-      const devices = deviceRes.items.map(item => ({ ...item, type: 'device' }));
-      const services = serviceRes.items.map(item => ({ ...item, type: 'service' }));
+      // Process devices
+      const devices = deviceRes.items.map((item) => ({
+        ...item,
+        category: "Devices",
+        type: "device",
+      }));
+
+      // Process services and categorize them
+      const services = serviceRes.items.map((item) => {
+        let category = "Services";
+        let type = "";
+
+        if (item.type === 1) {
+          type = 1; // Goi dich vu ca nhan
+        } else if (item.type === 2) {
+          type = 2; // Goi dich vu gia dinh
+        }
+
+        return { ...item, category, type };
+      });
+      console.log(devices);
+      console.log(services);
+      // Set states
       setDevice(devices);
       setService(services);
-      // Combine the arrays
+
+      // Combine all products into one array
       const combinedData = [...devices, ...services];
+      console.log(combinedData, "combine data");
+      // Set product state
       setProduct(combinedData);
+      // Sort by rate and get top rated items
       combinedData.sort((a, b) => b.rate - a.rate);
-      // Get top 5 items
       const topItems = combinedData.slice(0, 3);
+      //store to redux
+      dispatch(setProducts(combinedData));
       setTopRatedItems(topItems);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  // filter device or service in all product
+
   const filterProductsByCategory = () => {
     if (selectedCategory === "device") {
-      return product.filter((item) => item.type === 'device' && item.name === "Spirit");
+      return product.filter(
+        (item) => item.category === "Devices" && item.type === "device"
+      );
     } else if (selectedCategory === "service") {
       return product.filter(
-        (item) => item.type === 'service' && (item.duration === 3)
+        (item) => item.category === "Services" && item.duration === 3
       );
     } else {
       return product.filter(
         (item) =>
-          item.name === "Spirit" ||
-          (item.type === 'service' && item.duration === 3)
+          item.category === "Devices" ||
+          (item.category === "Services" && item.duration === 3)
       );
     }
   };
@@ -80,6 +107,7 @@ const Store = () => {
       return topRatedItems;
     }
   };
+
   const handleProductClick = (product) => {
     navigate(`/product-detail/${product.type}/${product.id}`);
   };
@@ -92,20 +120,9 @@ const Store = () => {
   };
 
   useEffect(() => {
-    // fetchAllDevices();
-    // fetchAllServices();
     fetchAllData();
   }, []);
-  const items = [
-    {
-      label: "Thấp đến cao",
-      key: "1",
-    },
-    {
-      label: "Cao đến thấp",
-      key: "2",
-    },
-  ];
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -118,11 +135,14 @@ const Store = () => {
       {/* search bar */}
       <Flex className="search-bar" align="center" justify="center" gap={30}>
         <Input.Search size="large" style={{ width: "60%" }} />
+        <Badge count={items?.cartTotalQuantity}>
         <Avatar
-          style={{ backgroundColor: "white" }}
+          onClick={() => navigate(`/cart`)}
+          style={{ cursor:"pointer" ,backgroundColor: "white" }}
           size={"large"}
           icon={<ShoppingFilled style={{ color: "black" }} />}
         />
+        </Badge>
       </Flex>
       {/* navigation */}
       <Row
@@ -210,37 +230,6 @@ const Store = () => {
           </Col>
         </Row>
       </Row>
-      {/* filter price */}
-      <Row style={{ width: "100vw" }}>
-        <Flex
-          align="center"
-          justify="flex-start"
-          style={{
-            width: "200px",
-            height: "64px",
-            backgroundColor: "white",
-            marginLeft: "100px",
-          }}
-        >
-          <Dropdown
-            menu={{
-              items,
-            }}
-          >
-            <a
-              style={{ padding: "0px 36px" }}
-              onClick={(e) => e.preventDefault()}
-            >
-              <Space
-                style={{ color: "black", fontSize: "18px", gap: "0px 15px" }}
-              >
-                Giá
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
-        </Flex>
-      </Row>
       {/* top product */}
       <Row
         className="top-product-container"
@@ -286,11 +275,6 @@ const Store = () => {
             swipeable
           >
             {filterTopRatedItemsByCategory().map((item) => (
-              // <Link
-              //   to={`/product-detail/${item.id}`}
-              //   key={item.id}
-              //   style={{ textDecoration: "none", color: "inherit" }}
-              // >
               <div
                 key={item.id}
                 style={{ display: "flex", justifyContent: "center" }}
@@ -298,13 +282,14 @@ const Store = () => {
                 <Card
                   hoverable
                   style={{
-                    display:"flex",
-                    alignItems:"center",
-                    flexDirection:"column",
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
                     width: 220,
                   }}
                   cover={
                     <img
+                      style={{ height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={item.image}
                       onClick={() => handleProductClick(item)}
@@ -315,12 +300,16 @@ const Store = () => {
                   <p style={{ padding: "10px 0px" }} className="price">
                     {formatPrice(item.price)}
                   </p>
-                  <Button style={{fontWeight:"600"}} size="large" type="primary" icon={<ShoppingCartOutlined />}>
+                  <Button
+                    style={{ fontWeight: "600" }}
+                    size="large"
+                    type="primary"
+                    icon={<ShoppingCartOutlined />}
+                  >
                     Thêm vào giỏ hàng
                   </Button>
                 </Card>
               </div>
-              // </Link>
             ))}
           </Carousel>
         </Row>
@@ -349,13 +338,15 @@ const Store = () => {
               <div key={product.id}>
                 <Card
                   hoverable
-                  style={{ width: 220,
-                    display:"flex",
-                    alignItems:"center",
-                    flexDirection:"column",
-                   }}
+                  style={{
+                    width: 220,
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                  }}
                   cover={
                     <img
+                      style={{ height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={product.image}
                       onClick={() => handleProductClick(product)}
@@ -363,10 +354,13 @@ const Store = () => {
                   }
                 >
                   <Meta title={product.name} />
-                  <p>
-                    {formatDescription(product.description, product.type)}
-                  </p>
-                  <Button style={{fontWeight:"600"}} size="large" type="primary" icon={<ShoppingCartOutlined />}>
+                  <p>{formatDescription(product.description, product.type)}</p>
+                  <Button
+                    style={{ fontWeight: "600" }}
+                    size="large"
+                    type="primary"
+                    icon={<ShoppingCartOutlined />}
+                  >
                     Thêm vào giỏ hàng
                   </Button>
                 </Card>
@@ -381,6 +375,51 @@ const Store = () => {
 
 export default Store;
 
+// const items = [
+//   {
+//     label: "Thấp đến cao",
+//     key: "1",
+//   },
+//   {
+//     label: "Cao đến thấp",
+//     key: "2",
+//   },
+// ];
+{
+  /* filter price */
+}
+{
+  /* <Row style={{ width: "100vw" }}>
+        <Flex
+          align="center"
+          justify="flex-start"
+          style={{
+            width: "200px",
+            height: "64px",
+            backgroundColor: "white",
+            marginLeft: "100px",
+          }}
+        >
+          <Dropdown
+            menu={{
+              items,
+            }}
+          >
+            <a
+              style={{ padding: "0px 36px" }}
+              onClick={(e) => e.preventDefault()}
+            >
+              <Space
+                style={{ color: "black", fontSize: "18px", gap: "0px 15px" }}
+              >
+                Giá
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
+        </Flex>
+      </Row> */
+}
 // const fetchAllDevices = async () => {
 //   try {
 //     const res = await getDevice();

@@ -1,15 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
-import { publicRoutes, customerRoutes, doctorRoutes, adminRoutes } from './router/Router'
+import { publicRoutes, customerRoutes, doctorRoutes, adminRoutes, defaultLayoutRoutes } from './router/Router'
 import DefaultLayout from './components/Layout/DefaultLayout/index';
-import { Fragment } from "react";
+import { Children, Fragment } from "react";
+import PrivateRoute from "./router/PrivateRoute";
 function App() {
 
   return (
     <Router>
       {/* route pubic */}
       <Routes>
-        {publicRoutes.map((route, index) => {
+        {defaultLayoutRoutes.map((route, index) => {
           // xử lí Layout
           let Layout = DefaultLayout
 
@@ -20,18 +21,23 @@ function App() {
           }
 
           const Page = route.component
-          return (
+          return (        
             <Route
               key={index}
               path={route.path}
               element={
+                route.path == "/error" ? <Page /> :
+                <PrivateRoute role={route.role}>
                 <Layout>
                   <Page />
-                </Layout>}
+                </Layout>
+                </PrivateRoute>
+                }
             />
           )
         })}
       </Routes>
+
       {/* route doctor */}
       <Routes>
         {doctorRoutes.map((route, index) => {

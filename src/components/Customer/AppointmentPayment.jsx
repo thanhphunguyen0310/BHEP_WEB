@@ -169,10 +169,39 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
 };
 
 export default AppointmentPayment;
+
+
 // const payment = await makePayment(userId, price);
 // console.log(payment,"payment")
 // const paymentUrl = payment?.data?.data?.paymentUrl;
 // window.location.replace(paymentUrl);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // if (payment?.data?.isSuccess) {
 // //   const paymentUrl = payment?.data?.data?.paymentUrl;
 // //   const paymentId = payment?.data?.data?.id;

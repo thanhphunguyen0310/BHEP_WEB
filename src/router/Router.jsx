@@ -16,6 +16,10 @@ import ProductDetail from "../components/ProductDetail";
 import DoctorSchedule from "../components/Doctor/DoctorSchedule";
 import BookingAppointment from '../pages/customer/BookingAppointment';
 import AppointmentPayment from '../components/Customer/AppointmentPayment';
+import AddCoin from '../pages/customer/AddCoin';
+import Cart from '../components/Customer/Cart';
+import Order from '../pages/Order';
+import ErrorPage from './../pages/Error';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -28,6 +32,9 @@ export const  publicRoutes = [
     {path: "/community", component: Community },
     {path: "/booking-appointment", component: BookingAppointment},
     {path: "/booking-payment", component: AppointmentPayment},
+    {path: "/add-coin", component: AddCoin},
+    {path: "/cart", component: Cart},
+    {path: "/order", component: Order}
 ]
 
 export const  customerRoutes = [
@@ -47,6 +54,30 @@ export const  doctorRoutes = [
 export const  adminRoutes = [
     // {path: "/manage-application", component: , layout: null},
     // {path: "/manage-appointment", component: , layout: null},
-    // {path: "/manage-user", component: , layout: null},
-    
+    // {path: "/manage-user", component: , layout: null}
 ]
+
+export const  defaultLayoutRoutes = [
+    {path: "/", component: Homepage, role: [0]},
+    {path: "/category", component: Category, role: [0]},
+    {path: "/store", component: Store, role: [0]},
+    {path: "/product-detail/:type/:id", component: ProductDetail, role: [0] },
+    {path: "/doctor", component: Doctor, role: [0] },
+    {path: "/all-doctor", component: AllDoctor, role: [0] },
+    {path: "/doctor-detail/:id", component: DoctorDetail, role: [0] },
+    {path: "/community", component: Community,role: [0] },
+    {path: "/booking-appointment", component: BookingAppointment, role: [2]},
+    {path: "/booking-payment", component: AppointmentPayment, role: [2]},
+    {path: "/add-coin", component: AddCoin, role: [2]},
+    {path: "/cart", component: Cart, role: [0]},
+    {path: "/order", component: Order, role: [2, 3]},
+    {path: "/doctor-chat", component: DoctorChat, layout: DoctorChatLayout, role: [3]},
+    {path: "/workspace", component: Workspace, role: [3]},
+    {path: "/create-schedule", component: DoctorSchedule, role: [3]},
+    {path: "/list-appointment", component: ListAppointment, role: [2, 3]},
+    {path: "/doctor-history-appointment", component: AppointmentHistory_Doctor, role: [0]},
+    {path: "/health-records", component: HealthRecord, role: [2]},
+    {path: "/history-appointment", component: AppointmentHistory, role: [2]},
+    {path: "/error", component: ErrorPage, role: [0]},
+]
+

@@ -274,7 +274,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Lượt đặt: {doctorDetail?.rate}</p>
+                      <p style={{ margin: 0 }}>Lượt đặt: {doctorDetail?.workProfile?.appointmentDone}</p>
                     </Col>
                   </Row>
 
@@ -292,7 +292,7 @@ const DoctorDetail = () => {
                       />
                     </Col>
                     <Col>
-                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail?.workProfile?.appointmentDone}</p>
+                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail?.rate}</p>
                     </Col>
                   </Row>
                 </Col>
