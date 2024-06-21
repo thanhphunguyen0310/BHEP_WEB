@@ -1,13 +1,15 @@
 import { Menu } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
+    navigate(`/`)
     dispatch(logout());
   };
 
