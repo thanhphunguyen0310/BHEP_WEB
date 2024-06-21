@@ -2,7 +2,6 @@ import Banner from "./../components/Banner";
 import "../styles/Homepage.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import DoctorCard from "../components/DoctorCard";
 import { responsiveProductCart } from "../data";
 import CommunityBanner from "../assets/img/community-banner.png";
@@ -13,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {getHighRateDoctor} from "../configs/api/doctorApi"
 import { getDevice, getService } from "../configs/api/productApi";
 import Meta from "antd/es/card/Meta";
+import Detail from "../assets/icon/details.svg"
 const Homepage = () => {
   const [topRatedItems, setTopRatedItems] = useState([]);
   const [topRatedDoctors, setTopRatedDoctors] = useState([]);
@@ -168,21 +168,22 @@ const Homepage = () => {
                     style={{height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={item.image}
-                      onClick={() => handleProductClick(item)}
+                      loading="lazy"
                     />
                   }
                 >
                   <Meta title={item.name} />
-                  <p style={{ padding: "10px 0px" }} className="price">
+                  <p style={{ padding: "10px 0px", color:"#3058A6", fontWeight:"500" }} className="price">
                     {formatPrice(item.price)}
                   </p>
                   <Button
-                    style={{ fontWeight: "600" }}
+                    style={{ fontWeight: "600"}}
                     size="large"
                     type="primary"
-                    icon={<ShoppingCartOutlined />}
+                    icon={<img src={Detail} alt="Details" style={{width:"16px", height:"16px"}}/>}  
+                    onClick={() => handleProductClick(item)}          
                   >
-                    Thêm vào giỏ hàng
+                    Xem chi tiết
                   </Button>
                 </Card>
               </div>
@@ -226,8 +227,9 @@ const Homepage = () => {
           <div className="content">
             <div className="avatar">
               <img src={LOGO} />
-            </div>
-            <div className="description">
+            </div>          
+          </div>
+          <div className="description">
               <h3>BHEP - SỨC KHỎE TỐT HƠN</h3>
               <section className="data">
                 <div className="item">
@@ -245,7 +247,6 @@ const Homepage = () => {
               </section>
             </div>
             <Button>Tham gia cộng đồng</Button>
-          </div>
         </div>
       </div>
     </>

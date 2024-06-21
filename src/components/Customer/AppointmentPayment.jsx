@@ -89,14 +89,14 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
       <Radio.Group onChange={handlePaymentMethodChange} className="radio-group">
         <Space direction="vertical">
           <Radio className="radio-option" value={1}>
-            <FaCoins
+              <FaCoins
               style={{
                 color: "#e6f024",
                 fontSize: "20px",
                 marginRight: "10px",
               }}
             />{" "}
-            Thanh toán bằng BHEP coin
+            <Typography.Text style={{fontWeight:"500"}}>Xu BHEP</Typography.Text>
           </Radio>
           <Radio disabled className="radio-option" value={2}>
             <FaMoneyBillWave

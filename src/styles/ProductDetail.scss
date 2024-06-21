@@ -16,6 +16,7 @@
       background-color: #9ce3fa;
     }
     .product-detail-header {
+      border-radius: 8px;
       margin-top: 20px;
       padding: 10px 10px;
       background-color: white;
@@ -34,6 +35,7 @@
         }
       }
       .content{
+        background-color: white;
         padding: 20px 20px;
         display: flex;
         justify-content: center;
@@ -45,6 +47,8 @@
           .ant-avatar {
             width: 220px;
             height: 220px;
+            // padding: 20px 20px;
+            // border: 1px rgb(183, 212, 253) solid;
             img {
               object-fit: cover;
               object-position: right;
@@ -138,6 +142,7 @@
 
     }
     .product-feedback {
+      border-radius: 8px;
       margin-top: 20px;
       padding: 10px 10px;
       background-color: white;

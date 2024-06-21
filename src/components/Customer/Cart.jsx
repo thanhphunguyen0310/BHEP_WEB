@@ -20,20 +20,28 @@ import {
   addToCart,
   clearCart,
   getTotal,
+  setLocalToCart,
 } from "../../store/cartSlice";
 import { ShoppingFilled } from "@ant-design/icons";
 import { useEffect } from "react";
+import Empty from "../../assets/icon/empty.svg"
 
 const Cart = () => {
   const items = useSelector((state) => state?.cart);
   const groupCode = useSelector((state) => state?.cart);
-  console.log(items);
-  console.log(groupCode);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getTotal());
+    const cart = JSON.parse(localStorage.getItem("cartItems"))
+    console.log(cart)
+    dispatch(setLocalToCart(cart));
+  }, []);
+
+  useEffect(() => {
+    if(items.length != 0){
+      dispatch(getTotal());
+    }
   }, [items, dispatch]);
   const columns = [
     {
@@ -183,6 +191,14 @@ const Cart = () => {
       currency: "VND",
     }).format(price);
   };
+  const emptyCartContent = (
+    <div style={{ textAlign: "center" }}>
+      <img src={Empty} alt="Empty Cart" style={{ width: 150, marginBottom: 20 }} />
+      <div>Giỏ hàng trống!</div>
+      <Typography.Link onClick={() => navigate(`/store`)}>Ấn vào đây để khám phá các sản phẩm của BHEP</Typography.Link>
+    </div>
+  ); 
+
   return (
     <div className="cart-container">
       <Flex className="search-bar" align="center" justify="center" gap={30}>
@@ -224,6 +240,9 @@ const Cart = () => {
             dataSource={items?.cartItems}
             rowKey={(record) => record.id}
             rowClassName={() => "custom-row"}
+            locale={{
+              emptyText: emptyCartContent,
+            }}
           />
         </Row>
 

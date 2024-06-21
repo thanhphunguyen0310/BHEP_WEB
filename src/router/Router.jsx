@@ -20,6 +20,8 @@ import AddCoin from '../pages/customer/AddCoin';
 import Cart from '../components/Customer/Cart';
 import Order from '../pages/Order';
 import ErrorPage from './../pages/Error';
+import FailPayment from './../pages/FailPayment';
+import SuccessPayment from './../pages/SuccessPayment';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -79,5 +81,7 @@ export const  defaultLayoutRoutes = [
     {path: "/health-records", component: HealthRecord, role: [2]},
     {path: "/history-appointment", component: AppointmentHistory, role: [2]},
     {path: "/error", component: ErrorPage, role: [0]},
+    {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
+    {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
 ]
 

@@ -9,6 +9,7 @@ import {
   Card,
   Button,
   Badge,
+  message,
 } from "antd";
 import { ShoppingFilled, ShoppingCartOutlined } from "@ant-design/icons";
 import category from "../assets/icon/category.svg";
@@ -21,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { setProducts } from "../store/productSlice";
 import Meta from "antd/es/card/Meta";
 import { useDispatch, useSelector } from "react-redux";
+import { addToCart, getTotal, setLocalToCart } from "../store/cartSlice";
 
 const Store = () => {
   const [product, setProduct] = useState([]);
@@ -31,6 +33,7 @@ const Store = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const items = useSelector((state) => state?.cart);
+  console.log(items)
   const fetchAllData = async () => {
     try {
       const [deviceRes, serviceRes] = await Promise.all([
@@ -58,15 +61,12 @@ const Store = () => {
 
         return { ...item, category, type };
       });
-      console.log(devices);
-      console.log(services);
       // Set states
       setDevice(devices);
       setService(services);
 
       // Combine all products into one array
       const combinedData = [...devices, ...services];
-      console.log(combinedData, "combine data");
       // Set product state
       setProduct(combinedData);
       // Sort by rate and get top rated items
@@ -79,7 +79,45 @@ const Store = () => {
       console.error("Error fetching data:", error);
     }
   };
-
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cartItems"))
+    console.log(cart)
+    dispatch(setLocalToCart(cart));
+    dispatch(getTotal());
+  }, []);
+  // const checkExistingProduct = () => {
+  //   if (product?.type != "device") {
+  //     const isExistProduct = items?.cartItems.find(
+  //       (item) => item.type === 1 || item.type === 2
+  //     );
+  //     if (isExistProduct != undefined) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // };
+  // const handleAddToCart = () => {
+  //   const checkExist = checkExistingProduct();
+  //   if (checkExist) {
+  //     let quantityToAdd = 1;
+  //     if (product?.type === "device") {
+  //       quantityToAdd = quantityToAdd; // Nếu là "device" thì lấy quantity mà người dùng chọn
+  //     }
+  //     const item = {
+  //       id: product.id,
+  //       name: product.name,
+  //       image: product.image,
+  //       price: product.price,
+  //       duration: product.duration,
+  //       type: product.type,
+  //       quantity: quantityToAdd,
+  //     };
+  //     dispatch(addToCart(item));
+  //     navigate("/cart");
+  //   } else {
+  //     message.error("Bạn không thể thêm sản phẩm này!")
+  //   }
+  // };
   const filterProductsByCategory = () => {
     if (selectedCategory === "device") {
       return product.filter(

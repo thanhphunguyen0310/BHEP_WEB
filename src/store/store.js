@@ -6,11 +6,11 @@ import doctorsReducer from './doctorsSlice';
 import appointmentReducer from './appointmentSlice';
 import productReducer from './productSlice'
 import cartReducer from "./cartSlice"
-
+import transactionReducer from "./transactionSlice"
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], // only auth will be persisted
+  whitelist: ['auth', 'cart'], 
 };
 
 
@@ -20,6 +20,7 @@ const rootReducer = combineReducers({
   appointment: appointmentReducer,
   products: productReducer,
   cart: cartReducer,
+  transaction: transactionReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

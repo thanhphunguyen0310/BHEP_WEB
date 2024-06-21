@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  cartItems: localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems"))
-    : [],
+  cartItems: [],
   cartTotalQuantity: 0,
   cartTotalAmount: 0,
   groupCode: '',
@@ -13,6 +11,10 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setLocalToCart: (state, action) => {
+      state.cartItems = action.payload == null ? [] : action.payload
+      console.log(action.payload)
+    },
     addToCart: (state, action) => {
       const itemIndex = state.cartItems.findIndex(
         (item) => item.id === action.payload.id
@@ -54,14 +56,15 @@ const cartSlice = createSlice({
         );
         state.cartItems = nextCartItems;
       }
-      localStorage.setItem("cartItem", JSON.stringify(state.cartItems));
+      localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
-    clearCart(state, action) {
-      (state.cartItems = []),
-        // localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-        localStorage.removeItem("cartItems");
-      (state.groupCode = [])
-      localStorage.setItem("cartItems", JSON.stringify(state.groupCode));
+    clearCart:(state, action) => {
+      state.cartItems = [];
+      state.cartTotalQuantity = 0;
+      state.cartTotalAmount = 0;
+      state.groupCode = '';
+      localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
+      localStorage.setItem("groupCode", JSON.stringify(state.groupCode));
     },
     getTotal(state, action) {
       let { total, quantity } = state.cartItems.reduce(
@@ -92,5 +95,9 @@ export const {
   decreaseCart,
   clearCart,
   getTotal,
+  setLocalToCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;
+  // cartItems: localStorage.getItem("cartItems")
+  //   ? JSON.parse(localStorage.getItem("cartItems"))
+  //   : [],
