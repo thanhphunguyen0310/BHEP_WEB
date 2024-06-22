@@ -38,7 +38,6 @@ const Cart = () => {
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cartItems"))
-    console.log(cart)
     dispatch(setLocalToCart(cart));
   }, []);
 

@@ -96,13 +96,17 @@ const Doctors = () => {
   const handleSearch = useCallback(
     debounce((value) => {
       const lowercasedValue = removeAccents(value.toLowerCase());
-  
+
       if (!selectedSpecialist) {
         // Trường hợp không chọn chuyên khoa
         const filteredDoctors = topDoctors.filter(
           (doctor) =>
-            removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-            removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+            removeAccents(doctor.fullName.toLowerCase()).includes(
+              lowercasedValue
+            ) ||
+            removeAccents(
+              getSpecialistState(doctor.specialistId).toLowerCase()
+            ).includes(lowercasedValue)
         );
         setDisplayedDoctors(filteredDoctors);
       } else if (selectedSpecialist && !value) {
@@ -116,8 +120,12 @@ const Doctors = () => {
         const filteredDoctors = topDoctors.filter(
           (doctor) =>
             doctor.specialistId === selectedSpecialist &&
-            (removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-              removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue))
+            (removeAccents(doctor.fullName.toLowerCase()).includes(
+              lowercasedValue
+            ) ||
+              removeAccents(
+                getSpecialistState(doctor.specialistId).toLowerCase()
+              ).includes(lowercasedValue))
         );
         setDisplayedDoctors(filteredDoctors);
       }
@@ -130,8 +138,8 @@ const Doctors = () => {
   };
   return (
     <>
-            {/* Banner doctor */}
-            <Carousel style={{ width: "100vw" }} infinite={false}>
+      {/* Banner doctor */}
+      <Carousel style={{ width: "100vw" }} infinite={false}>
         <div>
           <img
             style={{ width: "100vw" }}
