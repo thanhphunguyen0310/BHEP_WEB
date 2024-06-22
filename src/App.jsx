@@ -39,7 +39,7 @@ function App() {
       </Routes>
 
       {/* route doctor */}
-      <Routes>
+      {/* <Routes>
         {doctorRoutes.map((route, index) => {
           // xử lí Layout
           let Layout = DefaultLayout
@@ -62,7 +62,7 @@ function App() {
             />
           )
         })}
-      </Routes>
+      </Routes> */}
     </Router>
   )
 }

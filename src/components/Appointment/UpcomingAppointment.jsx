@@ -25,17 +25,21 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
   const fetchAppointments = async () => {
     const res = await getAppointmentByUserId(userId);
     const sortedAppointments = res.data?.appointments.sort((a, b) => {
+      if (a.status !== b.status) {
+        return a.status === 1 ? -1 : 1;
+      }
       const dateA = new Date(a.date.split("-").reverse().join("-"));
       const dateB = new Date(b.date.split("-").reverse().join("-"));
       return dateA - dateB;
     });
-    const sortedAppointmentReceive = res.data?.appointmentsReceived.sort(
-      (a, b) => {
-        const dateA = new Date(a.date.split("-").reverse().join("-"));
-        const dateB = new Date(b.date.split("-").reverse().join("-"));
-        return dateA - dateB;
+    const sortedAppointmentReceive = res.data?.appointmentsReceived.sort((a, b) => {
+      if (a.status !== b.status) {
+        return a.status === 1 ? -1 : 1;
       }
-    );
+      const dateA = new Date(a.date.split("-").reverse().join("-"));
+      const dateB = new Date(b.date.split("-").reverse().join("-"));
+      return dateA - dateB;
+    });
     const cancelledAppointments = res.data?.appointmentsReceived.filter(
       (appointment) => appointment.status === 3
     );

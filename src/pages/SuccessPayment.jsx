@@ -8,15 +8,14 @@ import {  useNavigate } from 'react-router-dom';
 const SuccessPayment = () => {
 
     const transaction = useSelector((state) => state?.transaction?.transaction)
+    console.log(transaction, "Success Payment")
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const updateTransactionStatus = async () => {
         try {
             if (transaction) {
-                console.log(transaction)
                 let id = transaction?.id
-                const status = await updateStatusPayment(id, 2);
-                console.log(status)
+                await updateStatusPayment(id, 2);
             }
         } catch (error) {
             console.log("Error: ", error)
@@ -24,7 +23,7 @@ const SuccessPayment = () => {
     }
     useEffect(() => {
         updateTransactionStatus();
-        // dispatch(clearTransaction())
+        dispatch(clearTransaction())
     }, [])
     return (
         <div className="success-payment-container">

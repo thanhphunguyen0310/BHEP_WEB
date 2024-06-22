@@ -10,7 +10,7 @@ import transactionReducer from "./transactionSlice"
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'cart'], 
+  whitelist: ['auth', 'cart', 'transaction'], 
 };
 
 

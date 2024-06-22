@@ -19,7 +19,7 @@ const cartSlice = createSlice({
         (item) => item.id === action.payload.id
       );
       if (itemIndex >= 0) {
-        state.cartItems[itemIndex].quantity += 1;
+        state.cartItems[itemIndex].quantity += action.payload.quantity;
       } else {  
         const tempProduct = {
           ...action.payload,
@@ -40,8 +40,8 @@ const cartSlice = createSlice({
       );
       state.cartItems = nextCartItems;
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-      (state.groupCode = [])
-      localStorage.setItem("cartItems", JSON.stringify(state.groupCode));
+      state.groupCode = ''
+      localStorage.setItem("groupCode", JSON.stringify(state.groupCode));
     },
     decreaseCart(state, action) {
       const itemIndex = state.cartItems.findIndex(

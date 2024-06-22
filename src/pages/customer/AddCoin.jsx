@@ -31,10 +31,10 @@ const AddCoin = () => {
       const napTien = await addCoin(userId, coinInput);
       const paymentUrl = napTien?.data?.checkoutUrl;
       const storeTransaction = dispatch(createTransaction(napTien.data))
-      console.log(napTien.data, "response");
-      console.log(storeTransaction, "redux");
       if (paymentUrl && storeTransaction?.payload?.id) {
-        window.location.href = paymentUrl;
+        setTimeout(() => {
+           window.location.href = paymentUrl;
+        },2000)
       } else {
         setPaymentResult("Không thể tạo URL thanh toán.");
       }
@@ -76,8 +76,7 @@ const AddCoin = () => {
         <div className="input-section">
           <Typography.Text>Số tiền: </Typography.Text>
           <InputNumber
-            min={0}
-            max={999999999999}
+            min={50000}
             value={coinInput}
             // formatter={(value) => `${formatNumber(value)}`}
             // parser={(value) => value.replace(/\$\s?|(,*)/g, "")}

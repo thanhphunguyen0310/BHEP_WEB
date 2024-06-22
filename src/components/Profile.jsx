@@ -39,9 +39,11 @@ const Profile = () => {
           <Link to="/list-appointment">Lịch hẹn</Link>
         </Menu.Item>
       )}
-      <Menu.Item key="profile" onClick={handleMessage}>
-        {/* <Link to="/profile">Hồ sơ</Link> */}
-        Hồ sơ 
+      <Menu.Item key="profile" 
+      // onClick={handleMessage}
+      >
+        <Link to="/profile">Hồ sơ</Link>
+        {/* Hồ sơ  */}
       </Menu.Item>
       <Menu.Item key="setting" onClick={handleMessage}>
         {/* <Link to="/settings">Cài đặt</Link> */}

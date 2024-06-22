@@ -28,11 +28,10 @@ export const addCoin = async ( userId, amount) => {
 
 export const updateStatusPayment = async ( id, status) => {
   try {
-    const res = await apiClient.post(`/Payment/${id}`, {
+    const res = await apiClient.put(`/Payment/${id}`, {
       id: id,
       status: status
     });
-    console.log(res.data)
     return res.data;
   } catch (error) {
     throw new Error(error.message); 
