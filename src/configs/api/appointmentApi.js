@@ -85,17 +85,14 @@ export const getAppointmentById = async (id) => {
   }
 }
 
-export const updateAppointment = async ({id, date, time, price, note, status, symptoms}) => {
+export const updateAppointment = async ({id, customerId, employeeId, status}) => {
   try {
-    const response = await apiClient.put(`/Appointment/${id}`,
+    const response = await apiClient.put(`/Appointment/${id}/Status`,
       {
         id: id,
-        date: date,
-        time: time,
-        price: price,
-        note: note,
+        customerId: customerId,
+        employeeId: employeeId,
         status: status,
-        symptoms: symptoms
       }
     );
     return response.data;

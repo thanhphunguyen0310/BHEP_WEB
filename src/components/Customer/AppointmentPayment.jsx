@@ -19,6 +19,7 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const userId = useSelector((state) => state?.appointment?.userId);
+  const userBalance = useSelector((state) => state.auth?.user?.data?.user?.balance);
   const doctorId = useSelector((state) => state?.appointment?.doctorId);
   const date = useSelector((state) => state?.appointment?.date);
   const time = useSelector((state) => state?.appointment?.time);
@@ -58,26 +59,31 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
     }
   };
   const handleConfirmPayment = async () => {
-    try {
-      const appointment = await makeAppointment(
-        userId,
-        doctorId,
-        date,
-        time,
-        price,
-        description,
-        note,
-        selectedSymptom
-      );
-      if (appointment) {
-        onPaymentSuccess(appointment.data.id);
-        setIsModalVisible(false);
-      } else {
+    if(userBalance <= 0 || userBalance < price) {
+      message.error("Số xu không đủ để đặt lịch. Bạn vui lòng nạp thêm xu!")
+      setIsModalVisible(false);
+    } else {
+      try {
+        const appointment = await makeAppointment(
+          userId,
+          doctorId,
+          date,
+          time,
+          price,
+          description,
+          note,
+          selectedSymptom
+        );
+        if (appointment) {
+          onPaymentSuccess(appointment.data.id);
+          setIsModalVisible(false);
+        } else {
+          message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
+        }
+      } catch (error) {
+        console.error("Error making appointment:", error);
         message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
       }
-    } catch (error) {
-      console.error("Error making appointment:", error);
-      message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
     }
   };
   const handleCancel = () => {

@@ -40,8 +40,8 @@ const AllDoctor = () => {
         return "Nội khoa";
       case 2:
         return "Răng hàm mặt";
-      // case 3:
-      //   return "Da liễu";
+      case 3:
+        return "Da liễu";
       case 4:
         return "Tai mũi họng";
       case 5:

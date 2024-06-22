@@ -107,7 +107,6 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
   };
   // get Appointment Detail
   const handleAppointmentClick = async (appointmentId) => {
-    console.log(appointmentId, "id chi tiet");
     try {
       const appointmentDetail = await getAppointmentById(appointmentId);
       console.log(appointmentDetail.data);
@@ -118,6 +117,37 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
       console.log(error);
     }
   };
+  // doctor confirm appointment
+  const handleConfirmAppointment = async () => {
+    Modal.confirm({
+      title: "Xác nhận lịch hẹn",
+      content: `Bạn xác nhận lịch hẹn này?`,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          if (appointmentDetail) {
+            const updatedAppointment = {
+              id: appointmentDetail.id,
+              customerId: appointmentDetail?.customer?.id,
+              employeeId: appointmentDetail?.employee?.id,
+              status: 1, //Update status to "Xác nhận"
+            };
+            console.log(updatedAppointment)
+            message.success("Chấp nhận lịch hẹn");
+            await updateAppointment(updatedAppointment);
+            // onRefuseAppointment(updatedAppointment);
+            fetchAppointments();
+            setOpenModal(false);
+          }
+        } catch (error) {
+          message.error(
+            "Có lỗi xảy ra khi xác nhận lịch làm việc: " + error.message
+          );
+        }
+      },
+    });
+  }
   // docter refuse appointment
   const handleRefuseAppointment = async () => {
     Modal.confirm({
@@ -128,18 +158,15 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
       onOk: async () => {
         try {
           if (appointmentDetail) {
-            const symptomIds = appointmentDetail.symptoms.map(symptom => symptom.id);
             const updatedAppointment = {
               id: appointmentDetail.id,
-              date: appointmentDetail.date,
-              time: appointmentDetail.time,
-              price: appointmentDetail.price,
-              note: appointmentDetail.note,
+              customerId: appointmentDetail?.customer?.id,
+              employeeId: appointmentDetail?.employee?.id,
               status: 3, //Update status to "Từ chối"
-              symptoms: symptomIds,
             };
-            await updateAppointment(updatedAppointment);
+            console.log(updatedAppointment)
             message.success("Đã từ chối");
+            await updateAppointment(updatedAppointment);
             onRefuseAppointment(updatedAppointment);
             fetchAppointments();
             setOpenModal(false);
@@ -237,7 +264,11 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
         footer={[
           userRole === 3 && appointmentDetail?.status === 0 && (
             <>
-              <Button key="confirm" type="primary">
+              <Button 
+                key="confirm" 
+                type="primary"
+                onClick={() => handleConfirmAppointment(appointmentDetail)}
+                >
                 Xác nhận
               </Button>
               <Button
