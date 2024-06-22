@@ -141,11 +141,6 @@ const Order = () => {
       );
       const serviceId = serviceItem?.id;
 
-      if (!serviceId) {
-        console.error("No valid service item found in cartItems.");
-        return;
-      }
-
       let products = items.cartItems
       .filter(item => item.type == "device")
       .map(item => ({ id: item.id, quantity: item.quantity }));
@@ -207,9 +202,6 @@ const Order = () => {
       }
     }
   };
-  const getUserBalance = async () =>{
-    console.log(userBalance)
-  }
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
