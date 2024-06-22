@@ -68,7 +68,7 @@ export const  defaultLayoutRoutes = [
     {path: "/all-doctor", component: AllDoctor, role: [0] },
     {path: "/doctor-detail/:id", component: DoctorDetail, role: [0] },
     {path: "/community", component: Community,role: [0] },
-    {path: "/booking-appointment", component: BookingAppointment, role: [2]},
+    {path: "/booking-appointment", component: BookingAppointment, role: [1, 2, 3]},
     {path: "/booking-payment", component: AppointmentPayment, role: [2]},
     {path: "/add-coin", component: AddCoin, role: [2]},
     {path: "/cart", component: Cart, role: [0]},

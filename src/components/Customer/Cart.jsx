@@ -7,8 +7,10 @@ import {
   Flex,
   Input,
   InputNumber,
+  Modal,
   Row,
   Typography,
+  message,
 } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
@@ -23,15 +25,17 @@ import {
   setLocalToCart,
 } from "../../store/cartSlice";
 import { ShoppingFilled } from "@ant-design/icons";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Empty from "../../assets/icon/empty.svg"
+import LoginForm from "../../models/LoginForm";
 
 const Cart = () => {
+  const [openLoginForm, setOpenLoginForm] = useState(false)
   const items = useSelector((state) => state?.cart);
   const groupCode = useSelector((state) => state?.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cartItems"))
     console.log(cart)
@@ -163,7 +167,14 @@ const Cart = () => {
       ),
     },
   ];
-
+  const handleOrder = () => {
+    if(!userRole) {
+      message.error("Vui lòng đăng nhập để đặt hàng")
+      setOpenLoginForm(true);
+    }else{
+      navigate(`/order`)
+    }
+  }
   const handleRemoveFromCart = (cartItem) => {
     dispatch(removeItemFromCart(cartItem));
   };
@@ -198,7 +209,9 @@ const Cart = () => {
       <Typography.Link onClick={() => navigate(`/store`)}>Ấn vào đây để khám phá các sản phẩm của BHEP</Typography.Link>
     </div>
   ); 
-
+  const closeLoginModal = () => {
+    setOpenLoginForm(false);
+  };
   return (
     <div className="cart-container">
       <Flex className="search-bar" align="center" justify="center" gap={30}>
@@ -254,10 +267,18 @@ const Cart = () => {
 
           <Row className="cart-footer-btn">
             <Button onClick={() => navigate(`/store`)}>Mua thêm</Button>
-            <Button onClick={() => navigate(`/order`)}>Đặt hàng</Button>
+            <Button onClick={handleOrder}>Đặt hàng</Button>
           </Row>
         </Row>
       </div>
+      <Modal
+        title="Đăng nhập"
+        open={openLoginForm}
+        onCancel={closeLoginModal}
+        footer={null}
+      >
+        <LoginForm closeForm={closeLoginModal} />
+      </Modal>
     </div>
   );
 };

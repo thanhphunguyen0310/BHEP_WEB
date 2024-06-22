@@ -9,6 +9,7 @@ import {
   Rate,
   Row,
   Select,
+  Spin,
   Typography,
   message,
 } from "antd";
@@ -35,7 +36,6 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   const items = useSelector((state) => state?.cart);
-  console.log(items);
   useEffect(() => {
     fetchProduct();
   }, [id, type]);
@@ -153,7 +153,9 @@ const ProductDetail = () => {
   };
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div>
+      <Spin />
+      </div>;
   }
   //Device Component
   const Device = ({ product }) => {

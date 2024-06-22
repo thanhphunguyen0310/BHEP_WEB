@@ -1,4 +1,4 @@
-import { Menu } from "antd";
+import { Menu, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +12,10 @@ const Profile = () => {
     navigate(`/`)
     dispatch(logout());
   };
+
+  const handleMessage = () =>{
+    message.loading("Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!")
+  }
 
   return (
     <Menu>
@@ -27,7 +31,7 @@ const Profile = () => {
       )}
       {userRole === 2 && (
         <Menu.Item key="add-coin">
-          <Link to="/add-coin">Nạp coin</Link>
+          <Link to="/add-coin">Nạp xu</Link>
         </Menu.Item>
       )}
       {userRole === 2 && (
@@ -35,11 +39,13 @@ const Profile = () => {
           <Link to="/list-appointment">Lịch hẹn</Link>
         </Menu.Item>
       )}
-      <Menu.Item key="profile">
-        <Link to="/profile">Hồ sơ</Link>
+      <Menu.Item key="profile" onClick={handleMessage}>
+        {/* <Link to="/profile">Hồ sơ</Link> */}
+        Hồ sơ 
       </Menu.Item>
-      <Menu.Item key="setting">
-        <Link to="/settings">Cài đặt</Link>
+      <Menu.Item key="setting" onClick={handleMessage}>
+        {/* <Link to="/settings">Cài đặt</Link> */}
+        Cài đặt 
       </Menu.Item>
       <Menu.Item onClick={handleLogout} key="logout">
         Đăng xuất

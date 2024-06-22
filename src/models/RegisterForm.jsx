@@ -52,6 +52,7 @@ const RegistForm = ({ closeForm, openLoginForm }) => {
       message.success("Đăng ký thành công!");
       // Đóng form đăng ký sau khi đăng ký thành công
       handleOk();
+      openLoginForm();
     } catch (error) {
       message.error("Đăng ký thất bại. Vui lòng thử lại sau!");
       console.error("Đăng ký thất bại:", error);

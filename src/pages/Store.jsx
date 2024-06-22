@@ -9,7 +9,7 @@ import {
   Card,
   Button,
   Badge,
-  message,
+  Spin,
 } from "antd";
 import { ShoppingFilled, ShoppingCartOutlined } from "@ant-design/icons";
 import category from "../assets/icon/category.svg";
@@ -22,7 +22,8 @@ import { useNavigate } from "react-router-dom";
 import { setProducts } from "../store/productSlice";
 import Meta from "antd/es/card/Meta";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, getTotal, setLocalToCart } from "../store/cartSlice";
+import { getTotal, setLocalToCart } from "../store/cartSlice";
+import Detail from "../assets/icon/details.svg"
 
 const Store = () => {
   const [product, setProduct] = useState([]);
@@ -30,12 +31,14 @@ const Store = () => {
   const [service, setService] = useState([]);
   const [topRatedItems, setTopRatedItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const items = useSelector((state) => state?.cart);
-  console.log(items)
+
   const fetchAllData = async () => {
     try {
+      setLoading(true);
       const [deviceRes, serviceRes] = await Promise.all([
         getDevice(),
         getService(),
@@ -77,11 +80,12 @@ const Store = () => {
       setTopRatedItems(topItems);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }finally {
+      setLoading(false); 
     }
   };
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cartItems"))
-    console.log(cart)
     dispatch(setLocalToCart(cart));
     dispatch(getTotal());
   }, []);
@@ -287,7 +291,10 @@ const Store = () => {
           }}
         >
           <Typography.Title level={6}>SẢN PHẨM PHỔ BIẾN</Typography.Title>
-          <Carousel
+          {loading ? (
+            <Spin />
+          ) : (
+            <Carousel
             className="carousel"
             additionalTransfrom={0}
             autoPlaySpeed={3000}
@@ -330,26 +337,35 @@ const Store = () => {
                       style={{ height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={item.image}
-                      onClick={() => handleProductClick(item)}
+                      loading="lazy"
                     />
                   }
                 >
                   <Meta title={item.name} />
-                  <p style={{ padding: "10px 0px" }} className="price">
+                  <p style={{ padding: "10px 0px", color:"#3058A6", fontWeight:"500 " }} className="price">
                     {formatPrice(item.price)}
                   </p>
                   <Button
-                    style={{ fontWeight: "600" }}
+                    style={{ fontWeight: "600", width:"180px" }}
                     size="large"
                     type="primary"
-                    icon={<ShoppingCartOutlined />}
+                    icon={
+                      <img
+                        src={Detail}
+                        alt="Details"
+                        style={{ width: "16px", height: "16px" }}
+                      />
+                    }
+                    onClick={() => handleProductClick(item)}
                   >
-                    Thêm vào giỏ hàng
+                    Xem chi tiết
                   </Button>
                 </Card>
               </div>
             ))}
           </Carousel>
+          )}
+
         </Row>
       </Row>
       {/* all product */}
@@ -371,9 +387,12 @@ const Store = () => {
           }}
         >
           <Typography.Title level={6}>TẤT CẢ SẢN PHẨM</Typography.Title>
-          <div className="product-card-list">
+          {loading ? (
+            <Spin />
+          ) : (
+            <div className="product-card-list">
             {filterProductsByCategory().map((product) => (
-              <div key={product.id}>
+              <div key={product.id} style={{display:"flex", justifyContent:"center"}}>
                 <Card
                   hoverable
                   style={{
@@ -387,24 +406,31 @@ const Store = () => {
                       style={{ height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={product.image}
-                      onClick={() => handleProductClick(product)}
                     />
                   }
                 >
                   <Meta title={product.name} />
                   <p>{formatDescription(product.description, product.type)}</p>
                   <Button
-                    style={{ fontWeight: "600" }}
+                    style={{ fontWeight: "600", width:"180px" }}
                     size="large"
                     type="primary"
-                    icon={<ShoppingCartOutlined />}
+                    icon={
+                      <img
+                        src={Detail}
+                        alt="Details"
+                        style={{ width: "16px", height: "16px" }}
+                      />
+                    }
+                    onClick={() => handleProductClick(product)}
                   >
-                    Thêm vào giỏ hàng
+                    Xem chi tiết
                   </Button>
                 </Card>
               </div>
             ))}
           </div>
+          )}
         </Row>
       </Row>
     </div>

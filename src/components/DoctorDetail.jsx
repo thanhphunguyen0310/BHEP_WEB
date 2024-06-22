@@ -7,6 +7,7 @@ import {
   Image,
   List,
   Menu,
+  Modal,
   Row,
   Typography,
   message,
@@ -27,6 +28,8 @@ import briefcase from "../assets/icon/briefcase.svg";
 import star from "../assets/icon/star.svg";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import LoginForm from "../models/LoginForm";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -46,58 +49,58 @@ const formatPrice = (price) => {
     currency: "VND",
   }).format(price);
 };
+const data = [
+  "(1986 - 1994) Bác sĩ nội khoa truyền nhiễm,Bệnh viện Nhân Dân Gia Định",
+  "(1994 - 1997) Phó trưởng phòng Kế hoach tổng hợp, Bác sĩ tim mach, Bệnh viện Nhân Dân Gia Định",
+  "(1997 - 1999) Phó trưởng khoa Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
+  "(2004 - 2007) Phó phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
+  "(2007 - 2008) Trưởng phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
+  "(2008 - 2010) Phó giám đốc bệnh viện, Bệnh viện Nhân Dân Gia Định",
+  "(2010 - 2016) Giám đốc Trung tâm Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
+  "(2016 - 2018) Tiến sĩ Nội xương khớp, Bệnh viện Nhân Dân Gia Định",
+  "(2020 - Hiện nay) Giám đốc Phòng khám, Tổ hợp y tế Mediplus",
+];
+const getSpecialistState = (specialistId) => {
+  switch (specialistId) {
+    case 1:
+      return "Nội khoa";
+    case 2:
+      return "Răng hàm mặt";
+    case 3:
+      return "Da liễu";
+    case 4:
+      return "Tai mũi họng";
+    case 5:
+      return "Hô hấp";
+    case 7:
+      return "Tim mạch";
+    case 8:
+      return "Xương khớp";
+    case 9:
+      return "Phụ sản";
+    case 10:
+      return "Thần kinh";
+    case 11:
+      return "Dinh dưỡng";
+    case 12:
+      return "Ký sinh trùng";
+    default:
+      return "Không xác định";
+  }
+};
+const getMajorState = (majorId) => {
+  switch (majorId) {
+    case 1:
+      return "BS ngoại khoa";
+    case 2:
+      return "BS nội khoa";
+    default:
+      return " ";
+  }
+};
 const DoctorDetail = () => {
   const navigate = useNavigate();
-  const data = [
-    "(1986 - 1994) Bác sĩ nội khoa truyền nhiễm,Bệnh viện Nhân Dân Gia Định",
-    "(1994 - 1997) Phó trưởng phòng Kế hoach tổng hợp, Bác sĩ tim mach, Bệnh viện Nhân Dân Gia Định",
-    "(1997 - 1999) Phó trưởng khoa Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
-    "(2004 - 2007) Phó phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
-    "(2007 - 2008) Trưởng phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
-    "(2008 - 2010) Phó giám đốc bệnh viện, Bệnh viện Nhân Dân Gia Định",
-    "(2010 - 2016) Giám đốc Trung tâm Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
-    "(2016 - 2018) Tiến sĩ Nội xương khớp, Bệnh viện Nhân Dân Gia Định",
-    "(2020 - Hiện nay) Giám đốc Phòng khám, Tổ hợp y tế Mediplus",
-  ];
-  const getSpecialistState = (specialistId) => {
-    switch (specialistId) {
-      case 1:
-        return "Nội khoa";
-      case 2:
-        return "Răng hàm mặt";
-      case 3:
-        return "Da liễu";
-      case 4:
-        return "Tai mũi họng";
-      case 5:
-        return "Hô hấp";
-      case 7:
-        return "Tim mạch";
-      case 8:
-        return "Xương khớp";
-      case 9:
-        return "Phụ sản";
-      case 10:
-        return "Thần kinh";
-      case 11:
-        return "Dinh dưỡng";
-      case 12:
-        return "Ký sinh trùng";
-      default:
-        return "Không xác định";
-    }
-  };
-  const getMajorState = (majorId) => {
-    switch (majorId) {
-      case 1:
-        return "BS ngoại khoa";
-      case 2:
-        return "BS nội khoa";
-      default:
-        return " ";
-    }
-  };
-
+  const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
   const { id } = useParams();
   //set timezone VietNam
   const today = dayjs().tz(vietnamTimezone);
@@ -105,6 +108,7 @@ const DoctorDetail = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [doctorDetail, setDoctorDetail] = useState("");
+  const [openLoginForm, setOpenLoginForm] = useState(false)
 
   const handleDateChange = async (date) => {
     const localDate = date.tz(vietnamTimezone);
@@ -137,7 +141,10 @@ const DoctorDetail = () => {
     handleDateChange(today);
   }, [id]);
   const handleBookingAppointment = () => {
-    if (selectedDate && selectedTimeSlot) {
+    if(!userRole) {
+      message.error("Vui lòng đăng nhập để đặt lịch hẹn!")
+      setOpenLoginForm(true);
+    } else if (selectedDate && selectedTimeSlot) {
       const schedule = {
         date: selectedDate.format(dateFormat),
         time: selectedTimeSlot
@@ -153,7 +160,9 @@ const DoctorDetail = () => {
       message.error('Bạn chưa chọn lịch hẹn');
     }
   };
-  
+  const closeLoginModal = () => {
+    setOpenLoginForm(false);
+  };
   return (
     <>
       {/* banner doctor */}
@@ -365,7 +374,7 @@ const DoctorDetail = () => {
                             justify={"center"}
                           >
                             <Col span={7}>{formatDay(date)}</Col>
-                            <Col span={8}>{date.format("DD-MM-YYYY")}</Col>
+                            <Col span={10}>{date.format("DD-MM-YYYY")}</Col>
                           </Row>
                         </Menu.Item>
                       );
@@ -488,6 +497,14 @@ const DoctorDetail = () => {
           </Row>
         </Row>
       </Row>
+      <Modal
+        title="Đăng nhập"
+        open={openLoginForm}
+        onCancel={closeLoginModal}
+        footer={null}
+      >
+        <LoginForm closeForm={closeLoginModal} />
+      </Modal>
     </>
   );
 };

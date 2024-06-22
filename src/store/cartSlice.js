@@ -13,7 +13,6 @@ const cartSlice = createSlice({
   reducers: {
     setLocalToCart: (state, action) => {
       state.cartItems = action.payload == null ? [] : action.payload
-      console.log(action.payload)
     },
     addToCart: (state, action) => {
       const itemIndex = state.cartItems.findIndex(

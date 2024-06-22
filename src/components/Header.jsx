@@ -35,6 +35,9 @@ const NavBar = () => {
       message.error("Failed to load avatar image");
     }
   };
+  const handleMessage = () => {
+    message.loading("Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!",[2])
+  }
   return (
     <div className="header-container">
       <div className="header-content">
@@ -44,10 +47,10 @@ const NavBar = () => {
         </Link>
 
         <Menu className="menu-items" mode="horizontal">
-          <Menu.Item className="item">
+          <Menu.Item className="item" onClick={handleMessage}>
             Chuyên mục <CaretDownOutlined />
           </Menu.Item>
-          <Menu.Item className="item">
+          <Menu.Item className="item" onClick={handleMessage}>
             Công cụ <CaretDownOutlined />
           </Menu.Item>
           <Menu.Item className="item">
@@ -55,7 +58,7 @@ const NavBar = () => {
               Cửa hàng <CaretDownOutlined />
             </Link>
           </Menu.Item>
-          <Menu.Item className="item">
+          <Menu.Item className="item" onClick={handleMessage}>
             Cộng đồng <CaretDownOutlined />
           </Menu.Item>
           <Menu.Item>

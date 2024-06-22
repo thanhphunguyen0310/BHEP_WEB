@@ -19,16 +19,19 @@ import { ShoppingFilled } from "@ant-design/icons";
 import "../styles/Order.scss";
 import { FaCoins } from "react-icons/fa";
 import { createOrder } from "../configs/api/orderApi";
+import { getUserDetail } from "../configs/api/userApi";
 import { useState } from "react";
 import { clearCart } from "../store/cartSlice";
 
 const Order = () => {
   const items = useSelector((state) => state?.cart);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
-  console.log(items);
+  const userBalance = useSelector((state) => state.auth?.user?.data?.user?.balance);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [balance, setBalance] = useState();
+
   const columns = [
     {
       title: <Typography.Title level={4}>Sản phẩm</Typography.Title>,
@@ -168,39 +171,45 @@ const Order = () => {
         products: products.length > 0 ? products : null,
       };
       try {
-        Modal.confirm({
-          title: 'Xác nhận đặt hàng',
-          content: `Hệ thống sẽ trừ ${formatPrice(items.cartTotalAmount)} xu BHEP trong ví của bạn. Bạn xác nhận chứ?`,
-          okText: 'Xác nhận',
-          cancelText: 'Hủy',
-          onOk: async () => {
-            const order = await createOrder(
-              dataOrder.userId,
-              dataOrder.amount,
-              dataOrder.isMinus,
-              dataOrder.title,
-              dataOrder.description,
-              dataOrder.isGenerateCode,
-              dataOrder.code,
-              dataOrder.vouchers,
-              dataOrder.serviceId,
-              dataOrder.products
-            );
-            console.log(order, "order response");
-            if (order.status === 200) {
-              dispatch(clearCart());
-              message.success('Đơn hàng của bạn đã được đặt thành công.');
-            } else {
-              message.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
-            }
-          },
-        });
+        if(userBalance <=0 || userBalance < dataOrder.amount){
+          message.warning("Số dư của bạn không đủ. Vui lòng nạp thêm xu!")
+        } else {
+          Modal.confirm({
+            title: 'Xác nhận đặt hàng',
+            content: `Hệ thống sẽ trừ ${formatPrice(items.cartTotalAmount)} xu BHEP trong ví của bạn. Bạn xác nhận chứ?`,
+            okText: 'Xác nhận',
+            cancelText: 'Hủy',
+            onOk: async () => {
+              const order = await createOrder(
+                dataOrder.userId,
+                dataOrder.amount,
+                dataOrder.isMinus,
+                dataOrder.title,
+                dataOrder.description,
+                dataOrder.isGenerateCode,
+                dataOrder.code,
+                dataOrder.vouchers,
+                dataOrder.serviceId,
+                dataOrder.products
+              );
+              console.log(order, "order response");
+              if (order.status === 200) {
+                dispatch(clearCart());
+                message.success('Đơn hàng của bạn đã được đặt thành công.');
+              } else {
+                message.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+              }
+            },
+          });
+        }
       } catch (error) {
         console.log("Error: ", error);
       }
     }
   };
-
+  const getUserBalance = async () =>{
+    console.log(userBalance)
+  }
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -335,7 +344,10 @@ const Order = () => {
             </Col>
           </Row>
           <Row className="order-btn">
-            <Button className="custom-button" onClick={makeOrder} disabled={!selectedPaymentMethod}>
+            <Button 
+              className="custom-button" 
+              onClick={makeOrder} 
+              disabled={!selectedPaymentMethod}>
               Đặt hàng
             </Button>
           </Row>

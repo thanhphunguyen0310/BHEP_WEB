@@ -6,16 +6,19 @@ import DoctorCard from "../components/DoctorCard";
 import { responsiveProductCart } from "../data";
 import CommunityBanner from "../assets/img/community-banner.png";
 import LOGO from "../assets/img/LOGO.png";
-import { Button, Card } from "antd";
+import { Button, Card, Spin, message } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {getHighRateDoctor} from "../configs/api/doctorApi"
+import { getHighRateDoctor } from "../configs/api/doctorApi";
 import { getDevice, getService } from "../configs/api/productApi";
 import Meta from "antd/es/card/Meta";
-import Detail from "../assets/icon/details.svg"
+import Detail from "../assets/icon/details.svg";
+
 const Homepage = () => {
   const [topRatedItems, setTopRatedItems] = useState([]);
   const [topRatedDoctors, setTopRatedDoctors] = useState([]);
+  const [isProductLoading, setIsProductLoading] = useState(true)
+  const [isDoctorLoading, setIsDoctorLoading] = useState(true)
   const navigate = useNavigate();
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
@@ -47,10 +50,11 @@ const Homepage = () => {
   };
   const fetchAllData = async () => {
     try {
+      setIsProductLoading(true);
       const [deviceRes, serviceRes] = await Promise.all([
         getDevice(),
         getService(),
-      ]); 
+      ]);
 
       // Process devices
       const devices = deviceRes.items.map((item) => ({
@@ -80,29 +84,20 @@ const Homepage = () => {
       setTopRatedItems(topItems);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsProductLoading(false);
     }
   };
-  // const handleAddToCart = () => {
-  //   const item = {
-  //            id: product.id,
-  //            name: product.name,
-  //            image: product.image,
-  //            price: product.price,
-  //            duration: product.duration,
-  //            type: type,
-  //            quantity: quantity, 
-  //   }
-  //   dispatch(
-  //       addToCart(item)
-  //     );
-  //   navigate("/cart");
-  // };
+
   const fetchTopRatedDoctors = async () => {
     try {
+      setIsDoctorLoading(true);
       const doctors = await getHighRateDoctor();
       setTopRatedDoctors(doctors);
     } catch (error) {
       console.error("Error fetching top rated doctors:", error);
+    }finally {
+      setIsDoctorLoading(false);
     }
   };
   const handleProductClick = (product) => {
@@ -125,7 +120,10 @@ const Homepage = () => {
       <div className="service">
         <div className="service-content">
           <h1>Sản phẩm nổi bật</h1>
-          <Carousel
+          {isProductLoading ? (
+            <Spin />
+          ) : (
+            <Carousel
             className="carousel"
             additionalTransfrom={0}
             autoPlaySpeed={3000}
@@ -165,7 +163,7 @@ const Homepage = () => {
                   }}
                   cover={
                     <img
-                    style={{height: "108px", objectFit: "cover" }}
+                      style={{ height: "108px", objectFit: "cover" }}
                       alt="example"
                       src={item.image}
                       loading="lazy"
@@ -173,15 +171,28 @@ const Homepage = () => {
                   }
                 >
                   <Meta title={item.name} />
-                  <p style={{ padding: "10px 0px", color:"#3058A6", fontWeight:"500" }} className="price">
+                  <p
+                    style={{
+                      padding: "10px 0px",
+                      color: "#3058A6",
+                      fontWeight: "500",
+                    }}
+                    className="price"
+                  >
                     {formatPrice(item.price)}
                   </p>
                   <Button
-                    style={{ fontWeight: "600"}}
+                    style={{ fontWeight: "600" }}
                     size="large"
                     type="primary"
-                    icon={<img src={Detail} alt="Details" style={{width:"16px", height:"16px"}}/>}  
-                    onClick={() => handleProductClick(item)}          
+                    icon={
+                      <img
+                        src={Detail}
+                        alt="Details"
+                        style={{ width: "16px", height: "16px" }}
+                      />
+                    }
+                    onClick={() => handleProductClick(item)}
                   >
                     Xem chi tiết
                   </Button>
@@ -189,13 +200,17 @@ const Homepage = () => {
               </div>
             ))}
           </Carousel>
+          )}
         </div>
       </div>
 
       <div className="doctor">
         <h1>Bác sĩ hàng đầu</h1>
         <div className="doctor-content">
-          <div className="doctor-items">
+        {isDoctorLoading ? (
+            <Spin />
+          ) : (
+            <div className="doctor-items" style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
             {topRatedDoctors.map((doctor) => (
               <Link
                 to={`/doctor-detail/${doctor.id}`}
@@ -215,6 +230,7 @@ const Homepage = () => {
               </Link>
             ))}
           </div>
+          )}
         </div>
       </div>
 
@@ -227,26 +243,34 @@ const Homepage = () => {
           <div className="content">
             <div className="avatar">
               <img src={LOGO} />
-            </div>          
+            </div>
           </div>
           <div className="description">
-              <h3>BHEP - SỨC KHỎE TỐT HƠN</h3>
-              <section className="data">
-                <div className="item">
-                  <p>15</p>
-                  <h4>Chủ đề</h4>
-                </div>
-                <div className="item">
-                  <p>4.5k</p>
-                  <h4>Bài viết</h4>
-                </div>
-                <div className="item">
-                  <p>50k</p>
-                  <h4>Thành viên</h4>
-                </div>
-              </section>
-            </div>
-            <Button>Tham gia cộng đồng</Button>
+            <h3>BHEP - SỨC KHỎE TỐT HƠN</h3>
+            <section className="data">
+              <div className="item">
+                <p>15</p>
+                <h4>Chủ đề</h4>
+              </div>
+              <div className="item">
+                <p>4.5k</p>
+                <h4>Bài viết</h4>
+              </div>
+              <div className="item">
+                <p>50k</p>
+                <h4>Thành viên</h4>
+              </div>
+            </section>
+          </div>
+          <Button
+            onClick={() =>
+              message.loading(
+                "Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!"
+              )
+            }
+          >
+            Tham gia cộng đồng
+          </Button>
         </div>
       </div>
     </>
@@ -254,3 +278,19 @@ const Homepage = () => {
 };
 
 export default Homepage;
+
+  // const handleAddToCart = () => {
+  //   const item = {
+  //            id: product.id,
+  //            name: product.name,
+  //            image: product.image,
+  //            price: product.price,
+  //            duration: product.duration,
+  //            type: type,
+  //            quantity: quantity,
+  //   }
+  //   dispatch(
+  //       addToCart(item)
+  //     );
+  //   navigate("/cart");
+  // };

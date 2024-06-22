@@ -40,11 +40,9 @@
     justify-content: center;
     .doctor-items {
       padding: 20px 0px;
-      display: flex;
       flex-wrap: wrap;
-      width: 65%; 
       gap: 20px;
-      justify-content: space-between;
+      width: 75%;
     }
   }
 }
