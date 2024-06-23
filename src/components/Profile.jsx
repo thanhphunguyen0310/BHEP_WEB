@@ -9,13 +9,15 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate(`/`)
+    navigate(`/`);
     dispatch(logout());
   };
 
-  const handleMessage = () =>{
-    message.loading("Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!")
-  }
+  const handleMessage = () => {
+    message.loading(
+      "Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!"
+    );
+  };
 
   return (
     <Menu>
@@ -29,25 +31,30 @@ const Profile = () => {
           <Link to="/manage">Quản lí</Link>
         </Menu.Item>
       )}
-      {userRole === 2 && (
-        <Menu.Item key="add-coin">
-          <Link to="/add-coin">Nạp xu</Link>
-        </Menu.Item>
-      )}
+      <Menu.Item key="profile">
+        <Link to="/profile">Thông tin cá nhân</Link>
+        {/* Hồ sơ  */}
+      </Menu.Item>
       {userRole === 2 && (
         <Menu.Item key="manage">
           <Link to="/list-appointment">Lịch hẹn</Link>
         </Menu.Item>
       )}
-      <Menu.Item key="profile" 
-      // onClick={handleMessage}
-      >
-        <Link to="/profile">Hồ sơ</Link>
-        {/* Hồ sơ  */}
-      </Menu.Item>
+      {(userRole === 1 || userRole === 2 || userRole === 3) && (
+        <Menu.Item key="health-tracking">
+          <Link to="/health-tracking">
+          Hồ sơ sức khỏe
+          </Link>
+        </Menu.Item>
+      )}
+      {(userRole === 2 || userRole === 3) && (
+        <Menu.Item key="add-coin">
+          <Link to="/add-coin">Nạp xu</Link>
+        </Menu.Item>
+      )}
       <Menu.Item key="setting" onClick={handleMessage}>
         {/* <Link to="/settings">Cài đặt</Link> */}
-        Cài đặt 
+        Cài đặt
       </Menu.Item>
       <Menu.Item onClick={handleLogout} key="logout">
         Đăng xuất

@@ -451,7 +451,7 @@ const DoctorDetail = () => {
         </Row>
       </Row>
       {/* doctor experience */}
-      <Row
+      {/* <Row
         className="doctor-experience-container"
         justify={"center"}
         style={{ width: "100vw", padding: "24px 0px" }}
@@ -496,7 +496,7 @@ const DoctorDetail = () => {
             />
           </Row>
         </Row>
-      </Row>
+      </Row> */}
       <Modal
         title="Đăng nhập"
         open={openLoginForm}

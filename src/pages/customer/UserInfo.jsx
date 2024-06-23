@@ -1,8 +1,19 @@
 import { useSelector } from "react-redux";
 import "../../styles/UserInfo.scss";
 import { useEffect, useState } from "react";
-import { getUserDetail } from "./../../configs/api/userApi";
-import { Avatar, Button, Divider, Input, Radio, Row, Typography } from "antd";
+import { getUserDetail, updateUserDetail } from "./../../configs/api/userApi";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Input,
+  Radio,
+  Row,
+  Typography,
+  Upload,
+  message,
+} from "antd";
+import { AiFillEdit } from "react-icons/ai";
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
@@ -18,7 +29,6 @@ const UserInfo = () => {
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
-      console.log(res.data);
       setUser(res.data);
       setFormData({
         fullName: res.data.fullName,
@@ -32,6 +42,7 @@ const UserInfo = () => {
     }
   };
   useEffect(() => {
+    console.log(formData, "form data");
     userDetail();
   }, [userId]);
 
@@ -42,9 +53,24 @@ const UserInfo = () => {
   const handleGenderChange = (e) => {
     setFormData((prevData) => ({ ...prevData, gender: e.target.value }));
   };
-  const handleSave = () => {
-    // Add logic to save updated user info
-    setEditMode(false);
+  const handleSave = async () => {
+    try {
+      const formDataUpdate = new FormData();
+      formDataUpdate.append("Id", userId);
+      formDataUpdate.append("FullName", formData.fullName);
+      formDataUpdate.append("Email", formData.email);
+      formDataUpdate.append("PhoneNumber", formData.phoneNumber);
+      formDataUpdate.append("Gender", formData.gender);
+      // formDataUpdate.append("Avatar", user.avatar);
+
+      console.log(formDataUpdate, "form Update");
+      await updateUserDetail(userId, formDataUpdate);
+      message.success("Cập nhật thông tin thành công!");
+      userDetail();
+      setEditMode(false);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   const formatBalance = (balance) => {
@@ -56,12 +82,26 @@ const UserInfo = () => {
         <Row justify={"space-between"} align={"middle"} className="header">
           <Typography.Title level={2}>THÔNG TIN CÁ NHÂN</Typography.Title>
           <Typography.Text onClick={() => setEditMode(!editMode)}>
-            {editMode ? "" : "Chỉnh sửa"}
+            {editMode ? "" : <Row align={"middle"}>Chỉnh sửa <AiFillEdit style={{width:"20px", height:"20px"}} color="#71a9fe"/></Row>}
           </Typography.Text>
         </Row>
-        <Row justify={"center"} className="user-avatar">
-          <Avatar src={user?.avatar} />
-        </Row>
+        {editMode ? (
+          <Row justify={"center"}>
+            <Upload
+              name="avatar"
+              listType="picture-circle"
+              className="avatar-uploader"
+              beforeUpload={() => false}
+            >
+              Upload
+            </Upload>
+          </Row>
+        ) : (
+          <Row justify={"center"} className="user-avatar">
+            <Avatar src={user?.avatar} />
+          </Row>
+        )}
+
         <Row className="user-info">
           <Typography.Text>Họ và Tên:</Typography.Text>
           {editMode ? (
@@ -125,13 +165,20 @@ const UserInfo = () => {
         <Divider />
         <Row className="user-info">
           <Typography.Text>BHEP xu:</Typography.Text>
-          <Typography.Text style={{color:"#fb8500"}}>{formatBalance(user?.balance)}</Typography.Text>
+          <Typography.Text style={{ color: "#fb8500" }}>
+            {formatBalance(user?.balance)}
+          </Typography.Text>
         </Row>
-        {editMode ? 
-      <Row className="profile-button">
-        <Button onClick={() => setEditMode(false)}>Hủy</Button>
-        <Button type="primary">Lưu thay đổi</Button>
-      </Row> : <> </>}
+        {editMode ? (
+          <Row className="profile-button">
+            <Button onClick={() => setEditMode(false)}>Hủy</Button>
+            <Button type="primary" onClick={handleSave}>
+              Lưu thay đổi
+            </Button>
+          </Row>
+        ) : (
+          <> </>
+        )}
       </div>
     </div>
   );

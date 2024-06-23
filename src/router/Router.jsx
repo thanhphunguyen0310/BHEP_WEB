@@ -23,6 +23,7 @@ import ErrorPage from './../pages/Error';
 import FailPayment from './../pages/FailPayment';
 import SuccessPayment from './../pages/SuccessPayment';
 import UserInfo from '../pages/customer/UserInfo';
+import UserHealthTracking from '../pages/customer/UserHealthTracking'
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -71,7 +72,7 @@ export const  defaultLayoutRoutes = [
     {path: "/community", component: Community,role: [0] },
     {path: "/booking-appointment", component: BookingAppointment, role: [1, 2, 3]},
     {path: "/booking-payment", component: AppointmentPayment, role: [2]},
-    {path: "/add-coin", component: AddCoin, role: [2]},
+    {path: "/add-coin", component: AddCoin, role: [2, 3]},
     {path: "/cart", component: Cart, role: [0]},
     {path: "/order", component: Order, role: [2, 3]},
     {path: "/doctor-chat", component: DoctorChat, layout: DoctorChatLayout, role: [3]},
@@ -84,6 +85,7 @@ export const  defaultLayoutRoutes = [
     {path: "/error", component: ErrorPage, role: [0]},
     {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
     {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
-    {path: "/profile", component: UserInfo, role: [1, 2, 3]}
+    {path: "/profile", component: UserInfo, role: [1, 2, 3]},
+    {path: "/health-tracking", component: UserHealthTracking,}
 ]
 
