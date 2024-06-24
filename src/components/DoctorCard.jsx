@@ -27,10 +27,13 @@ const DoctorCard = (props) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
+                justifyContent:"flex-start"
               }}
             >
-              <p style={{ margin: 0 }}>{props.description}</p>
+              <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
+              <p style={{ margin: 0, fontWeight:400 }}>{props.major}</p>
               <p style={{ margin: 0 }}>{props.fullName}</p>
+              </div>
             </div>
           }
           description={

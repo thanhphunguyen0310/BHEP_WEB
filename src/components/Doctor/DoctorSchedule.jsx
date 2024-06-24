@@ -99,8 +99,7 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
     const fetchSchedules = async () => {
       try {
         const fetchedSchedules = await getDoctorSchedule(employeeId);
-        console.log(fetchedSchedules)
-        if (fetchedSchedules.length === 0) {
+        if (!fetchedSchedules.isSuccess && fetchedSchedules.statusCode === 404) {
           message.info("Bạn chưa tạo lịch làm việc");
           setFetchedSchedules([]);
           setSchedules({});
@@ -117,12 +116,11 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
           acc[dateStr] = timeRanges;
           return acc;
         }, {});
-        console.log(fetchedSchedules)
         setFetchedSchedules(fetchedSchedules)
         setSchedules(formattedSchedules);
         setExistingSchedules(formattedSchedules);
       } catch (error) {
-        message.error("Có lỗi xảy ra khi lấy lịch làm việc: " + error.message);
+        message.error("Có lỗi xảy ra khi lấy lịch làm việc: " + error.statusCode);
       }
     };
 
@@ -168,7 +166,6 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
       },
     ];
     const timeSlot = formattedSchedules[0].time;
-    console.log(timeSlot, "time slot")
     try {
       let response;
       if (existingSchedules[dateStr]) {

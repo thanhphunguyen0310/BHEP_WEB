@@ -34,13 +34,16 @@
   
         .mascot {
           .ant-image-img {
-            width: 350px;
-            height: 350px;
-            background-color: #2caee1;
-            padding: 50px;
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(#5dc9f3, #1286df);
+            padding: 20px;
             border-radius: 50%;
-            animation: mascot-pulse 1s infinite;
           }
+        }
+        .mascot-updating {
+          box-shadow: 0 0 0 0 rgba(44, 174, 225, 0.7);
+          animation: mascot-pulse 1s ease-out infinite;
         }
   
         .text-footer {
@@ -56,13 +59,16 @@
   
   @keyframes mascot-pulse {
     0% {
+      box-shadow: 0 0 0 0 rgba(44, 174, 225, 0.7);
       transform: scale(1);
     }
     50% {
+      box-shadow: 0 0 0 30px rgba(44, 174, 225, 0);
       transform: scale(1.1);
     }
     100% {
-      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(44, 174, 225, 0);
+      transform: scale(1.2);
     }
   }
   

@@ -60,7 +60,6 @@ const Doctors = () => {
 
       const sortedDoctors = doctors.sort((a, b) => b.rate - a.rate);
       const topDoctors = sortedDoctors.slice(0, 8);
-
       setTopDoctors(topDoctors);
       setDisplayedDoctors(topDoctors);
       setLoading(false);
@@ -211,6 +210,7 @@ const Doctors = () => {
                       fullName={doctor.fullName}
                       specialistId={getSpecialistState(doctor.specialistId)}
                       description={doctor.description}
+                      major={doctor.workProfile.major.name}
                       rate={doctor.rate}
                       workPlace={doctor.workProfile.workPlace}
                     />

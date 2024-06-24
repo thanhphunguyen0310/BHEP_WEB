@@ -6,6 +6,7 @@ import {
   Avatar,
   Button,
   Divider,
+  Image,
   Input,
   Radio,
   Row,
@@ -14,6 +15,7 @@ import {
   message,
 } from "antd";
 import { AiFillEdit } from "react-icons/ai";
+import { PlusOutlined } from '@ant-design/icons';
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
@@ -45,7 +47,6 @@ const UserInfo = () => {
     }
   };
   useEffect(() => {
-    console.log(formData, "form data");
     userDetail();
   }, [userId]);
 
@@ -70,8 +71,6 @@ const UserInfo = () => {
       if (avatarFile) {
         formDataUpdate.append('Avatar', avatarFile);
       }
-
-      console.log(formDataUpdate, "form Update");
       await updateUserDetail(userId, formDataUpdate);
       message.success("Cập nhật thông tin thành công!");
       userDetail();
@@ -97,13 +96,39 @@ const UserInfo = () => {
           <Row justify="center">
             <Upload
               name="avatar"
-              listType="picture-circle"
+              listType="picture-card"
               className="avatar-uploader"
               beforeUpload={() => false}
               onChange={handleAvatarChange}
             >
               {formData.avatar ? (
-                <img src={formData.avatar} alt="avatar" style={{ width: '100%' }} />
+                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <Avatar
+                shape="square"
+                  src={formData.avatar}
+                  alt="avatar"
+                  style={{ width: '100%', height:"100%" }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <PlusOutlined />
+                </div>
+              </div>
               ) : (
                 'Upload'
               )}
@@ -111,7 +136,7 @@ const UserInfo = () => {
           </Row>
         ) : (
           <Row justify="center" className="user-avatar">
-            <Avatar src={user?.avatar} />
+            <Avatar shape="square" src={user?.avatar} />
           </Row>
         )}
 

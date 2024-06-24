@@ -30,7 +30,6 @@ const Order = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-  const [balance, setBalance] = useState();
 
   const columns = [
     {
@@ -187,7 +186,6 @@ const Order = () => {
                 dataOrder.serviceId,
                 dataOrder.products
               );
-              console.log(order, "order response");
               if (order.status === 200) {
                 dispatch(clearCart());
                 message.success('Đơn hàng của bạn đã được đặt thành công.');

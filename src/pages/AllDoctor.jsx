@@ -240,7 +240,7 @@ const AllDoctor = () => {
                         }}
                       >
                         <span>
-                          <p>{doctor.description}</p>
+                          <p style={{fontWeight:400}}>{doctor.workProfile.major.name}</p>
                           <p>{doctor.fullName}</p>
                         </span>
                       </div>

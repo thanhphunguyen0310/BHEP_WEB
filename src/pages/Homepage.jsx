@@ -109,7 +109,6 @@ const Homepage = () => {
     try {
       setIsDoctorLoading(true);
       const doctors = await getHighRateDoctor();
-      console.log(doctors,"data")
       setTopRatedDoctors(doctors);
     } catch (error) {
       console.error("Error fetching top rated doctors:", error);
@@ -247,6 +246,7 @@ const Homepage = () => {
                     fullName={doctor.fullName}
                     specialistId={getSpecialistState(doctor.specialistId)}
                     description={doctor.description}
+                    major={doctor.workProfile.major.name}
                     rate={doctor.rate}
                     workPlace={doctor.workProfile.workPlace}
                   />

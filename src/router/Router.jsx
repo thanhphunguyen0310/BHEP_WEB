@@ -86,6 +86,6 @@ export const  defaultLayoutRoutes = [
     {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
     {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
     {path: "/profile", component: UserInfo, role: [1, 2, 3]},
-    {path: "/health-tracking", component: UserHealthTracking,}
+    {path: "/health-tracking", component: UserHealthTracking,role: [1, 2, 3]}
 ]
 

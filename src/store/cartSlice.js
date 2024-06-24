@@ -16,7 +16,7 @@ const cartSlice = createSlice({
     },
     addToCart: (state, action) => {
       const itemIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) => item.id === action.payload.id  && item.type === action.payload.type
       );
       if (itemIndex >= 0) {
         state.cartItems[itemIndex].quantity += action.payload.quantity;

@@ -32,7 +32,6 @@ import LoginForm from "../../models/LoginForm";
 const Cart = () => {
   const [openLoginForm, setOpenLoginForm] = useState(false)
   const items = useSelector((state) => state?.cart);
-  console.log(items.cartItems)
   const groupCode = useSelector((state) => state?.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
