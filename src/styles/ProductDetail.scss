@@ -47,11 +47,22 @@
           .ant-avatar {
             width: 220px;
             height: 220px;
-            // padding: 20px 20px;
-            // border: 1px rgb(183, 212, 253) solid;
             img {
               object-fit: cover;
               object-position: right;
+            }
+          }
+        }
+        .device-img{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .ant-avatar {
+            width: 220px;
+            height: 220px;
+            img {
+              object-fit: cover;
+              object-position: center;
             }
           }
         }
@@ -127,13 +138,13 @@
               font-size: 18px;
             }
             .add-to-cart {
-              border-color: #ed1c1c;
-              background-color: #fbebed;
-              color: #ed1c1c;
+              border-color: #3058A6;
+              background-color: white;
+              color: #3058A6;
             }
   
             .buy-now {
-              background-color: #ed1c1c;
+              background-color: #3058A6;
               color: #ffffff;
             }
           }

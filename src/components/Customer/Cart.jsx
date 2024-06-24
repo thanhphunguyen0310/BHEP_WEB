@@ -32,6 +32,7 @@ import LoginForm from "../../models/LoginForm";
 const Cart = () => {
   const [openLoginForm, setOpenLoginForm] = useState(false)
   const items = useSelector((state) => state?.cart);
+  console.log(items.cartItems)
   const groupCode = useSelector((state) => state?.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ const Cart = () => {
       className: "custom-header",
       key: "image",
       render: (text, record) => {
+        const isDevice = record.type === 'device';
         return text ? (
           <span style={{ display: "flex", alignItems: "center" }}>
             <img
@@ -64,7 +66,7 @@ const Cart = () => {
                 height: "80px",
                 borderRadius: "4px",
                 objectFit: "cover",
-                objectPosition: "right",
+                objectPosition: isDevice ? "center" : "right",
               }}
             />
             <div
@@ -159,7 +161,8 @@ const Cart = () => {
       render: (text, record) => (
         <Space size="middle">
           <MdDelete
-            color="#3058A6"
+            style={{cursor:"pointer"}}
+            color="#ed0505"
             onClick={() => handleRemoveFromCart(record)}
           />
         </Space>

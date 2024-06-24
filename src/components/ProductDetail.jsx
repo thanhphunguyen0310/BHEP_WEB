@@ -348,7 +348,7 @@ const ProductDetail = () => {
             </Row>
           )}
           <Row className="content">
-            <Col span={8} className="product-img">
+            <Col span={8} className={type === "device" ? 'device-img': 'product-img'}>
               <Avatar
                 shape="square"
                 src={product.image}

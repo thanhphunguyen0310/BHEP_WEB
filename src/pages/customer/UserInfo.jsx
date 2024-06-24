@@ -24,13 +24,16 @@ const UserInfo = () => {
     phoneNumber: "",
     gender: "",
     balance: "",
+    avatar: "",
   });
+  const [avatarFile, setAvatarFile] = useState(null);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
       setUser(res.data);
       setFormData({
+        avatar: res.data.avatar,
         fullName: res.data.fullName,
         email: res.data.email,
         phoneNumber: res.data.phoneNumber,
@@ -53,6 +56,9 @@ const UserInfo = () => {
   const handleGenderChange = (e) => {
     setFormData((prevData) => ({ ...prevData, gender: e.target.value }));
   };
+  const handleAvatarChange = (info) => {
+    setAvatarFile(info.file);
+  };
   const handleSave = async () => {
     try {
       const formDataUpdate = new FormData();
@@ -61,7 +67,9 @@ const UserInfo = () => {
       formDataUpdate.append("Email", formData.email);
       formDataUpdate.append("PhoneNumber", formData.phoneNumber);
       formDataUpdate.append("Gender", formData.gender);
-      // formDataUpdate.append("Avatar", user.avatar);
+      if (avatarFile) {
+        formDataUpdate.append('Avatar', avatarFile);
+      }
 
       console.log(formDataUpdate, "form Update");
       await updateUserDetail(userId, formDataUpdate);
@@ -86,18 +94,23 @@ const UserInfo = () => {
           </Typography.Text>
         </Row>
         {editMode ? (
-          <Row justify={"center"}>
+          <Row justify="center">
             <Upload
               name="avatar"
               listType="picture-circle"
               className="avatar-uploader"
               beforeUpload={() => false}
+              onChange={handleAvatarChange}
             >
-              Upload
+              {formData.avatar ? (
+                <img src={formData.avatar} alt="avatar" style={{ width: '100%' }} />
+              ) : (
+                'Upload'
+              )}
             </Upload>
           </Row>
         ) : (
-          <Row justify={"center"} className="user-avatar">
+          <Row justify="center" className="user-avatar">
             <Avatar src={user?.avatar} />
           </Row>
         )}

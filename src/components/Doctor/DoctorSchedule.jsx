@@ -99,6 +99,14 @@ const DoctorSchedule = ({ open, onOk, onCancel }) => {
     const fetchSchedules = async () => {
       try {
         const fetchedSchedules = await getDoctorSchedule(employeeId);
+        console.log(fetchedSchedules)
+        if (fetchedSchedules.length === 0) {
+          message.info("Bạn chưa tạo lịch làm việc");
+          setFetchedSchedules([]);
+          setSchedules({});
+          setExistingSchedules({});
+          return;
+        }
         const formattedSchedules = fetchedSchedules.reduce((acc, schedule) => {
           const dateStr = schedule.date;
           const timeRanges = schedule.time.map((timeRange) => {

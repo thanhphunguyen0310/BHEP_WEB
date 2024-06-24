@@ -20,7 +20,6 @@ const UserHealthTracking = () => {
       if (snapshot.exists()) {
         setIsUpdating(true);
         const newData = snapshot.val();
-        console.log(newData, ">>>>>>");
         setUserHealth(newData);
       } else {
         console.log("No data available");
