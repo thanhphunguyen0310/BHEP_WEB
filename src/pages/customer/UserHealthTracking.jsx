@@ -34,7 +34,7 @@ const UserHealthTracking = () => {
       // Sau 3 giây, tắt animation và hiển thị lại dòng chữ
       const timeout = setTimeout(() => {
         setIsUpdating(false);
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timeout);
     }

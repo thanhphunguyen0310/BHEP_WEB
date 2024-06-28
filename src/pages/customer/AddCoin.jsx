@@ -76,7 +76,7 @@ const AddCoin = () => {
         <div className="input-section">
           <Typography.Text>Số tiền: </Typography.Text>
           <InputNumber
-            min={50000}
+            // min={50000}
             value={coinInput}
             // formatter={(value) => `${formatNumber(value)}`}
             // parser={(value) => value.replace(/\$\s?|(,*)/g, "")}

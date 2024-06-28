@@ -1,9 +1,7 @@
-import React from 'react';
-
 const CompletedAppointments = () => {
     return (
-        <div>
-            Content of Completed Appointments Tab
+        <div style={{minHeight:"400px"}}>
+
         </div>
     );
 }
