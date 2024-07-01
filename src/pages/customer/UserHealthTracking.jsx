@@ -4,7 +4,7 @@ import { database } from "../../configs/firebase/firebaseConfig";
 import { useEffect, useState } from "react";
 import "../../styles/HealthTracking.scss";
 import { Col, Image, Row, Spin, Typography } from "antd";
-import HeartBeatCard from "../../components/Customer/HearBeatCard";
+import HeartBeatCard from "../../components/Customer/HeartBeatCard";
 import SpO2Card from "../../components/Customer/SpO2Card";
 import BodyTemperatureCard from "../../components/Customer/BodyTemperatureCard";
 import LOGO from "../../assets/img/LOGO.png";
