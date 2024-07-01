@@ -89,13 +89,10 @@ export const  defaultLayoutRoutes = [
     {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
     {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
     {path: "/profile", component: UserInfo, role: [1, 2, 3]},
-<<<<<<< Updated upstream
-    {path: "/health-tracking", component: UserHealthTracking,}
-=======
     {path: "/health-tracking", component: UserHealthTracking,role: [1, 2, 3]},
     {path: "/policy", component: Policy},
     {path: "/about-us", component: AboutUs},
     {path: "/terms-of-use", component: TermOfUse},
->>>>>>> Stashed changes
+
 ]
 

@@ -6,6 +6,7 @@ import {
   Avatar,
   Button,
   Divider,
+  Image,
   Input,
   Radio,
   Row,
@@ -14,6 +15,7 @@ import {
   message,
 } from "antd";
 import { AiFillEdit } from "react-icons/ai";
+import { PlusOutlined } from '@ant-design/icons';
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
@@ -24,13 +26,16 @@ const UserInfo = () => {
     phoneNumber: "",
     gender: "",
     balance: "",
+    avatar: "",
   });
+  const [avatarFile, setAvatarFile] = useState(null);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
       setUser(res.data);
       setFormData({
+        avatar: res.data.avatar,
         fullName: res.data.fullName,
         email: res.data.email,
         phoneNumber: res.data.phoneNumber,
@@ -42,7 +47,6 @@ const UserInfo = () => {
     }
   };
   useEffect(() => {
-    console.log(formData, "form data");
     userDetail();
   }, [userId]);
 
@@ -53,6 +57,9 @@ const UserInfo = () => {
   const handleGenderChange = (e) => {
     setFormData((prevData) => ({ ...prevData, gender: e.target.value }));
   };
+  const handleAvatarChange = (info) => {
+    setAvatarFile(info.file);
+  };
   const handleSave = async () => {
     try {
       const formDataUpdate = new FormData();
@@ -61,9 +68,9 @@ const UserInfo = () => {
       formDataUpdate.append("Email", formData.email);
       formDataUpdate.append("PhoneNumber", formData.phoneNumber);
       formDataUpdate.append("Gender", formData.gender);
-      // formDataUpdate.append("Avatar", user.avatar);
-
-      console.log(formDataUpdate, "form Update");
+      if (avatarFile) {
+        formDataUpdate.append('Avatar', avatarFile);
+      }
       await updateUserDetail(userId, formDataUpdate);
       message.success("Cập nhật thông tin thành công!");
       userDetail();
@@ -86,19 +93,50 @@ const UserInfo = () => {
           </Typography.Text>
         </Row>
         {editMode ? (
-          <Row justify={"center"}>
+          <Row justify="center">
             <Upload
               name="avatar"
-              listType="picture-circle"
+              listType="picture-card"
               className="avatar-uploader"
               beforeUpload={() => false}
+              onChange={handleAvatarChange}
             >
-              Upload
+              {formData.avatar ? (
+                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <Avatar
+                shape="square"
+                  src={formData.avatar}
+                  alt="avatar"
+                  style={{ width: '100%', height:"100%" }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <PlusOutlined />
+                </div>
+              </div>
+              ) : (
+                'Upload'
+              )}
             </Upload>
           </Row>
         ) : (
-          <Row justify={"center"} className="user-avatar">
-            <Avatar src={user?.avatar} />
+          <Row justify="center" className="user-avatar">
+            <Avatar shape="square" src={user?.avatar} />
           </Row>
         )}
 

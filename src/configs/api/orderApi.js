@@ -25,7 +25,6 @@ export const createOrder = async (
       serviceId: serviceId,
       products: products,
     });
-    console.log(order)
     return order;
   } catch (error) {
     throw new Error(error.message);

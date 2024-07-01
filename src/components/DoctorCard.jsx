@@ -27,10 +27,13 @@ const DoctorCard = (props) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
+                justifyContent:"flex-start"
               }}
             >
-              <p style={{ margin: 0 }}>{props.description}</p>
+              <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
+              <p style={{ margin: 0, fontWeight:400 }}>{props.major}</p>
               <p style={{ margin: 0 }}>{props.fullName}</p>
+              </div>
             </div>
           }
           description={
@@ -64,7 +67,7 @@ const DoctorCard = (props) => {
               <p style={{ margin: 0 }}>{props.specialistId}</p>
             </Col>
           </Row>
-          <Row align="middle" gutter={8}>
+          <Row style={{height:"50px"}} align="middle" gutter={8}>
             <Col>
               <Image
                 height={"10px"}
@@ -73,9 +76,8 @@ const DoctorCard = (props) => {
                 src={Hospital}
               />
             </Col>
-            <Col>
-              {/* <p style={{ margin: 0 }}>{props.workPlace}</p> */}
-              <p style={{ margin: 0 }}>Bệnh viện Nhân dân Gia Định</p>
+            <Col span={20}>
+              <p style={{ margin: 0 }}>{props.workPlace}</p>
             </Col>
           </Row>
           <Row style={{ marginTop: "10px" }} justify={"center"}>

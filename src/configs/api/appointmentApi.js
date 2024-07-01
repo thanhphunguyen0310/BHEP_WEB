@@ -21,7 +21,6 @@ export const makeAppointment = async (
       note: note,
       symptoms: symptoms,
     });
-    console.log(appointment.data)
     return appointment.data;
   } catch (error) {
     throw new Error(error.message);

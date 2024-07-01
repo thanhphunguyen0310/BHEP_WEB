@@ -153,10 +153,16 @@ const Store = () => {
   const handleProductClick = (product) => {
     navigate(`/product-detail/${product.type}/${product.id}`);
   };
+
   const formatDescription = (description, type) => {
     if (type === 2) {
       const splitDescription = description.split(". ");
-      return splitDescription.slice(-2).join(". ");
+      return `${splitDescription.slice(-2).join(". ")}...`;
+    } else if (type === "device") {
+      const colonIndex = description.indexOf(":");
+      if (colonIndex !== -1) {
+        return `${description.substring(0, colonIndex)}...`;
+      }
     }
     return description;
   };
@@ -334,7 +340,12 @@ const Store = () => {
                   }}
                   cover={
                     <img
-                      style={{ height: "108px", objectFit: "cover" }}
+                    style={{
+                      height: "150px",
+                      width: "100%", 
+                      objectFit: "cover",
+                      objectPosition:"right"
+                    }}
                       alt="example"
                       src={item.image}
                       loading="lazy"
@@ -403,7 +414,12 @@ const Store = () => {
                   }}
                   cover={
                     <img
-                      style={{ height: "108px", objectFit: "cover" }}
+                      style={{
+                      height: "150px",
+                      width: "100%", 
+                      objectFit: "cover",
+                      objectPosition:"right"
+                    }}
                       alt="example"
                       src={product.image}
                     />

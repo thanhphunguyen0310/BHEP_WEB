@@ -23,27 +23,25 @@ const Homepage = () => {
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
-        return "Nội khoa";
+        return "Xương khớp";
       case 2:
-        return "Răng hàm mặt";
+        return "Tim mạch";
       case 3:
-        return "Da liễu";
+        return "Thần kinh";
       case 4:
         return "Tai mũi họng";
       case 5:
-        return "Hô hấp";
-      case 7:
-        return "Tim mạch";
-      case 8:
-        return "Xương khớp";
-      case 9:
+        return "Răng hàm mặt";
+      case 6:
         return "Phụ sản";
-      case 10:
-        return "Thần kinh";
-      case 11:
-        return "Dinh dưỡng";
-      case 12:
+      case 7:
+        return "Nội khoa";
+      case 8:
         return "Ký sinh trùng";
+      case 9:
+        return "Hô hấp";
+      case 10:
+        return "Dinh dưỡng";
       default:
         return "Không xác định";
     }
@@ -78,15 +76,33 @@ const Homepage = () => {
       });
       // Combine all products into one array
       const combinedData = [...devices, ...services];
+
+      const deviceItem = combinedData.find(item => item.type === "device");
+      const personalServiceItem = combinedData.find(item => item.type === 1 && item.duration === 3);
+      const familyServiceItem = combinedData.find(item => item.type === 2 && item.duration === 3);
+
+      const selectedItems = [deviceItem, personalServiceItem, familyServiceItem].filter(item => item !== undefined);
       // Sort by rate and get top rated items
-      combinedData.sort((a, b) => b.rate - a.rate);
-      const topItems = combinedData.slice(0, 5);
-      setTopRatedItems(topItems);
+      // combinedData.sort((a, b) => b.rate - a.rate);
+      // const topItems = combinedData.slice(0, 3);
+      setTopRatedItems(selectedItems);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setIsProductLoading(false);
     }
+  };
+  const formatDescription = (description, type) => {
+    if (type === 2) {
+      const splitDescription = description.split(". ");
+      return `${splitDescription.slice(-2).join(". ")}...`;
+    } else if (type === "device") {
+      const colonIndex = description.indexOf(":");
+      if (colonIndex !== -1) {
+        return `${description.substring(0, colonIndex)}...`;
+      }
+    }
+    return description;
   };
 
   const fetchTopRatedDoctors = async () => {
@@ -107,12 +123,12 @@ const Homepage = () => {
     fetchAllData();
     fetchTopRatedDoctors();
   }, []);
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
+  // const formatPrice = (price) => {
+  //   return new Intl.NumberFormat("vi-VN", {
+  //     style: "currency",
+  //     currency: "VND",
+  //   }).format(price);
+  // };
   return (
     <>
       <Banner />
@@ -159,11 +175,17 @@ const Homepage = () => {
                     display: "flex",
                     alignItems: "center",
                     flexDirection: "column",
-                    width: 220,
+                    width: 250,
+                    height:350
                   }}
                   cover={
                     <img
-                      style={{ height: "108px", objectFit: "cover" }}
+                    style={{
+                      height: "150px",
+                      width: "100%", 
+                      objectFit: "cover",
+                      objectPosition:"right"
+                    }}
                       alt="example"
                       src={item.image}
                       loading="lazy"
@@ -173,13 +195,14 @@ const Homepage = () => {
                   <Meta title={item.name} />
                   <p
                     style={{
-                      padding: "10px 0px",
-                      color: "#3058A6",
-                      fontWeight: "500",
+                      fontSize:"14px",
+                      marginTop:"15px",
+                      fontWeight:300,
+                      height:"80px"
                     }}
-                    className="price"
+                    className="description"
                   >
-                    {formatPrice(item.price)}
+                    {formatDescription(item.description, item.type)}
                   </p>
                   <Button
                     style={{ fontWeight: "600" }}
@@ -223,8 +246,9 @@ const Homepage = () => {
                     fullName={doctor.fullName}
                     specialistId={getSpecialistState(doctor.specialistId)}
                     description={doctor.description}
+                    major={doctor.workProfile.major.name}
                     rate={doctor.rate}
-                    workPlace={doctor.workPlace}
+                    workPlace={doctor.workProfile.workPlace}
                   />
                 </div>
               </Link>
@@ -278,19 +302,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-
-  // const handleAddToCart = () => {
-  //   const item = {
-  //            id: product.id,
-  //            name: product.name,
-  //            image: product.image,
-  //            price: product.price,
-  //            duration: product.duration,
-  //            type: type,
-  //            quantity: quantity,
-  //   }
-  //   dispatch(
-  //       addToCart(item)
-  //     );
-  //   navigate("/cart");
-  // };

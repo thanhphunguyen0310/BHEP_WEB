@@ -20,7 +20,6 @@ const UserHealthTracking = () => {
       if (snapshot.exists()) {
         setIsUpdating(true);
         const newData = snapshot.val();
-        console.log(newData, ">>>>>>");
         setUserHealth(newData);
       } else {
         console.log("No data available");
@@ -35,7 +34,7 @@ const UserHealthTracking = () => {
       // Sau 3 giây, tắt animation và hiển thị lại dòng chữ
       const timeout = setTimeout(() => {
         setIsUpdating(false);
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timeout);
     }
@@ -62,8 +61,8 @@ const UserHealthTracking = () => {
           <Spin />
         )}
         <div className="update-data">
-          <Row className={`mascot ${isUpdating ? "visible" : "hidden"}`}>
-            <Image preview={false} src={LOGO} className="mascot-updating" />
+          <Row className="mascot">
+            <Image preview={false} src={LOGO}  className={isUpdating ? "mascot-updating" : ""} />
           </Row>
           {!isUpdating && (
             <Row className="text-footer">

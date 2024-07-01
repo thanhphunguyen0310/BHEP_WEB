@@ -5,6 +5,7 @@ const CancelledAppointments = ({ cancelledAppointments }) => {
     console.log(cancelledAppointments, "lịch hủy")
     return (
         <List
+        style={{minHeight:"400px"}}
         itemLayout="horizontal"
         dataSource={cancelledAppointments}
         renderItem={(item) => (

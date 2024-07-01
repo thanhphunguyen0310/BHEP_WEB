@@ -99,7 +99,7 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
               Thông tin người hẹn
             </Typography.Paragraph>
             <Row className="information-content">
-              <Col className="content">
+              <Col  span={4} className="content">
                 <Avatar
                   src={userAvt}
                   style={{ width: "70px", height: "70px", padding: "3px 3px" }}

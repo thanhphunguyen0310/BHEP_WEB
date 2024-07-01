@@ -16,27 +16,25 @@ const Doctors = () => {
   const getSpecialistState = (specialistId) => {
     switch (specialistId) {
       case 1:
-        return "Nội khoa";
+        return "Xương khớp";
       case 2:
-        return "Răng hàm mặt";
+        return "Tim mạch";
       case 3:
-        return "Da liễu";
+        return "Thần kinh";
       case 4:
         return "Tai mũi họng";
       case 5:
-        return "Hô hấp";
-      case 7:
-        return "Tim mạch";
-      case 8:
-        return "Xương khớp";
-      case 9:
+        return "Răng hàm mặt";
+      case 6:
         return "Phụ sản";
-      case 10:
-        return "Thần kinh";
-      case 11:
-        return "Dinh dưỡng";
-      case 12:
+      case 7:
+        return "Nội khoa";
+      case 8:
         return "Ký sinh trùng";
+      case 9:
+        return "Hô hấp";
+      case 10:
+        return "Dinh dưỡng";
       default:
         return "Không xác định";
     }
@@ -62,7 +60,6 @@ const Doctors = () => {
 
       const sortedDoctors = doctors.sort((a, b) => b.rate - a.rate);
       const topDoctors = sortedDoctors.slice(0, 8);
-
       setTopDoctors(topDoctors);
       setDisplayedDoctors(topDoctors);
       setLoading(false);
@@ -213,8 +210,9 @@ const Doctors = () => {
                       fullName={doctor.fullName}
                       specialistId={getSpecialistState(doctor.specialistId)}
                       description={doctor.description}
+                      major={doctor.workProfile.major.name}
                       rate={doctor.rate}
-                      workPlace={doctor.workPlace}
+                      workPlace={doctor.workProfile.workPlace}
                     />
                   </div>
                 </Link>

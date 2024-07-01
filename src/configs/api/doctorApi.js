@@ -74,14 +74,27 @@ export const createDoctorSchedule = async (employeeId, schedules) => {
   }
 };
 
+// export const getDoctorSchedule = async (employeeId) => {
+//   try {
+//     const schedule = await apiClient.get(`/Schedule/Employee/${employeeId}`);
+//     return schedule.data.data.weekSchedule;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 export const getDoctorSchedule = async (employeeId) => {
   try {
     const schedule = await apiClient.get(`/Schedule/Employee/${employeeId}`);
+    if (!schedule.data.isSuccess && schedule.data.statusCode === 404) {
+      // Return a specific message or handle it in another way if needed
+      return { isSuccess: false, statusCode: 404, message: "Schedule not found." };
+    }
     return schedule.data.data.weekSchedule;
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 
 export const updateDoctorSchedule = async (employeeId, date, time) => {
   try {

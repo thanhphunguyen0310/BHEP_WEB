@@ -104,7 +104,25 @@ const ProductDetail = () => {
       message.error("Bạn không thể thêm sản phẩm này!")
     }
   };
-
+  const handleBuyNow = () => {
+    // console.log("aaaaaaaaaaaaa")
+    // let quantityToAdd = 1;
+    //   if (type === "device") {
+    //     quantityToAdd = quantity; // Nếu là "device" thì lấy quantity mà người dùng chọn
+    //   }
+      const item = {
+        id: product.id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        duration: product.duration,
+        type: type,
+        // quantity: quantityToAdd,
+      };
+      console.log(item)
+      // dispatch(addToCart(item));
+      // navigate("/cart");
+  }
   const handleCreateGroup = () => {
     const isExistType1 = items?.cartItems.some(item => item.type === "1");
   
@@ -223,7 +241,11 @@ const ProductDetail = () => {
           >
             Thêm vào giỏ hàng
           </Button>
-          <Button size="large" className="custom-button buy-now">
+          <Button 
+            size="large" 
+            className="custom-button buy-now"
+            onClick={handleBuyNow}  
+          >
             Mua ngay
           </Button>
         </Row>
@@ -348,7 +370,8 @@ const ProductDetail = () => {
             </Row>
           )}
           <Row className="content">
-            <Col span={8} className="product-img">
+            <Col span={8} className={type === "device"? 'device-img': 'product-img'}>
+            {/* <Col span={8} className='product-img'> */}
               <Avatar
                 shape="square"
                 src={product.image}
