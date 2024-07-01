@@ -76,7 +76,6 @@ const Homepage = () => {
       });
       // Combine all products into one array
       const combinedData = [...devices, ...services];
-
       const deviceItem = combinedData.find(item => item.type === "device");
       const personalServiceItem = combinedData.find(item => item.type === 1 && item.duration === 3);
       const familyServiceItem = combinedData.find(item => item.type === 2 && item.duration === 3);

@@ -28,12 +28,12 @@ const FailPayment = () => {
                 status="error"
                 title="Giao dịch thất bại"
                 subTitle="Vui lòng kiểm tra lại thông tin."
-                extra={[
-                    <Button type="primary" key="console" onClick={() => navigate(`/`)}>
-                        Về trang chủ
-                    </Button>,
-                    <Button key="buy" onClick={() => navigate(`/add-coin`)}>Thực hiện lại</Button>,
-                ]}
+                // extra={[
+                //     <Button type="primary" key="console" onClick={() => navigate(`/`)}>
+                //         Về trang chủ
+                //     </Button>,
+                //     <Button key="buy" onClick={() => navigate(`/add-coin`)}>Thực hiện lại</Button>,
+                // ]}
             >
             </Result>
         </div>

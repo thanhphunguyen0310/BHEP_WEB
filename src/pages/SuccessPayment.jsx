@@ -30,13 +30,14 @@ const SuccessPayment = () => {
             <Result
                 status="success"
                 title="Thanh toán thành công"
+                subTitle="Cảm ơn bạn đã tin tưởng chúng tôi."
                 // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
-                extra={[
-                    <Button type="primary" key="console" onClick={() => navigate(`/`)}>
-                        Về trang chủ
-                    </Button>,
-                    <Button key="buy" onClick={() => navigate(`/add-coin`)}>Nạp thêm</Button>,
-                ]}
+                // extra={[
+                //     <Button type="primary" key="console" onClick={() => navigate(`/`)}>
+                //         Về trang chủ
+                //     </Button>,
+                //     <Button key="buy" onClick={() => navigate(`/add-coin`)}>Nạp thêm</Button>,
+                // ]}
             />
         </div>
     );
