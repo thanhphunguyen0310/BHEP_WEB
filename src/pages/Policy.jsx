@@ -38,9 +38,9 @@ const Policy = () => {
             liệu cá nhân được cung cấp cho chúng tôi một cách tự nguyện trực
             tiếp từ bạn hay thông qua một bên thứ ba được bạn ủy quyền hợp lệ để
             chia sẻ dữ liệu cá nhân của bạn cho chúng tôi ( “đại diện được ủy
-            quyền” của bạn) sau khi (i) bạn (hoặc đại diện được ủy quyền của
+            quyền” của bạn) sau khi bạn (hoặc đại diện được ủy quyền của
             bạn) đã được thông báo về các mục đích mà dữ liệu được thu thập (vui
-            lòng đọc các mục đích được đề cập bên dưới), và (ii) bạn (hay đại
+            lòng đọc các mục đích được đề cập bên dưới), và bạn (hay đại
             diện được ủy quyền của bạn) đã đồng ý với việc thu thập và việc sử
             dụng dữ liệu cá nhân của bạn cho những mục đích đó, hoặc việc thu
             thập và sử dụng dữ liệu cá nhân mà không có sự đồng ý được cho phép
@@ -461,7 +461,7 @@ const Policy = () => {
           <Typography.Text>
             <ul>
               <li>Số liên lạc: (+84) 868 405 894</li>
-              <li>Địa chỉ Email: bhep2024@gmail.com</li>
+              <li>Địa chỉ Email: <a href="mailto:bhep2024@gmail.com"> bhep2024@gmail.com </a></li>
             </ul>
           </Typography.Text>
           <Typography.Text>
