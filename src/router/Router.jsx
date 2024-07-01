@@ -27,6 +27,7 @@ import UserHealthTracking from '../pages/customer/UserHealthTracking'
 import Policy from '../pages/Policy';
 import AboutUs from '../pages/AboutUs';
 import TermOfUse from '../pages/TermOfUse';
+import DisableAccount from '../components/DisableAccount';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -93,6 +94,6 @@ export const  defaultLayoutRoutes = [
     {path: "/policy", component: Policy},
     {path: "/about-us", component: AboutUs},
     {path: "/terms-of-use", component: TermOfUse},
-
+    {path: "/disable-account", component: DisableAccount},
 ]
 

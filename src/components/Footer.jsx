@@ -42,6 +42,7 @@ const Footer = () => {
             <p>Câu hỏi thường gặp</p>
             <p>Tiêu chuẩn cộng đồng</p>
             <p>Quy trình đặt lịch và mua hàng</p>
+            <p style={{cursor:"pointer"}} onClick={()=> navigate('/disable-account')}>Vô hiệu hóa tài khoản</p>
           </div>
         </Col>
         <Col className="gutter-row" span={6}>
