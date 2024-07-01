@@ -16,8 +16,8 @@ export const addCoin = async ( userId, amount) => {
       amount: amount,
       description: "Phu test nap xu",
       items: items,
-      returnURL: "http://localhost:5173/success-payment",
-      cancelURL: "http://localhost:5173/fail-payment",
+      returnURL: "https://bhep.vn/success-payment",
+      cancelURL: "https://bhep.vn/fail-payment",
       expireAt: expireAt.toISOString(),
     });
     return addCoin.data;
