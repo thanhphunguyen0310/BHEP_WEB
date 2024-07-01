@@ -12,13 +12,13 @@
        /* Adjusted margin to offset the fixed header */
 
       .text-content {
-          padding: 80px 0px;
+        //   padding: 80px 0px;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          justify-content: center;
 
           .content-top {
-              font-size: 3rem; /* text-5xl */
+              font-size: 48px; /* text-5xl */
               font-weight: bold; /* font-bold */
               line-height: 1.2; /* leading-tight */
               color: black;

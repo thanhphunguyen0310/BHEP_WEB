@@ -23,7 +23,7 @@ const Banner = () => {
                             <br /> với ứng dụng BHEP
                         </h1>
                     </div>
-                    <div className="content-bottom">
+                    {/* <div className="content-bottom">
                         <img src={APP_QR} alt="app-qr" />
                         <div className="btn-link">
                             <h2>Quét mã để tải ngay</h2>
@@ -33,7 +33,7 @@ const Banner = () => {
                             </div>
                         </div>
 
-                    </div>
+                    </div> */}
                 </div>
                 <div className="app-img">
                     <img src={APP} alt="app-image" />
