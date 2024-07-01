@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import "../styles/Footer.scss";
 import { Col, Row } from "antd";
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <div className="footer">
       <Row
@@ -35,8 +37,8 @@ const Footer = () => {
         </Col>
         <Col className="gutter-row" span={6}>
           <div className="footer-content">
-            <p>Điều khoản sử dụng</p>
-            <p>Chính sách riêng tư</p>
+            <p style={{cursor:"pointer"}} onClick={()=> navigate('/terms-of-use')}>Điều khoản sử dụng</p>
+            <p style={{cursor:"pointer"}} onClick={()=> navigate('/policy')}>Chính sách bảo mật</p>
             <p>Câu hỏi thường gặp</p>
             <p>Tiêu chuẩn cộng đồng</p>
             <p>Quy trình đặt lịch và mua hàng</p>
@@ -47,7 +49,7 @@ const Footer = () => {
             <h1>Liên hệ</h1>
             <p>9 đường 12D, phường Long Thạnh Mỹ, Thành phố Thủ Đức</p>
             <p>bhep2024@gmail.com</p>
-            <p>(+84) 326 157 607</p>
+            <p>(+84) 868 405 894</p>
           </div>
         </Col>
       </Row>
