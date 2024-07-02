@@ -5,6 +5,7 @@ import CompletedAppointments from "../components/Appointment/CompletedAppointmen
 import CancelledAppointments from "../components/Appointment/CancelledAppointment";
 import { useState } from "react";
 
+
 const ListAppointment = () => {
   const [cancelledAppointments, setCancelledAppointments] = useState([]);
 
@@ -16,30 +17,33 @@ const ListAppointment = () => {
     {
       key: "1",
       label: "Lịch sắp đến",
-      children: <UpcomingAppointments onRefuseAppointment={handleRefuseAppointment} />,
+      children: (
+        <UpcomingAppointments onRefuseAppointment={handleRefuseAppointment} />
+      ),
     },
     {
       key: "2",
       label: "Hoàn thành",
-      children: <CompletedAppointments  />,
+      children: <CompletedAppointments />,
     },
     {
       key: "3",
       label: "Đã hủy",
-      children: <CancelledAppointments cancelledAppointments={cancelledAppointments}/>,
+      children: (
+        <CancelledAppointments cancelledAppointments={cancelledAppointments} />
+      ),
     },
   ];
+
   return (
-    <>
-      <div className="appointment-container">
-        <div className="appointment-content">
-          <Row className="content">
-            <Typography.Title level={2}>Danh sách lịch hẹn</Typography.Title>
-            <Tabs size="large" defaultActiveKey="1" items={items} />
-          </Row>
-        </div>
+    <div className="appointment-container">
+      <div className="appointment-content">
+        <Row className="content">
+          <Typography.Title level={2}>Danh sách lịch hẹn</Typography.Title>
+          <Tabs size="large" defaultActiveKey="1" items={items} />
+        </Row>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -147,7 +147,6 @@ const Order = () => {
   const getBalance = async () => {
     try {
       const balance = await getUserDetail(userId);
-      console.log(balance.data.balance);
       setUserBalance(balance.data.balance);
     } catch (error) {
       console.log(error);
@@ -196,7 +195,6 @@ const Order = () => {
         products: products.length > 0 ? products : null,
       };
       try {
-        console.log(userBalance)
         if (userBalance <= 0 || userBalance < dataOrder.amount) {
           message.warning("Số dư của bạn không đủ. Vui lòng nạp thêm xu!");
         } else {

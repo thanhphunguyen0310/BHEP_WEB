@@ -6,20 +6,21 @@ import {
   FaRegCreditCard,
   FaCoins,
 } from "react-icons/fa";
-import "../../styles/AppointmentPayment.scss"; // Import file for custom styling
-import { useState } from "react";
-import { makePayment } from "../../configs/api/appointmentApi";
+import "../../styles/AppointmentPayment.scss";
+import { useEffect, useState } from "react";
+import { getUserDetail } from "../../configs/api/userApi";
 import { makeAppointment } from "../../configs/api/appointmentApi";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../configs/firebase/firebaseConfig"
 
-const AppointmentPayment = ({ onPaymentSuccess }) => {
-  const navigate = useNavigate();
+const AppointmentPayment = ({ onPaymentSuccess, setCurrentStep }) => {
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userBalance, setUserBalance] = useState(null);
+
   const userId = useSelector((state) => state?.appointment?.userId);
-  const userBalance = useSelector((state) => state.auth?.user?.data?.user?.balance);
   const doctorId = useSelector((state) => state?.appointment?.doctorId);
   const date = useSelector((state) => state?.appointment?.date);
   const time = useSelector((state) => state?.appointment?.time);
@@ -58,10 +59,22 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
       );
     }
   };
+  useEffect(() => {
+    getBalance();
+  }, []);
+  const getBalance = async () => {
+    try {
+      const balance = await getUserDetail(userId);
+      setUserBalance(balance.data.balance);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleConfirmPayment = async () => {
     if(userBalance <= 0 || userBalance < price) {
       message.error("Số xu không đủ để đặt lịch. Bạn vui lòng nạp thêm xu!")
       setIsModalVisible(false);
+      setCurrentStep(2);
     } else {
       try {
         const appointment = await makeAppointment(
@@ -75,6 +88,19 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
           selectedSymptom
         );
         if (appointment) {
+          // Firestore data structure
+        const notificationData = {
+          appointmentId: appointment.data.id,
+          content: `Muốn đặt lịch hẹn vào ngày ${date} : ${time}`,
+          createdAt: Date.now(),
+          fromUserId: userId,
+          isRead: false,
+          toUserId: doctorId,
+          uid: appointment.data.id,
+        };
+
+        // Add the document to Firestore
+        await setDoc(doc(db, 'notification', `${appointment.data.id}`), notificationData);
           onPaymentSuccess(appointment.data.id);
           setIsModalVisible(false);
         } else {
@@ -83,6 +109,7 @@ const AppointmentPayment = ({ onPaymentSuccess }) => {
       } catch (error) {
         console.error("Error making appointment:", error);
         message.error("Có lỗi xảy ra khi tạo lịch hẹn. Vui lòng thử lại.");
+        setCurrentStep(2);
       }
     }
   };

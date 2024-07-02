@@ -32,7 +32,8 @@ const BookingAppointment = () => {
     {
       title: "Thanh toán",
       content: <AppointmentPayment 
-      onPaymentSuccess={handlePaymentSuccess}/>,
+      onPaymentSuccess={handlePaymentSuccess}
+      setCurrentStep={setCurrentStep}/>,
     },
     {
       title: "Hoàn thành",
