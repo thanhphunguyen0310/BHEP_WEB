@@ -171,7 +171,7 @@ const Order = () => {
         description = `Họ tên: ${userName}, Số điện thoại: ${phoneNumber}, Địa chỉ: ${address}`;
       }
       let isGenerateCode, code;
-      if (items.cartItems.every((item) => item.type === "device")) {
+      if (items.cartItems.every((item) => item.type === "device" || item.type === "1")) {
         isGenerateCode = false;
         code = null;
       } else {
