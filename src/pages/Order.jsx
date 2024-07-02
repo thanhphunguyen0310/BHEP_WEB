@@ -2,14 +2,17 @@ import {
   Avatar,
   Badge,
   Button,
+  Card,
   Col,
   Flex,
+  Form,
   Input,
   Modal,
   Radio,
   Row,
   Space,
   Table,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -26,11 +29,26 @@ import { clearCart } from "../store/cartSlice";
 const Order = () => {
   const items = useSelector((state) => state?.cart);
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
-  const userBalance = useSelector((state) => state.auth?.user?.data?.user?.balance);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [userBalance, setUserBalance] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
 
+  // const userBalance = useSelector(
+  //   (state) => state.auth?.user?.data?.user?.balance
+  // );
+
+  // const balance = async () =>{
+  //   try {
+  //     await getUserDetail(userId);
+  //     setUserBalance(balance.data.balance);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   const columns = [
     {
       title: <Typography.Title level={4}>Sản phẩm</Typography.Title>,
@@ -38,6 +56,7 @@ const Order = () => {
       className: "custom-header",
       key: "image",
       render: (text, record) => {
+        const objectPosition = record.type === "device" ? "center" : "right";
         return text ? (
           <span style={{ display: "flex", alignItems: "center" }}>
             <img
@@ -49,7 +68,7 @@ const Order = () => {
                 height: "80px",
                 borderRadius: "4px",
                 objectFit: "cover",
-                objectPosition: "right",
+                objectPosition: objectPosition,
               }}
             />
             <div
@@ -131,7 +150,7 @@ const Order = () => {
   const vouchers = null;
   const COD = 0;
 
-  const makeOrder = async() => {
+  const makeOrder = async () => {
     if (!selectedPaymentMethod) {
       message.warning("Bạn cần chọn 1 trong các phương thức thanh toán.");
     } else {
@@ -141,23 +160,32 @@ const Order = () => {
       const serviceId = serviceItem?.id;
 
       let products = items.cartItems
-      .filter(item => item.type == "device")
-      .map(item => ({ id: item.id, quantity: item.quantity }));
+        .filter((item) => item.type == "device")
+        .map((item) => ({ id: item.id, quantity: item.quantity }));
 
-      let isGenerateCode, code;
-      if (items.groupCode && items.groupCode.length > 0) {
-        isGenerateCode = false;
-        code = items.groupCode;
-      } else {
-        isGenerateCode = true;
-        code = null;
-      }
+        let description = `Order Description`;
+        if (items.cartItems.some(item => item.type === 'device')) {
+          description = `Họ tên: ${userName}, Số điện thoại: ${phoneNumber}, Địa chỉ: ${address}`;
+        }
+        let isGenerateCode, code;
+        if (items.cartItems.every(item => item.type === 'device')) {
+          isGenerateCode = false;
+          code = null; 
+        } else {
+          if (items.groupCode && items.groupCode.length > 0) {
+            isGenerateCode = false;
+            code = items.groupCode;
+          } else {
+            isGenerateCode = true;
+            code = null;
+          }
+        }
       let dataOrder = {
         userId: userId,
         amount: items.cartTotalAmount,
         isMinus: true,
         title: "Order Title",
-        description: "Order Description",
+        description: description,
         isGenerateCode: isGenerateCode,
         code: code,
         vouchers: vouchers,
@@ -165,14 +193,18 @@ const Order = () => {
         products: products.length > 0 ? products : null,
       };
       try {
-        if(userBalance <=0 || userBalance < dataOrder.amount){
-          message.warning("Số dư của bạn không đủ. Vui lòng nạp thêm xu!")
+       const balance = await getUserDetail(userId);
+        setUserBalance(balance.data.balance)
+        if (userBalance <= 0 || userBalance < dataOrder.amount) {
+          message.warning("Số dư của bạn không đủ. Vui lòng nạp thêm xu!");
         } else {
           Modal.confirm({
-            title: 'Xác nhận đặt hàng',
-            content: `Hệ thống sẽ trừ ${formatPrice(items.cartTotalAmount)} xu BHEP trong ví của bạn. Bạn xác nhận chứ?`,
-            okText: 'Xác nhận',
-            cancelText: 'Hủy',
+            title: "Xác nhận đặt hàng",
+            content: `Hệ thống sẽ trừ ${formatPrice(
+              items.cartTotalAmount
+            )} xu BHEP trong ví của bạn. Bạn xác nhận chứ?`,
+            okText: "Xác nhận",
+            cancelText: "Hủy",
             onOk: async () => {
               const order = await createOrder(
                 dataOrder.userId,
@@ -188,9 +220,9 @@ const Order = () => {
               );
               if (order.status === 200) {
                 dispatch(clearCart());
-                message.success('Đơn hàng của bạn đã được đặt thành công.');
+                message.success("Đơn hàng của bạn đã được đặt thành công.");
               } else {
-                message.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                message.error("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
               }
             },
           });
@@ -200,6 +232,7 @@ const Order = () => {
       }
     }
   };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -246,6 +279,81 @@ const Order = () => {
           <Typography.Text>Phiếu giảm giá</Typography.Text>
           <Typography.Text>Chọn phiếu</Typography.Text>
         </Row>
+        <Form onFinish={makeOrder} className="order-delivery">
+          {items.cartItems.some((item) => item.type === "device") && (
+            <Row align={"middle"} justify={"start"}>
+              <Card
+                title={
+                  <Tooltip
+                    placement="rightTop"
+                    title="Khi mua thiết bị, vui lòng điền thông tin người nhận để chúng tôi
+              có thể giao hàng cho bạn."
+                  >
+                    <Typography.Text>Thông tin mua hàng</Typography.Text>
+                  </Tooltip>
+                }
+              >
+                <Row gutter={[16, 16]}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="userName"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Họ tên không được để trống",
+                        },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder="Họ tên"
+                        style={{ marginBottom: "16px" }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="phoneNumber"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Số điện thoại không được để trống",
+                        },
+                        {
+                          pattern: /^[0-9]{10}$/,
+                          message: "Số điện thoại phải đủ 10 số",
+                        },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="Số điện thoại"
+                        style={{ marginBottom: "16px" }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="address"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Địa chỉ không được để trống",
+                        },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Địa chỉ"
+                        style={{ marginBottom: "16px" }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
+            </Row>
+          )}
+        </Form>
       </Row>
       <Row className="order-payment">
         <Col className="payment-method" span={10}>
@@ -334,10 +442,11 @@ const Order = () => {
             </Col>
           </Row>
           <Row className="order-btn">
-            <Button 
-              className="custom-button" 
-              onClick={makeOrder} 
-              disabled={!selectedPaymentMethod}>
+            <Button
+              className="custom-button"
+              onClick={makeOrder}
+              disabled={!selectedPaymentMethod}
+            >
               Đặt hàng
             </Button>
           </Row>

@@ -11,6 +11,7 @@ export const getUserDetail = async (id) => {
   }
 };
 
+<<<<<<< Updated upstream
 // export const updateUserDetail = async (id, formData) => {
 //   try {
 //     const response = await axios.put(`https://bhepapi.azurewebsites.net/Api/V1/User/${id}`, formData, {
@@ -31,9 +32,44 @@ export const getUserDetail = async (id) => {
     //   },
     // });
 
+=======
+export const updateUserDetail = async (id, formData) => {
+  try {
+    const response = await axios.put(
+      `https://bhepapi.azurewebsites.net/Api/V1/User/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+>>>>>>> Stashed changes
     return response.data;
   } catch (error) {
     console.error("Error updating user data:", error);
     throw error;
   }
 };
+<<<<<<< Updated upstream
+=======
+
+// export const updateUserDetail = async (id, formData) => {
+//   try {
+//     const response = await axios.put(
+//       `https://cleanly-divine-pegasus.ngrok-free.app/Api/V1/User/${id}`,
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error updating user data:", error);
+//     throw error;
+//   }
+// };
+
+>>>>>>> Stashed changes
