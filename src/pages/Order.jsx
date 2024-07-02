@@ -23,7 +23,7 @@ import "../styles/Order.scss";
 import { FaCoins } from "react-icons/fa";
 import { createOrder } from "../configs/api/orderApi";
 import { getUserDetail } from "../configs/api/userApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clearCart } from "../store/cartSlice";
 
 const Order = () => {
@@ -41,14 +41,6 @@ const Order = () => {
   //   (state) => state.auth?.user?.data?.user?.balance
   // );
 
-  // const balance = async () =>{
-  //   try {
-  //     await getUserDetail(userId);
-  //     setUserBalance(balance.data.balance);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
   const columns = [
     {
       title: <Typography.Title level={4}>Sản phẩm</Typography.Title>,
@@ -149,7 +141,18 @@ const Order = () => {
   ];
   const vouchers = null;
   const COD = 0;
-
+  useEffect(() => {
+    getBalance();
+  }, []);
+  const getBalance = async () => {
+    try {
+      const balance = await getUserDetail(userId);
+      console.log(balance.data.balance);
+      setUserBalance(balance.data.balance);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const makeOrder = async () => {
     if (!selectedPaymentMethod) {
       message.warning("Bạn cần chọn 1 trong các phương thức thanh toán.");
@@ -163,23 +166,23 @@ const Order = () => {
         .filter((item) => item.type == "device")
         .map((item) => ({ id: item.id, quantity: item.quantity }));
 
-        let description = `Order Description`;
-        if (items.cartItems.some(item => item.type === 'device')) {
-          description = `Họ tên: ${userName}, Số điện thoại: ${phoneNumber}, Địa chỉ: ${address}`;
-        }
-        let isGenerateCode, code;
-        if (items.cartItems.every(item => item.type === 'device')) {
+      let description = `Order Description`;
+      if (items.cartItems.some((item) => item.type === "device")) {
+        description = `Họ tên: ${userName}, Số điện thoại: ${phoneNumber}, Địa chỉ: ${address}`;
+      }
+      let isGenerateCode, code;
+      if (items.cartItems.every((item) => item.type === "device")) {
+        isGenerateCode = false;
+        code = null;
+      } else {
+        if (items.groupCode && items.groupCode.length > 0) {
           isGenerateCode = false;
-          code = null; 
+          code = items.groupCode;
         } else {
-          if (items.groupCode && items.groupCode.length > 0) {
-            isGenerateCode = false;
-            code = items.groupCode;
-          } else {
-            isGenerateCode = true;
-            code = null;
-          }
+          isGenerateCode = true;
+          code = null;
         }
+      }
       let dataOrder = {
         userId: userId,
         amount: items.cartTotalAmount,
@@ -193,8 +196,7 @@ const Order = () => {
         products: products.length > 0 ? products : null,
       };
       try {
-       const balance = await getUserDetail(userId);
-        setUserBalance(balance.data.balance)
+        console.log(userBalance)
         if (userBalance <= 0 || userBalance < dataOrder.amount) {
           message.warning("Số dư của bạn không đủ. Vui lòng nạp thêm xu!");
         } else {
