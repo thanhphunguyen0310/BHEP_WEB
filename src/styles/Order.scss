@@ -78,6 +78,14 @@
         cursor: pointer;
       }
     }
+    .order-delivery{
+      width: 80%;
+      padding: 20px 0px;
+      .ant-typography{
+        font-size: 20px;
+        font-weight: 500;
+      }
+    }
   }
   .order-payment {
     margin-top: 20px;
