@@ -14,7 +14,7 @@ export const addCoin = async ( userId, amount) => {
     const addCoin = await apiClient.post(`/Payment/PayOS`, {
       userId: userId,
       amount: amount,
-      description: "Phu test nap xu",
+      description: `${userId} nạp xu`,
       items: items,
       returnURL: "https://bhep.vn/success-payment",
       cancelURL: "https://bhep.vn/fail-payment",

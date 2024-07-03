@@ -3,7 +3,6 @@ import {
   getAppointmentByUserId,
   getAppointmentById,
   updateAppointment,
-  cancelAppointment,
 } from "../../configs/api/appointmentApi";
 import { useSelector } from "react-redux";
 import "../../styles/UpcomingAppointment.scss";
@@ -106,14 +105,34 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
     }).format(price);
   };
   // user cancel appointment
-  const handleCancelAppointment = async (appointment) => {
-    try {
-      await cancelAppointment(appointment.id);
-      fetchAppointments();
-      setOpenModal(false);
-    } catch (error) {
-      console.error("Error cancelling appointment:", error);
-    }
+  const handleCancelAppointment = async () => {
+    Modal.confirm({
+      title: "Xác nhận hủy lịch",
+      content: `Bạn xác nhận hủy lịch hẹn này?`,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          if (appointmentDetail) {
+            const updatedAppointment = {
+              id: appointmentDetail.id,
+              customerId: appointmentDetail?.customer?.id,
+              employeeId: appointmentDetail?.employee?.id,
+              status: -1, //Update status to "Hủy"
+            };
+            message.success("Đã hủy");
+            await updateAppointment(updatedAppointment);
+            onRefuseAppointment(updatedAppointment);
+            fetchAppointments();
+            setOpenModal(false);
+          }
+        } catch (error) {
+          message.error(
+            "Có lỗi xảy ra khi xóa lịch làm việc: " + error.message
+          );
+        }
+      },
+    });
   };
   // get Appointment Detail
   const handleAppointmentClick = async (appointmentId) => {
@@ -173,7 +192,6 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
               employeeId: appointmentDetail?.employee?.id,
               status: 3, //Update status to "Từ chối"
             };
-            console.log(updatedAppointment)
             message.success("Đã từ chối");
             await updateAppointment(updatedAppointment);
             onRefuseAppointment(updatedAppointment);

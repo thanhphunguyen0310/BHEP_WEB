@@ -19,7 +19,6 @@ export const getUserDetail = async (id) => {
 //       {
 //         headers: {
 //           "Content-Type": "multipart/form-data",
-//           'ngrok-skip-browser-warning': 'true',
 //         },
 //       }
 //     );
@@ -38,6 +37,7 @@ export const updateUserDetail = async (id, formData) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );

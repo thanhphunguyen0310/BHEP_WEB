@@ -6,7 +6,6 @@ import {
   Avatar,
   Button,
   Divider,
-  Image,
   Input,
   Radio,
   Row,
@@ -16,6 +15,7 @@ import {
 } from "antd";
 import { AiFillEdit } from "react-icons/ai";
 import { PlusOutlined } from '@ant-design/icons';
+import ALT_AVATAR from "../../assets/img/alt-avatar.png";
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
@@ -104,7 +104,7 @@ const UserInfo = () => {
               {formData.avatar ? (
                 <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 <Avatar
-                shape="square"
+                  shape="square"
                   src={formData.avatar}
                   alt="avatar"
                   style={{ width: '100%', height:"100%" }}
@@ -136,7 +136,7 @@ const UserInfo = () => {
           </Row>
         ) : (
           <Row justify="center" className="user-avatar">
-            <Avatar shape="square" src={user?.avatar} />
+            <Avatar shape="circle" src={user?.avatar || ALT_AVATAR} />
           </Row>
         )}
 
@@ -201,6 +201,13 @@ const UserInfo = () => {
           )}
         </Row>
         <Divider />
+        {/* <Row className="user-info">
+          <Typography.Text>BHEP xu:</Typography.Text>
+          <Typography.Text style={{ color: "#fb8500" }}>
+            {formatBalance(user?.balance)}
+          </Typography.Text>
+        </Row>
+        <Divider /> */}
         <Row className="user-info">
           <Typography.Text>BHEP xu:</Typography.Text>
           <Typography.Text style={{ color: "#fb8500" }}>
