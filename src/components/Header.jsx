@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import LOGO from "../assets/img/LOGO.png";
+import ALT_AVATAR from "../assets/img/alt-avatar.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -54,12 +55,6 @@ const NavBar = () => {
     await updateDoc(notificationRef, {
       isRead: true,
     });
-  };
-  const handleAvatarError = (e) => {
-    if (e && e.target) {
-      e.target.src = "/path/to/placeholder/avatar.png";
-      message.error("Failed to load avatar image");
-    }
   };
   const handleMessage = () => {
     message.loading(
@@ -109,7 +104,7 @@ const NavBar = () => {
           onClick={() => handleNotificationClick(appointmentId, id)}
             className={isRead ? 'read-notification' : 'unread-notification'}>
             <List.Item.Meta
-              avatar={<Avatar src={avatar} onError={handleAvatarError} />}
+              avatar={<Avatar src={avatar} />}
               title={userName}
               description={content}
             />
@@ -168,9 +163,9 @@ const NavBar = () => {
               <Dropdown overlay={<Profile />} placement="bottomRight">
                 <Avatar
                   className="avatar"
-                  src={auth?.user?.data?.user?.avatar}
-                  alt={auth?.user?.data?.user?.fullName}
-                  onError={handleAvatarError}
+                  src={auth?.user?.data?.user?.avatar || ALT_AVATAR}
+                  alt="User Avatar"
+                  onError={(e) => { e.target.onerror = null; e.target.src = ALT_AVATAR; }}
                   style={{ cursor: "pointer" }}
                 />
               </Dropdown>

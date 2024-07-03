@@ -19,10 +19,10 @@ export const updateUserDetail = async (id, formData) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
+          'ngrok-skip-browser-warning': 'true',
         },
       }
     );
-
     return response.data;
   } catch (error) {
     console.error("Error updating user data:", error);
@@ -38,7 +38,6 @@ export const updateUserDetail = async (id, formData) => {
 //       {
 //         headers: {
 //           "Content-Type": "multipart/form-data",
-//           'ngrok-skip-browser-warning': 'true',
 //         },
 //       }
 //     );

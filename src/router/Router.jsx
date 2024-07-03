@@ -24,6 +24,11 @@ import FailPayment from './../pages/FailPayment';
 import SuccessPayment from './../pages/SuccessPayment';
 import UserInfo from '../pages/customer/UserInfo';
 import UserHealthTracking from '../pages/customer/UserHealthTracking'
+import Policy from '../pages/Policy';
+import AboutUs from '../pages/AboutUs';
+import TermOfUse from '../pages/TermOfUse';
+import DisableAccount from '../components/DisableAccount';
+import Manage from '../pages/admin/Manage';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -86,6 +91,11 @@ export const  defaultLayoutRoutes = [
     {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
     {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
     {path: "/profile", component: UserInfo, role: [1, 2, 3]},
-    {path: "/health-tracking", component: UserHealthTracking,role: [1, 2, 3]}
+    {path: "/health-tracking", component: UserHealthTracking,role: [1, 2, 3]},
+    {path: "/policy", component: Policy},
+    {path: "/about-us", component: AboutUs},
+    {path: "/terms-of-use", component: TermOfUse},
+    {path: "/disable-account", component: DisableAccount},
+    {path: "/manage", component: Manage, role: [1]},
 ]
 

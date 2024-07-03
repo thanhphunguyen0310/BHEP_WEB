@@ -26,23 +26,23 @@ import {
 } from "../../store/cartSlice";
 import { ShoppingFilled } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import Empty from "../../assets/icon/empty.svg"
+import Empty from "../../assets/icon/empty.svg";
 import LoginForm from "../../models/LoginForm";
 
 const Cart = () => {
-  const [openLoginForm, setOpenLoginForm] = useState(false)
+  const [openLoginForm, setOpenLoginForm] = useState(false);
   const items = useSelector((state) => state?.cart);
   const groupCode = useSelector((state) => state?.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cartItems"))
+    const cart = JSON.parse(localStorage.getItem("cartItems"));
     dispatch(setLocalToCart(cart));
   }, []);
 
   useEffect(() => {
-    if(items.length != 0){
+    if (items.length != 0) {
       dispatch(getTotal());
     }
   }, [items, dispatch]);
@@ -53,7 +53,7 @@ const Cart = () => {
       className: "custom-header",
       key: "image",
       render: (text, record) => {
-        const isDevice = record.type === 'device';
+        const isDevice = record.type === "device";
         return text ? (
           <span style={{ display: "flex", alignItems: "center" }}>
             <img
@@ -129,7 +129,7 @@ const Cart = () => {
         <>
           {record.type === "device" ? (
             <InputNumber
-             style={{textAlign:"center", width:"60px"}}
+              style={{ textAlign: "center", width: "60px" }}
               value={record.quantity}
               onChange={(value) => handleItemQuantityChange(record, value)}
             />
@@ -160,7 +160,7 @@ const Cart = () => {
       render: (text, record) => (
         <Space size="middle">
           <MdDelete
-            style={{cursor:"pointer"}}
+            style={{ cursor: "pointer" }}
             color="#ed0505"
             onClick={() => handleRemoveFromCart(record)}
           />
@@ -169,13 +169,13 @@ const Cart = () => {
     },
   ];
   const handleOrder = () => {
-    if(!userRole) {
-      message.error("Vui lòng đăng nhập để đặt hàng")
+    if (!userRole) {
+      message.error("Vui lòng đăng nhập để đặt hàng");
       setOpenLoginForm(true);
-    }else{
-      navigate(`/order`)
+    } else {
+      navigate(`/order`);
     }
-  }
+  };
   const handleRemoveFromCart = (cartItem) => {
     dispatch(removeItemFromCart(cartItem));
   };
@@ -205,14 +205,21 @@ const Cart = () => {
   };
   const emptyCartContent = (
     <div style={{ textAlign: "center" }}>
-      <img src={Empty} alt="Empty Cart" style={{ width: 150, marginBottom: 20 }} />
+      <img
+        src={Empty}
+        alt="Empty Cart"
+        style={{ width: 150, marginBottom: 20 }}
+      />
       <div>Giỏ hàng trống!</div>
-      <Typography.Link onClick={() => navigate(`/store`)}>Ấn vào đây để khám phá các sản phẩm của BHEP</Typography.Link>
+      <Typography.Link onClick={() => navigate(`/store`)}>
+        Ấn vào đây để khám phá các sản phẩm của BHEP
+      </Typography.Link>
     </div>
-  ); 
+  );
   const closeLoginModal = () => {
     setOpenLoginForm(false);
   };
+
   return (
     <div className="cart-container">
       <Flex className="search-bar" align="center" justify="center" gap={30}>

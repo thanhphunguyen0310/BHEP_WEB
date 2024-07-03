@@ -100,7 +100,7 @@ export const updateAppointment = async ({id, customerId, employeeId, status}) =>
   }
 }
 
-export const cancelAppointment = async (id) => {
+export const deleteAppointment = async (id) => {
   try {
     const response = await apiClient.delete(`/Appointment/${id}`);
     return response.data;
