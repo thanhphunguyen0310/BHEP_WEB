@@ -1,19 +1,35 @@
 import "../styles/Header.scss";
-import { Menu, Button, Typography, Avatar, message, Dropdown } from "antd";
+import {
+  Menu,
+  Button,
+  Typography,
+  Avatar,
+  message,
+  Dropdown,
+  Badge,
+  List,
+} from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import LOGO from "../assets/img/LOGO.png";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import LoginForm from "../models/LoginForm";
 import RegistForm from "../models/RegisterForm";
 import Profile from "./Profile";
+import { IoIosNotifications } from "react-icons/io";
+import { db } from '../configs/firebase/firebaseConfig'; // Make sure to import your firebase config
+import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { getAppointmentById } from "../configs/api/appointmentApi";
 
 const NavBar = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showRegistForm, setShowRegistForm] = useState(false);
+  const [openNoti, setOpenNoti] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNoti, setUnreadNoti] = useState([]);
   const auth = useSelector((state) => state.auth);
-
+  const navigate = useNavigate();
   const openLoginForm = () => {
     setShowLoginForm(true);
     setShowRegistForm(false);
@@ -28,7 +44,17 @@ const NavBar = () => {
     setShowLoginForm(false);
     setShowRegistForm(false);
   };
-
+  const handleNotificationClick = async (appointmentId, notificationId) => {
+    await updateNotificationReadStatus(notificationId);
+    setOpenNoti(false);
+    navigate('/list-appointment', { state: { appointmentId } });
+  };
+  const updateNotificationReadStatus = async (notificationId) => {
+    const notificationRef = doc(db, 'notification', notificationId);
+    await updateDoc(notificationRef, {
+      isRead: true,
+    });
+  };
   const handleAvatarError = (e) => {
     if (e && e.target) {
       e.target.src = "/path/to/placeholder/avatar.png";
@@ -36,8 +62,63 @@ const NavBar = () => {
     }
   };
   const handleMessage = () => {
-    message.loading("Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!",[2])
-  }
+    message.loading(
+      "Tính năng đang được BHEP phát triển. Bạn quay lại sau nhé!",
+      [2]
+    );
+  };
+  useEffect(() => {
+    if (auth.user?.data?.user?.roleId === 3) {
+      const q = query(
+        collection(db, 'notification'), 
+        where('toUserId', '==', auth?.user?.data?.user?.id));
+        // where('isRead', '==', false));
+      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+        const notifications = [];
+        for (const doc of querySnapshot.docs) {
+          const notification = doc.data();
+          const appointment = await getAppointmentById(notification.appointmentId);
+          notifications.push({
+            id: doc.id,
+            ...notification,
+            avatar: appointment?.data?.customer?.avatar,
+            userName: appointment?.data?.customer?.fullName,
+            status: appointment?.data?.status
+          });
+          notifications.sort((a, b) => {
+            if (a.isRead && !b.isRead) return 1;
+            if (!a.isRead && b.isRead) return -1;
+            return 0;
+          });
+          setNotifications(notifications);
+        }
+        const unreadNotifications = notifications.filter((noti) => !noti.isRead);
+        setUnreadNoti(unreadNotifications);
+      });
+      return () => unsubscribe();
+    }
+  }, [auth.user]);
+  const notificationMenu = (
+    <Menu className="menu-notification">
+      <List
+        itemLayout="vertical"
+        dataSource={notifications}
+        renderItem={({id, appointmentId,  avatar, userName, content, createdAt, isRead })=> (
+          <List.Item 
+          key={id} 
+          onClick={() => handleNotificationClick(appointmentId, id)}
+            className={isRead ? 'read-notification' : 'unread-notification'}>
+            <List.Item.Meta
+              avatar={<Avatar src={avatar} onError={handleAvatarError} />}
+              title={userName}
+              description={content}
+            />
+            <p>{new Date(createdAt).toLocaleString()}</p>
+          </List.Item>
+        )}
+      />
+    </Menu>
+  );
   return (
     <div className="header-container">
       <div className="header-content">
@@ -69,15 +150,31 @@ const NavBar = () => {
         </Menu>
         <div className="button">
           {auth.user?.isSuccess ? (
-            <Dropdown overlay={<Profile />} placement="bottomRight">
-              <Avatar
-                className="avatar"
-                src={auth?.user?.data?.user?.avatar}
-                alt={auth?.user?.data?.user?.fullName}
-                onError={handleAvatarError}
-                style={{ cursor: "pointer" }}
-              />
-            </Dropdown>
+            <div className="user-loggedin">
+              <div style={{marginRight:"12px"}}>
+              <Dropdown 
+              arrow 
+              overlay={notificationMenu} 
+              placement="bottomRight" 
+              trigger={['click']}
+              open={openNoti}
+              onOpenChange={(open)=>setOpenNoti(open)}
+              >
+              <Badge count={unreadNoti.length} overflowCount={99}>
+                <IoIosNotifications className="notification-icon" />
+              </Badge>
+              </Dropdown>
+              </div>
+              <Dropdown overlay={<Profile />} placement="bottomRight">
+                <Avatar
+                  className="avatar"
+                  src={auth?.user?.data?.user?.avatar}
+                  alt={auth?.user?.data?.user?.fullName}
+                  onError={handleAvatarError}
+                  style={{ cursor: "pointer" }}
+                />
+              </Dropdown>
+            </div>
           ) : (
             <>
               <Button

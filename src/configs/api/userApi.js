@@ -19,6 +19,7 @@ export const getUserDetail = async (id) => {
 //       {
 //         headers: {
 //           "Content-Type": "multipart/form-data",
+//           'ngrok-skip-browser-warning': 'true',
 //         },
 //       }
 //     );

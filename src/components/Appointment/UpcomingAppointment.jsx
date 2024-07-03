@@ -10,6 +10,7 @@ import "../../styles/UpcomingAppointment.scss";
 import { Avatar, Button, Col, Modal, Row, Typography, message } from "antd";
 import { RiCalendarScheduleFill } from "react-icons/ri";
 import { FaClock, FaStickyNote } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 const { Text } = Typography;
 
 const UpcomingAppointment = ({ onRefuseAppointment }) => {
@@ -18,7 +19,7 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [appointmentDetail, setAppointmentDetail] = useState(null);
-
+  const location = useLocation();
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
   const userRole = useSelector((state) => state.auth?.user?.data?.user?.roleId);
 
@@ -57,6 +58,11 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
       fetchAppointments();
     }
   }, [userId]);
+  useEffect(() => {
+    if (location.state?.appointmentId) {
+      handleAppointmentClick(location.state.appointmentId);
+    }
+  }, [location.state]);
   const getStatusAppointment = (status) => {
     switch (status) {
       case -1:
@@ -113,7 +119,6 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
   const handleAppointmentClick = async (appointmentId) => {
     try {
       const appointmentDetail = await getAppointmentById(appointmentId);
-      console.log(appointmentDetail.data);
       setAppointmentDetail(appointmentDetail.data);
       setSelectedAppointment(appointmentDetail.data);
       setOpenModal(true);

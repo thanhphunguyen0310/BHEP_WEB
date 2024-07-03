@@ -1,13 +1,6 @@
-import { Result, Button, Spin } from "antd";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import queryString from "query-string";
-import { getPaymentStatus } from "../../configs/api/appointmentApi";
+import { Result, Button } from "antd";
 
 const AppointmentFinish = ({ paymentId }) => {
-  const location = useLocation();
-  const [isPaymentComplete, setIsPaymentComplete] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   return (
     <>
