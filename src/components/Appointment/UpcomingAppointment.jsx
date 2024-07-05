@@ -206,6 +206,34 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
       },
     });
   };
+  const handlCompleteAppointment = async () => {
+    Modal.confirm({
+      title: "Hoàn thành lịch hẹn",
+      content: `Bạn xác đã hoàn thành lịch hẹn này?`,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          if (appointmentDetail) {
+            const updatedAppointment = {
+              id: appointmentDetail.id,
+              customerId: appointmentDetail?.customer?.id,
+              employeeId: appointmentDetail?.employee?.id,
+              status: 2, //Update status to "Hoàn thành"
+            };
+            message.success("Chúc mừng bạn đã hoàn thành đơn hẹn");
+            await updateAppointment(updatedAppointment);
+            fetchAppointments();
+            setOpenModal(false);
+          }
+        } catch (error) {
+          message.error(
+            "Có lỗi xảy ra khi xác nhận lịch làm việc: " + error.message
+          );
+        }
+      },
+    });
+  }
   const handleModalClose = () => {
     setOpenModal(false);
   };
@@ -305,6 +333,18 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
                 danger
               >
                 Từ chối
+              </Button>
+            </>
+          ),
+          userRole === 3 && appointmentDetail?.status === 1 && (
+            <>
+              <Button 
+                key="confirm" 
+                type="primary"
+                style={{ backgroundColor:"#0dbd2a" }}
+                onClick={() => handlCompleteAppointment(appointmentDetail)}
+                >
+                Hoàn thành
               </Button>
             </>
           ),

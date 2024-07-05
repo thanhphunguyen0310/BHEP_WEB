@@ -16,23 +16,23 @@ const ListAppointment = () => {
   const items = [
     {
       key: "1",
-      label: "Lịch sắp đến",
+      label: "Lịch hẹn",
       children: (
         <UpcomingAppointments onRefuseAppointment={handleRefuseAppointment} />
       ),
     },
-    {
-      key: "2",
-      label: "Hoàn thành",
-      children: <CompletedAppointments />,
-    },
-    {
-      key: "3",
-      label: "Đã hủy",
-      children: (
-        <CancelledAppointments cancelledAppointments={cancelledAppointments} />
-      ),
-    },
+    // {
+    //   key: "2",
+    //   label: "Hoàn thành",
+    //   children: <CompletedAppointments />,
+    // },
+    // {
+    //   key: "3",
+    //   label: "Đã hủy",
+    //   children: (
+    //     <CancelledAppointments cancelledAppointments={cancelledAppointments} />
+    //   ),
+    // },
   ];
 
   return (
