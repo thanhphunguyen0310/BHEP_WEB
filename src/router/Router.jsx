@@ -29,6 +29,7 @@ import AboutUs from '../pages/AboutUs';
 import TermOfUse from '../pages/TermOfUse';
 import DisableAccount from '../components/DisableAccount';
 import Manage from '../pages/admin/Manage';
+import ManageJobApplication from '../components/Admin/ManageJobApplication';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -97,5 +98,6 @@ export const  defaultLayoutRoutes = [
     {path: "/terms-of-use", component: TermOfUse},
     {path: "/disable-account", component: DisableAccount},
     {path: "/manage", component: Manage, role: [1]},
+    {path: "/manage-job-application", component: ManageJobApplication, role: [1]},
 ]
 
