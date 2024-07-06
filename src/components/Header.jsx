@@ -76,6 +76,7 @@ const NavBar = () => {
       for (const doc of querySnapshot.docs) {
         const notification = doc.data();
         const appointment = await getAppointmentById(notification.appointmentId);
+        setAppointments(appointment.data)
         fetchedNotifications.push({
           id: doc.id,
           ...notification,
@@ -105,7 +106,7 @@ const NavBar = () => {
       const q = query(
         collection(db, 'notification'), 
         where('toUserId', '==', auth?.user?.data?.user?.id));
-      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+      const unsubscribe = onSnapshot(q, async () => {
         fetchNotifications();
       });
       return () => unsubscribe();
@@ -130,9 +131,9 @@ const NavBar = () => {
             <p>{new Date(createdAt).toLocaleString()}</p>
           </List.Item>
           {status === 0 && ( // Chỉ hiển thị nút khi status === 0
-            <Space size={1}>
-              <Button type="primary" onClick={() => handleAcceptAppointment(appointmentId)}>Xác nhận</Button>
-              <Button danger style={{ marginLeft: '10px' }} onClick={() => handleRejectAppointment(appointmentId)}>Từ chối</Button>
+            <Space size={1}  className={isRead ? 'read-notification' : 'unread-notification'}>
+              <Button type="primary" onClick={() => handleAcceptAppointment(appointmentId, id)}>Xác nhận</Button>
+              <Button danger style={{ marginLeft: '10px' }} onClick={() => handleRejectAppointment(appointmentId, id)}>Từ chối</Button>
             </Space>
           )}
           </>
@@ -141,7 +142,7 @@ const NavBar = () => {
     </Menu>
   );
   // Hàm xử lý khi nhấn nút Xác nhận
-const handleAcceptAppointment = async (appointmentId) => {
+const handleAcceptAppointment = async (appointmentId, notificationId) => {
   try {
     const updatedAppointment = {
       id: appointmentId,
@@ -151,6 +152,7 @@ const handleAcceptAppointment = async (appointmentId) => {
     };
     await updateAppointment(updatedAppointment);
     message.success('Đã xác nhận cuộc hẹn thành công!');
+    await updateNotificationReadStatus(notificationId);
     fetchNotifications();
   } catch (error) {
     console.error('Lỗi khi xác nhận cuộc hẹn:', error);
@@ -159,7 +161,7 @@ const handleAcceptAppointment = async (appointmentId) => {
 };
 
 // Hàm xử lý khi nhấn nút Từ chối
-const handleRejectAppointment = async (appointmentId) => {
+const handleRejectAppointment = async (appointmentId, notificationId) => {
   try {
     const updatedAppointment = {
       id: appointmentId,
@@ -169,6 +171,7 @@ const handleRejectAppointment = async (appointmentId) => {
     };
     await updateAppointment(updatedAppointment);
     message.success('Đã từ chối cuộc hẹn thành công!');
+    await updateNotificationReadStatus(notificationId);
     fetchNotifications();
   } catch (error) {
     console.error('Lỗi khi từ chối cuộc hẹn:', error);
