@@ -138,3 +138,8 @@
       border-radius: 50%; // Make avatars circular
     }
   }
+  @media (max-width: 900px) {
+    .header-content .logo {
+      display: none;
+    }
+  }

@@ -34,3 +34,13 @@ export const updateJobApplicationStatus = async (JobApplicationId, status) => {
         throw error;
     }
 }
+
+export const getSpecialist = async () => {
+    try {
+        const response = await apiClient.get(`/Specialist`)
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+    }
+}

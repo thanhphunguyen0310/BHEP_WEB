@@ -146,3 +146,41 @@
     }
   }
 }
+@media (max-width: 480px) {
+  .service-content h1,
+  .doctor h1,
+  .community h1 {
+    font-size: 20px;
+  }
+
+  .community-content {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+  }
+
+  .community-content .header img {
+    width: 100%;
+    height: auto;
+  }
+
+  .community-content .content .avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .community-content .description {
+    margin-top: 50px;
+  }
+
+  .community-content .description .data {
+    margin: 15px 5px;
+  }
+
+  .community-content .ant-btn {
+    width: 80%;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+

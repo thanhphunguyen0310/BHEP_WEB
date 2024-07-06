@@ -5,7 +5,6 @@ import {
   Col,
   Dropdown,
   Image,
-  List,
   Menu,
   Modal,
   Row,
