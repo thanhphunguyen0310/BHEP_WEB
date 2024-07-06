@@ -1,22 +1,29 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "../../styles/UserInfo.scss";
 import { useEffect, useState } from "react";
-import { getUserDetail, updateUserDetail } from "./../../configs/api/userApi";
+import {
+  getUserDetail,
+  updateUserDetail,
+  disableAccount,
+} from "./../../configs/api/userApi";
 import {
   Avatar,
   Button,
   Divider,
   Input,
+  Modal,
   Radio,
   Row,
+  Space,
   Typography,
   Upload,
   message,
 } from "antd";
 import { AiFillEdit } from "react-icons/ai";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from "@ant-design/icons";
 import ALT_AVATAR from "../../assets/img/alt-avatar.png";
-
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../store/authSlice";
 const UserInfo = () => {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -29,7 +36,15 @@ const UserInfo = () => {
     avatar: "",
   });
   const [avatarFile, setAvatarFile] = useState(null);
+  const [disableModalVisible, setDisableModalVisible] = useState(false);
+  const [disableReason, setDisableReason] = useState("");
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    navigate(`/`);
+    dispatch(logout());
+  };
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
@@ -45,6 +60,24 @@ const UserInfo = () => {
     } catch (error) {
       console.log("Error: ", error);
     }
+  };
+  const handleDisableAccount = async () => {
+    setDisableModalVisible(true);
+  };
+  const handleDisableConfirm = async () => {
+    try {
+      message.success("Tài khoản đã bị vô hiệu hóa!");
+      setDisableModalVisible(false);
+      handleLogout();
+      await disableAccount(userId, disableReason);
+    } catch (error) {
+      console.log("Error: ", error);
+      message.error("Đã có lỗi xảy ra khi vô hiệu hóa tài khoản.");
+    }
+  };
+
+  const handleDisableCancel = () => {
+    setDisableModalVisible(false);
   };
   useEffect(() => {
     userDetail();
@@ -69,7 +102,7 @@ const UserInfo = () => {
       formDataUpdate.append("PhoneNumber", formData.phoneNumber);
       formDataUpdate.append("Gender", formData.gender);
       if (avatarFile) {
-        formDataUpdate.append('Avatar', avatarFile);
+        formDataUpdate.append("Avatar", avatarFile);
       }
       await updateUserDetail(userId, formDataUpdate);
       message.success("Cập nhật thông tin thành công!");
@@ -89,7 +122,17 @@ const UserInfo = () => {
         <Row justify={"space-between"} align={"middle"} className="header">
           <Typography.Title level={2}>THÔNG TIN CÁ NHÂN</Typography.Title>
           <Typography.Text onClick={() => setEditMode(!editMode)}>
-            {editMode ? "" : <Row align={"middle"}>Chỉnh sửa <AiFillEdit style={{width:"20px", height:"20px"}} color="#71a9fe"/></Row>}
+            {editMode ? (
+              ""
+            ) : (
+              <Row align={"middle"}>
+                Chỉnh sửa{" "}
+                <AiFillEdit
+                  style={{ width: "20px", height: "20px" }}
+                  color="#71a9fe"
+                />
+              </Row>
+            )}
           </Typography.Text>
         </Row>
         {editMode ? (
@@ -102,35 +145,41 @@ const UserInfo = () => {
               onChange={handleAvatarChange}
             >
               {formData.avatar ? (
-                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <Avatar
-                  shape="square"
-                  src={formData.avatar}
-                  alt="avatar"
-                  style={{ width: '100%', height:"100%" }}
-                />
                 <div
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0, 0, 0, 0.5)',
-                    borderRadius: '8px',
-                    color: 'white',
-                    fontSize: '24px',
-                    cursor: 'pointer',
+                    position: "relative",
+                    width: "100%",
+                    height: "100%",
                   }}
                 >
-                  <PlusOutlined />
+                  <Avatar
+                    shape="square"
+                    src={formData.avatar}
+                    alt="avatar"
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "rgba(0, 0, 0, 0.5)",
+                      borderRadius: "8px",
+                      color: "white",
+                      fontSize: "24px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <PlusOutlined />
+                  </div>
                 </div>
-              </div>
               ) : (
-                'Upload'
+                "Upload"
               )}
             </Upload>
           </Row>
@@ -201,13 +250,16 @@ const UserInfo = () => {
           )}
         </Row>
         <Divider />
-        {/* <Row className="user-info">
-          <Typography.Text>BHEP xu:</Typography.Text>
-          <Typography.Text style={{ color: "#fb8500" }}>
-            {formatBalance(user?.balance)}
-          </Typography.Text>
+        <Row className="user-info">
+          <Typography.Text>Mã thiết bị:</Typography.Text>
+          <Typography.Text>{user?.familyCodes}</Typography.Text>
         </Row>
-        <Divider /> */}
+        <Divider />
+        <Row className="user-info">
+          <Typography.Text>Mã gia đình:</Typography.Text>
+          <Typography.Text>{user?.deviceCodes}</Typography.Text>
+        </Row>
+        <Divider />
         <Row className="user-info">
           <Typography.Text>BHEP xu:</Typography.Text>
           <Typography.Text style={{ color: "#fb8500" }}>
@@ -224,7 +276,27 @@ const UserInfo = () => {
         ) : (
           <> </>
         )}
+        <Space className="disable-btn">
+          <Button type="dashed" danger onClick={handleDisableAccount}>
+            Vô hiệu hóa tài khoản
+          </Button>
+        </Space>
       </div>
+      <Modal
+        title="Vô hiệu hóa tài khoản"
+        open={disableModalVisible}
+        onOk={handleDisableConfirm}
+        onCancel={handleDisableCancel}
+      >
+        <p>Vui lòng nhập lí do vô hiệu hóa tài khoản:</p>
+        <Input.TextArea
+          value={disableReason}
+          onChange={(e) => setDisableReason(e.target.value)}
+          placeholder="Nhập lí do"
+          rows={4}
+          maxLength={50}
+        />
+      </Modal>
     </div>
   );
 };

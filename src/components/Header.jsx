@@ -67,7 +67,6 @@ const NavBar = () => {
       const q = query(
         collection(db, 'notification'), 
         where('toUserId', '==', auth?.user?.data?.user?.id));
-        // where('isRead', '==', false));
       const unsubscribe = onSnapshot(q, async (querySnapshot) => {
         const notifications = [];
         for (const doc of querySnapshot.docs) {

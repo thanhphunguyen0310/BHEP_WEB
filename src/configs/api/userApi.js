@@ -11,6 +11,19 @@ export const getUserDetail = async (id) => {
   }
 };
 
+export const disableAccount = async (userId, reason) => {
+  try {
+    const disable = await apiClient.post(`/DeletionRequest`, {
+      userId: userId,
+      reason: reason,
+    });
+    return disable.data;
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    throw error;
+  }
+};
+
 export const updateUserDetail = async (id, formData) => {
   try {
     const response = await axios.put(
@@ -19,7 +32,7 @@ export const updateUserDetail = async (id, formData) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          'ngrok-skip-browser-warning': 'true',
+          "ngrok-skip-browser-warning": "true",
         },
       }
     );
@@ -47,4 +60,3 @@ export const updateUserDetail = async (id, formData) => {
 //     throw error;
 //   }
 // };
-
