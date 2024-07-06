@@ -1,5 +1,5 @@
 import "../styles/Banner.scss";
-import APP from "../assets/img/app-banner.png";
+import APP from "../assets/img/App-banner.jpg";
 import APP_QR from "../assets/img/app-qr.png";
 import AppStore from "../assets/img/applestore.png"
 import GooglePlay from "../assets/img/googleplay.png"
@@ -23,7 +23,7 @@ const Banner = () => {
                             <br /> với ứng dụng BHEP
                         </h1>
                     </div>
-                    <div className="content-bottom">
+                    {/* <div className="content-bottom">
                         <img src={APP_QR} alt="app-qr" />
                         <div className="btn-link">
                             <h2>Quét mã để tải ngay</h2>
@@ -32,8 +32,7 @@ const Banner = () => {
                                 <img src={GooglePlay} alt="app-image" />
                             </div>
                         </div>
-
-                    </div>
+                    </div> */}
                 </div>
                 <div className="app-img">
                     <img src={APP} alt="app-image" />

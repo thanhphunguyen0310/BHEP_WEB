@@ -9,16 +9,16 @@
       display: flex;
       width: 100%;
       justify-content: space-between;
-      padding: 0 280px;
+      padding: 0 250px;
   
       .text-content {
         padding: 80px 0px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
   
         .content-top {
-          font-size: 3rem;
+          font-size: 3.5rem;
           font-weight: bold;
           line-height: 1.2;
           color: black;
