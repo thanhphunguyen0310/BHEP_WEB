@@ -24,6 +24,7 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
 
   const fetchAppointments = async () => {
     const res = await getAppointmentByUserId(userId);
+    console.log(res.data);
     const sortedAppointments = res.data?.appointments.sort((a, b) => {
       if (a.status !== b.status) {
         return a.status === 1 ? -1 : 1;
@@ -161,7 +162,6 @@ const UpcomingAppointment = ({ onRefuseAppointment }) => {
               employeeId: appointmentDetail?.employee?.id,
               status: 1, //Update status to "Xác nhận"
             };
-            console.log(updatedAppointment)
             message.success("Chấp nhận lịch hẹn");
             await updateAppointment(updatedAppointment);
             // onRefuseAppointment(updatedAppointment);

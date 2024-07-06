@@ -8,6 +8,7 @@ import {
   Dropdown,
   Badge,
   List,
+  Space,
 } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import LOGO from "../assets/img/LOGO.png";
@@ -20,14 +21,15 @@ import RegistForm from "../models/RegisterForm";
 import Profile from "./Profile";
 import { IoIosNotifications } from "react-icons/io";
 import { db } from '../configs/firebase/firebaseConfig'; // Make sure to import your firebase config
-import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
-import { getAppointmentById } from "../configs/api/appointmentApi";
+import { collection, query, where, onSnapshot, updateDoc, doc, getDocs } from 'firebase/firestore';
+import { getAppointmentById, updateAppointment } from "../configs/api/appointmentApi";
 
 const NavBar = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showRegistForm, setShowRegistForm] = useState(false);
   const [openNoti, setOpenNoti] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [unreadNoti, setUnreadNoti] = useState([]);
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -62,32 +64,49 @@ const NavBar = () => {
       [2]
     );
   };
+  const fetchNotifications = async () => {
+    try {
+      const q = query(
+        collection(db, 'notification'), 
+        where('toUserId', '==', auth?.user?.data?.user?.id)
+      );
+      const querySnapshot = await getDocs(q);
+      const fetchedNotifications = [];
+  
+      for (const doc of querySnapshot.docs) {
+        const notification = doc.data();
+        const appointment = await getAppointmentById(notification.appointmentId);
+        fetchedNotifications.push({
+          id: doc.id,
+          ...notification,
+          avatar: appointment?.data?.customer?.avatar,
+          userName: appointment?.data?.customer?.fullName,
+          status: appointment?.data?.status
+        });
+      }
+  
+      fetchedNotifications.sort((a, b) => {
+        if (a.isRead && !b.isRead) return 1;
+        if (!a.isRead && b.isRead) return -1;
+        return 0;
+      });
+  
+      setNotifications(fetchedNotifications);
+  
+      const unreadNotifications = fetchedNotifications.filter((noti) => !noti.isRead);
+      setUnreadNoti(unreadNotifications);
+    } catch (error) {
+      console.error('Lỗi khi fetch dữ liệu thông báo:', error);
+    }
+  };
   useEffect(() => {
     if (auth.user?.data?.user?.roleId === 3) {
+      fetchNotifications();
       const q = query(
         collection(db, 'notification'), 
         where('toUserId', '==', auth?.user?.data?.user?.id));
       const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-        const notifications = [];
-        for (const doc of querySnapshot.docs) {
-          const notification = doc.data();
-          const appointment = await getAppointmentById(notification.appointmentId);
-          notifications.push({
-            id: doc.id,
-            ...notification,
-            avatar: appointment?.data?.customer?.avatar,
-            userName: appointment?.data?.customer?.fullName,
-            status: appointment?.data?.status
-          });
-          notifications.sort((a, b) => {
-            if (a.isRead && !b.isRead) return 1;
-            if (!a.isRead && b.isRead) return -1;
-            return 0;
-          });
-          setNotifications(notifications);
-        }
-        const unreadNotifications = notifications.filter((noti) => !noti.isRead);
-        setUnreadNoti(unreadNotifications);
+        fetchNotifications();
       });
       return () => unsubscribe();
     }
@@ -97,7 +116,8 @@ const NavBar = () => {
       <List
         itemLayout="vertical"
         dataSource={notifications}
-        renderItem={({id, appointmentId,  avatar, userName, content, createdAt, isRead })=> (
+        renderItem={({id, appointmentId,  avatar, userName, content, createdAt, isRead, status })=> (
+          <>
           <List.Item 
           key={id} 
           onClick={() => handleNotificationClick(appointmentId, id)}
@@ -109,10 +129,52 @@ const NavBar = () => {
             />
             <p>{new Date(createdAt).toLocaleString()}</p>
           </List.Item>
+          {status === 0 && ( // Chỉ hiển thị nút khi status === 0
+            <Space size={1}>
+              <Button type="primary" onClick={() => handleAcceptAppointment(appointmentId)}>Xác nhận</Button>
+              <Button danger style={{ marginLeft: '10px' }} onClick={() => handleRejectAppointment(appointmentId)}>Từ chối</Button>
+            </Space>
+          )}
+          </>
         )}
       />
     </Menu>
   );
+  // Hàm xử lý khi nhấn nút Xác nhận
+const handleAcceptAppointment = async (appointmentId) => {
+  try {
+    const updatedAppointment = {
+      id: appointmentId,
+      customerId: appointments?.customer?.id,
+      employeeId: appointments?.employee?.id,
+      status: 1, //Update status to "Xác nhận"
+    };
+    await updateAppointment(updatedAppointment);
+    message.success('Đã xác nhận cuộc hẹn thành công!');
+    fetchNotifications();
+  } catch (error) {
+    console.error('Lỗi khi xác nhận cuộc hẹn:', error);
+    message.error('Đã xảy ra lỗi khi xác nhận cuộc hẹn.');
+  }
+};
+
+// Hàm xử lý khi nhấn nút Từ chối
+const handleRejectAppointment = async (appointmentId) => {
+  try {
+    const updatedAppointment = {
+      id: appointmentId,
+      customerId: appointments?.customer?.id,
+      employeeId: appointments?.employee?.id,
+      status: 3, //Update status to "Từ chối"
+    };
+    await updateAppointment(updatedAppointment);
+    message.success('Đã từ chối cuộc hẹn thành công!');
+    fetchNotifications();
+  } catch (error) {
+    console.error('Lỗi khi từ chối cuộc hẹn:', error);
+    message.error('Đã xảy ra lỗi khi từ chối cuộc hẹn.');
+  }
+};
   return (
     <div className="header-container">
       <div className="header-content">

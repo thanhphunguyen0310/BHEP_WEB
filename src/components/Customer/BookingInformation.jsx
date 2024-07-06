@@ -169,9 +169,9 @@ const BookingInformation = ({ onNextStep, setConfirmationStatus }) => {
             </Typography.Paragraph>
             <Row className="information-content no-bg">
               <Radio.Group>
-                <Radio value={1}>Offline</Radio>
+                <Radio value={1}>Online</Radio>
                 <Radio disabled value={2}>
-                  Online
+                  Offline
                 </Radio>
               </Radio.Group>
             </Row>
