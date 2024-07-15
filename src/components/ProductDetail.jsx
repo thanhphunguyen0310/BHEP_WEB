@@ -15,12 +15,13 @@ import {
 } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/ProductDetail.scss";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getDeviceById, getServiceById } from "../configs/api/productApi";
 import { ShoppingFilled } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../store/productSlice";
 import { addToCart, updateGroupCode } from "../store/cartSlice";
+import { debounce } from "lodash";
 
 const ProductDetail = () => {
   const { id, type } = useParams();
@@ -89,6 +90,14 @@ const ProductDetail = () => {
       if (type === "device") {
         quantityToAdd = quantity; // Nếu là "device" thì lấy quantity mà người dùng chọn
       }
+      if (type == 2) {
+        // Family service requires group item or valid group code
+        const groupItem = items?.cartItems.find((item) => item.id.startsWith("group-"));
+        if (!groupItem && !groupCode) {
+          message.error("Vui lòng tạo nhóm hoặc nhập mã nhóm để thêm gói dịch vụ gia đình vào giỏ hàng.");
+          return;
+        }
+      }
       const item = {
         id: product.id,
         name: product.name,
@@ -143,14 +152,17 @@ const ProductDetail = () => {
     }
   };
   
-  const handleInputGroupCode = (e) => {
-    
-    const code = e.target.value;
-    console.log(code);
-    setGroupCode(code);
-    // setTimeout(() => {
+  const debounceUpdateGroupCode = useCallback(
+    debounce((code) => {
       dispatch(updateGroupCode(code));
-    // }, 200);
+    }, 500),
+    []
+  );
+
+  const handleInputGroupCode = (e) => {
+    const code = e.target.value;
+    setGroupCode(code);
+    debounceUpdateGroupCode(code);
   };
   const handleDurationChange = (value) => {
     setDuration(value);

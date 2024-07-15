@@ -8,7 +8,6 @@ import {  useNavigate } from 'react-router-dom';
 const SuccessPayment = () => {
 
     const transaction = useSelector((state) => state?.transaction?.transaction)
-    console.log(transaction, "Success Payment")
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const updateTransactionStatus = async () => {

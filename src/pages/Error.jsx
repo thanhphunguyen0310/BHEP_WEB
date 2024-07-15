@@ -6,9 +6,10 @@ const ErrorPage = () => {
         <>
         <p> Bạn không có quyền truy cập trang này</p>
         <br />
-        <p 
-            onClick={() => navigate('/')}
-        >Quay lại trang chủ</p>
+        <a 
+            href="/"
+            // onClick={() => navigate('/')}
+        >Quay lại trang chủ</a>
         </>
 
      );
