@@ -252,12 +252,12 @@ const UserInfo = () => {
         <Divider />
         <Row className="user-info">
           <Typography.Text>Mã thiết bị:</Typography.Text>
-          <Typography.Text>{user?.familyCodes}</Typography.Text>
+          <Typography.Text>{user?.deviceCodes}</Typography.Text>
         </Row>
         <Divider />
         <Row className="user-info">
           <Typography.Text>Mã gia đình:</Typography.Text>
-          <Typography.Text>{user?.deviceCodes}</Typography.Text>
+          <Typography.Text>{user?.familyCodes}</Typography.Text>
         </Row>
         <Divider />
         <Row className="user-info">
