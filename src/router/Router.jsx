@@ -30,6 +30,7 @@ import TermOfUse from '../pages/TermOfUse';
 import DisableAccount from '../components/DisableAccount';
 import Manage from '../pages/admin/Manage';
 import ManageJobApplication from '../components/Admin/ManageJobApplication';
+import ManageOrder from '../components/Admin/ManageOrder';
 
 export const  publicRoutes = [
     {path: "/", component: Homepage},
@@ -89,8 +90,8 @@ export const  defaultLayoutRoutes = [
     {path: "/health-records", component: HealthRecord, role: [2]},
     {path: "/history-appointment", component: AppointmentHistory, role: [2]},
     {path: "/error", component: ErrorPage, role: [0]},
-    {path: "/fail-payment", component: FailPayment, role: [1,2,3]},
-    {path: "/success-payment", component: SuccessPayment, role: [1, 2, 3]},
+    {path: "/fail-payment", component: FailPayment},
+    {path: "/success-payment", component: SuccessPayment},
     {path: "/profile", component: UserInfo, role: [1, 2, 3]},
     {path: "/health-tracking", component: UserHealthTracking,role: [1, 2, 3]},
     {path: "/policy", component: Policy},
@@ -99,5 +100,6 @@ export const  defaultLayoutRoutes = [
     {path: "/disable-account", component: DisableAccount},
     {path: "/manage", component: Manage, role: [1]},
     {path: "/manage-job-application", component: ManageJobApplication, role: [1]},
+    {path: "/manage-order", component: ManageOrder, role: [1]},
 ]
 

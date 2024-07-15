@@ -38,10 +38,9 @@ const RegistForm = ({ closeForm, openLoginForm }) => {
       message: "Nhập mật khẩu!",
     },
     {
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
       message:
-        "Mật khẩu phải chứa ít nhất 6 ký tự, bao gồm chữ thường, chữ in hoa và số!" +" "+
-        "Ví dụ:123456Abc",
+        "Mật khẩu phải chứa ít nhất 6 ký tự, bao gồm chữ thường, chữ in hoa, số và kí tự đặc biệt! Ví dụ: 123456Abc!",
     },
   ];
   const handleRegister = async (values) => {

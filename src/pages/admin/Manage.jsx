@@ -112,7 +112,10 @@ const Manage = () => {
                   <Typography.Title level={4}>
                     Danh sách đơn hàng
                   </Typography.Title>
-                  <Button type="primary">Xem</Button>
+                  <Button 
+                  type="primary"
+                  onClick={() => {navigate(`/manage-order`)}}
+                  >Xem</Button>
                 </div>
               </Card>
             </Col>

@@ -24,33 +24,15 @@ export const disableAccount = async (userId, reason) => {
   }
 };
 
-export const updateUserDetail = async (id, formData) => {
-  try {
-    const response = await axios.put(
-      `https://bhepapi.azurewebsites.net/Api/V1/User/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "ngrok-skip-browser-warning": "true",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error updating user data:", error);
-    throw error;
-  }
-};
-
 // export const updateUserDetail = async (id, formData) => {
 //   try {
 //     const response = await axios.put(
-//       `https://cleanly-divine-pegasus.ngrok-free.app/Api/V1/User/${id}`,
+//       `https://bhepapi.azurewebsites.net/Api/V1/User/${id}`,
 //       formData,
 //       {
 //         headers: {
 //           "Content-Type": "multipart/form-data",
+//           "ngrok-skip-browser-warning": "true",
 //         },
 //       }
 //     );
@@ -60,3 +42,21 @@ export const updateUserDetail = async (id, formData) => {
 //     throw error;
 //   }
 // };
+
+export const updateUserDetail = async (id, formData) => {
+  try {
+    const response = await axios.put(
+      `https://cleanly-divine-pegasus.ngrok-free.app/Api/V1/User/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    throw error;
+  }
+};

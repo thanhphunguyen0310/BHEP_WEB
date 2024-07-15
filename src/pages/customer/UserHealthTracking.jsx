@@ -1,5 +1,4 @@
-import { useSelector } from "react-redux";
-import { get, ref, onValue } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { database } from "../../configs/firebase/firebaseConfig";
 import { useEffect, useState } from "react";
 import "../../styles/HealthTracking.scss";
@@ -12,7 +11,7 @@ import LOGO from "../../assets/img/LOGO.png";
 const UserHealthTracking = () => {
   const [userHealth, setUserHealth] = useState();
   const [isUpdating, setIsUpdating] = useState(false);
-  const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
+  // const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
 
   useEffect(() => {
     const userHealthRef = ref(database, "Device1");
