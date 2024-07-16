@@ -75,7 +75,7 @@ const Manage = () => {
             </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Card className="workspace-card" hoverable>
-                <div className="card-content">
+                <div className="card-content" onClick={() => {navigate(`/manage-job-application`)}}>
                   <FaMailBulk className="icon manage-job-icon"/>
                   <Typography.Title level={4}>
                     Đơn đăng ký nhân viên
@@ -89,7 +89,7 @@ const Manage = () => {
             </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Card className="workspace-card" hoverable>
-                <div className="card-content">
+                <div className="card-content" onClick={() => {navigate(`/manage-payment`)}}>
                   <FaMoneyBillWave className="icon manage-payment-icon"/>
                   <Typography.Title level={4}>
                     Quản lí giao dịch
@@ -103,7 +103,7 @@ const Manage = () => {
             </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Card className="workspace-card" hoverable>
-                <div className="card-content">
+                <div className="card-content" onClick={() => {navigate(`/manage-order`)}}>
                   <FaShoppingBag className="icon manage-order-icon"/>
                   <Typography.Title level={4}>
                     Danh sách đơn hàng
