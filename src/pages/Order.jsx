@@ -186,7 +186,7 @@ const Order = () => {
         userId: userId,
         amount: items.cartTotalAmount,
         isMinus: true,
-        title: "Order Title",
+        title: "Đặt hàng",
         description: description,
         isGenerateCode: isGenerateCode,
         code: code,

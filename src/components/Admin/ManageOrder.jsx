@@ -1,9 +1,210 @@
+import { EyeOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Col,
+  Descriptions,
+  Divider,
+  Modal,
+  Row,
+  Space,
+  Table,
+} from "antd";
+import { useEffect, useState } from "react";
+import "../../styles/ManageOrder.scss";
+import { getAllOrder, getOrderById } from "../../configs/api/orderApi";
 const ManageOrder = () => {
-    return ( 
-        <>
-        Quản lí bán hàng
-        </>
-     );
-}
- 
+  const [order, setOrder] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
+  const fetchOrderDetail = async (orderId) => {
+    try {
+      const dataDetail = await getOrderById(orderId);
+      console.log(dataDetail.data);
+      setSelectedOrder(dataDetail.data);
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Error fetching job application details:", error);
+    }
+  };
+
+  const fetchOrder = async (pageIndex = 1, pageSize = 10) => {
+    const data = await getAllOrder(pageIndex, pageSize);
+    setOrder(data.items);
+    setPagination({
+      ...pagination,
+      current: pageIndex,
+      pageSize: pageSize,
+      total: data.totalCount,
+    });
+  };
+
+  const handleTableChange = (pagination) => {
+    fetchOrder(pagination.current, pagination.pageSize);
+  };
+
+  useEffect(() => {
+    fetchOrder(pagination.current, pagination.pageSize);
+  }, []);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "id",
+    },
+    {
+      title: "Sản phẩm",
+      dataIndex: "productName",
+      responsive: ["md"],
+      render: (_, record) => {
+        const productName = [];
+        if (record.service) {
+          productName.push(record.service.name);
+        }
+        if (record.products) {
+          productName.push(...record.products.map((product) => product.name));
+        }
+        return productName.join(", ");
+      },
+    },
+    {
+      title: "Ngày đặt",
+      dataIndex: "createdDate",
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "amount",
+      render: (_, record) => formatPrice(record.amount),
+    },
+    {
+      title: "",
+      dataIndex: "actions",
+      render: (_, record) => (
+        <EyeOutlined
+          style={{ cursor: "pointer", color: "#1890ff" }}
+          onClick={() => fetchOrderDetail(record.id)}
+        />
+      ),
+    },
+  ];
+
+  const renderOrderDetails = (order) => {
+    return (
+      <>
+        <Descriptions bordered column={1}>
+          <Descriptions.Item label="Mã đơn hàng">{order.id}</Descriptions.Item>
+          <Descriptions.Item label="ID khách hàng">
+            {order.userId}
+          </Descriptions.Item>
+          <Descriptions.Item label="Tổng tiền">
+            {formatPrice(order.amount)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Chi tiết">
+            {order.description}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ngày đặt">
+            {order.createdDate}
+          </Descriptions.Item>
+          <Descriptions.Item label="Voucher">{order.voucher}</Descriptions.Item>
+        </Descriptions>
+        {order.products && (
+          <>
+            <Divider>Sản phẩm</Divider>
+            {order.products.map((product) => (
+              <Descriptions bordered column={1} key={product.id}>
+                <Descriptions.Item label="Tên sản phẩm">
+                  {product.name}
+                </Descriptions.Item>
+                <Descriptions.Item label="Giá">
+                  {formatPrice(product.price)}
+                </Descriptions.Item>
+                {/* <Descriptions.Item label="Hình ảnh">
+                    <img src={product.image} alt={product.name} style={{ width: '100px' }} />
+                  </Descriptions.Item> */}
+              </Descriptions>
+            ))}
+            {order.devices && (
+              <>
+                <Divider>Devices</Divider>
+                {order.devices.map((device) => (
+                  <Descriptions bordered column={1} key={device.id}>
+                  <Descriptions.Item label="Device Code" key={device.id}>
+                    {device.code}
+                  </Descriptions.Item>
+                  </Descriptions>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
+        {order.service && (
+          <>
+            <Divider>Gói Dịch vụ</Divider>
+            <Descriptions bordered column={1}>
+            <Descriptions.Item label="Tên dịch vụ">
+              {order.service.name}
+            </Descriptions.Item>
+            {order.service.type === 2 && (
+                <Descriptions.Item label="Thời hạn dịch vụ">{order.service.duration} tháng</Descriptions.Item>
+              )}
+              </Descriptions>
+          </>
+        )}
+       
+          {order.familyCode && (
+             <Descriptions bordered column={1}>
+            <Descriptions.Item label="Mã gia đình">
+              {order.familyCode}
+            </Descriptions.Item>
+            </Descriptions>
+          )}
+      </>
+    );
+  };
+
+  return (
+    <div className="order-container">
+      <div className="order-content">
+        <Table
+          size="large"
+          columns={columns}
+          dataSource={order}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+          }}
+          onChange={handleTableChange}
+        />
+        {selectedOrder && (
+          <Modal
+            title={`Chi tiết đơn hàng ${selectedOrder.id}`}
+            open={openModal}
+            onCancel={() => setOpenModal(false)}
+            footer={null}
+            width={800}
+          >
+            {renderOrderDetails(selectedOrder)}
+          </Modal>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default ManageOrder;
+

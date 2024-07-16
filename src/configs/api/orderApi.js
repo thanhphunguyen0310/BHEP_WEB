@@ -30,3 +30,29 @@ export const createOrder = async (
     throw new Error(error.message);
   }
 };
+// admin manage order
+export const getAllOrder = async (pageIndex, pageSize) => {
+  try {
+      const response = await apiClient.get(`/CoinTransaction`,{
+          params: {
+              pageIndex,
+              pageSize,
+              Type: 2
+            },
+      })
+      return response.data.data;
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+  }
+}
+// admin manage order details
+export const getOrderById = async (OrderId) => {
+  try {
+      const response = await apiClient.get(`/CoinTransaction/${OrderId}`)
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+  }
+}
