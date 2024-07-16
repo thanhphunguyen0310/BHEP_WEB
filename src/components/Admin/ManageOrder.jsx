@@ -1,13 +1,8 @@
 import { EyeOutlined } from "@ant-design/icons";
 import {
-  Avatar,
-  Button,
-  Col,
   Descriptions,
   Divider,
   Modal,
-  Row,
-  Space,
   Table,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -103,28 +98,28 @@ const ManageOrder = () => {
 
   const renderOrderDetails = (order) => {
     return (
-      <>
-        <Descriptions bordered column={1}>
-          <Descriptions.Item label="Mã đơn hàng">{order.id}</Descriptions.Item>
-          <Descriptions.Item label="ID khách hàng">
+      <div style={{minWidth:"800px"}}>
+        <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width:"100%"}} bordered column={1}>
+          <Descriptions.Item  label="Mã đơn hàng">{order.id}</Descriptions.Item>
+          <Descriptions.Item  label="ID khách hàng">
             {order.userId}
           </Descriptions.Item>
           <Descriptions.Item label="Tổng tiền">
             {formatPrice(order.amount)}
           </Descriptions.Item>
-          <Descriptions.Item label="Chi tiết">
+          <Descriptions.Item  label="Chi tiết">
             {order.description}
           </Descriptions.Item>
-          <Descriptions.Item label="Ngày đặt">
+          <Descriptions.Item  label="Ngày đặt">
             {order.createdDate}
           </Descriptions.Item>
-          <Descriptions.Item label="Voucher">{order.voucher}</Descriptions.Item>
+          <Descriptions.Item  label="Voucher">{order.voucher == null ? "Không" : order.voucher}</Descriptions.Item>
         </Descriptions>
         {order.products && (
           <>
             <Divider>Sản phẩm</Divider>
             {order.products.map((product) => (
-              <Descriptions bordered column={1} key={product.id}>
+              <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width: "100%"}} bordered column={1} key={product.id}>
                 <Descriptions.Item label="Tên sản phẩm">
                   {product.name}
                 </Descriptions.Item>
@@ -132,47 +127,47 @@ const ManageOrder = () => {
                   {formatPrice(product.price)}
                 </Descriptions.Item>
                 {/* <Descriptions.Item label="Hình ảnh">
-                    <img src={product.image} alt={product.name} style={{ width: '100px' }} />
+                    <img src={product.image} alt={product.name} style={{ width:"80px", height:"80px" }} />
                   </Descriptions.Item> */}
               </Descriptions>
             ))}
             {order.devices && (
               <>
-                <Divider>Devices</Divider>
+                <Divider>Thiết bị</Divider>
                 {order.devices.map((device) => (
-                  <Descriptions bordered column={1} key={device.id}>
-                  <Descriptions.Item label="Device Code" key={device.id}>
-                    {device.code}
-                  </Descriptions.Item>
+                  <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width: "100%"}} bordered column={1} key={device.id}>
+                    <Descriptions.Item label="Device Code" key={device.id}>
+                      {device.code}
+                    </Descriptions.Item>
                   </Descriptions>
                 ))}
               </>
             )}
           </>
         )}
-
         {order.service && (
           <>
             <Divider>Gói Dịch vụ</Divider>
-            <Descriptions bordered column={1}>
-            <Descriptions.Item label="Tên dịch vụ">
-              {order.service.name}
-            </Descriptions.Item>
-            {order.service.type === 2 && (
-                <Descriptions.Item label="Thời hạn dịch vụ">{order.service.duration} tháng</Descriptions.Item>
+            <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width: "100%"}} bordered column={1}>
+              <Descriptions.Item label="Tên dịch vụ">
+                {order.service.name}
+              </Descriptions.Item>
+              {order.service.type === 2 && (
+                <Descriptions.Item label="Thời hạn dịch vụ">
+                  {order.service.duration} tháng
+                </Descriptions.Item>
               )}
-              </Descriptions>
+            </Descriptions>
           </>
         )}
-       
-          {order.familyCode && (
-             <Descriptions bordered column={1}>
+        {order.familyCode && (
+          <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width: "100%"}} bordered column={1}>
             <Descriptions.Item label="Mã gia đình">
               {order.familyCode}
             </Descriptions.Item>
-            </Descriptions>
-          )}
-      </>
+          </Descriptions>
+        )}
+      </div>
     );
   };
 
@@ -196,7 +191,7 @@ const ManageOrder = () => {
             open={openModal}
             onCancel={() => setOpenModal(false)}
             footer={null}
-            width={800}
+            width={3000}
           >
             {renderOrderDetails(selectedOrder)}
           </Modal>
@@ -207,4 +202,3 @@ const ManageOrder = () => {
 };
 
 export default ManageOrder;
-
