@@ -4,10 +4,12 @@ import {
   Divider,
   Modal,
   Table,
+  Typography,
 } from "antd";
 import { useEffect, useState } from "react";
 import "../../styles/ManageOrder.scss";
 import { getAllOrder, getOrderById } from "../../configs/api/orderApi";
+import { getUserDetail } from "../../configs/api/userApi"
 const ManageOrder = () => {
   const [order, setOrder] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -21,7 +23,6 @@ const ManageOrder = () => {
   const fetchOrderDetail = async (orderId) => {
     try {
       const dataDetail = await getOrderById(orderId);
-      console.log(dataDetail.data);
       setSelectedOrder(dataDetail.data);
       setOpenModal(true);
     } catch (error) {
@@ -54,16 +55,25 @@ const ManageOrder = () => {
       currency: "VND",
     }).format(price);
   };
-
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('-');
+    return new Date(`${year}-${month}-${day}`);
+  };
   const columns = [
     {
       title: "Mã đơn hàng",
       dataIndex: "id",
+      width: 120,
     },
     {
       title: "Sản phẩm",
       dataIndex: "productName",
       responsive: ["md"],
+      onHeaderCell: () => ({
+        style: {
+          textAlign: "center",
+        },
+      }),
       render: (_, record) => {
         const productName = [];
         if (record.service) {
@@ -78,11 +88,30 @@ const ManageOrder = () => {
     {
       title: "Ngày đặt",
       dataIndex: "createdDate",
+      sorter: (a, b) => parseDate(b.createdDate) - parseDate(a.createdDate),
+      defaultSortOrder: 'descend',  // Display most recent date first by default
+      onHeaderCell: () => ({
+        style: {
+          textAlign: "center",
+        },
+      }),
+      onCell: () => ({
+        style: { textAlign: "center" },
+      }),
     },
     {
       title: "Tổng tiền",
       dataIndex: "amount",
       render: (_, record) => formatPrice(record.amount),
+      sorter: (a, b) => a.amount - b.amount,
+      onHeaderCell: () => ({
+        style: {
+          textAlign: "center",
+        },
+      }),
+      onCell: () => ({
+        style: { textAlign: "center" },
+      }),
     },
     {
       title: "",
@@ -104,6 +133,7 @@ const ManageOrder = () => {
           <Descriptions.Item  label="ID khách hàng">
             {order.userId}
           </Descriptions.Item>
+          <Descriptions.Item label="Khách hàng"><UserName userId={order.userId} /></Descriptions.Item>
           <Descriptions.Item label="Tổng tiền">
             {formatPrice(order.amount)}
           </Descriptions.Item>
@@ -180,6 +210,7 @@ const ManageOrder = () => {
   return (
     <div className="order-container">
       <div className="order-content">
+      <Typography.Title level={2}>Quản lí đơn hàng</Typography.Title>
         <Table
           size="large"
           columns={columns}
@@ -206,5 +237,23 @@ const ManageOrder = () => {
     </div>
   );
 };
+const UserName = ({ userId }) => {
+  const [userName, setUserName] = useState("Loading...");
 
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const dataUser = await getUserDetail(userId);
+        setUserName(dataUser.data.fullName);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+        setUserName("Không tìm thấy người dùng");
+      }
+    };
+
+    fetchUserName();
+  }, [userId]);
+
+  return <span>{userName}</span>;
+};
 export default ManageOrder;

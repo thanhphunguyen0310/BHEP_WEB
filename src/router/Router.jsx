@@ -31,41 +31,42 @@ import DisableAccount from '../components/DisableAccount';
 import Manage from '../pages/admin/Manage';
 import ManageJobApplication from '../components/Admin/ManageJobApplication';
 import ManageOrder from '../components/Admin/ManageOrder';
+import ManagePayment from '../components/Admin/ManagePayement';
 
-export const  publicRoutes = [
-    {path: "/", component: Homepage},
-    {path: "/category", component: Category},
-    {path: "/store", component: Store},
-    {path: "/product-detail/:type/:id", component: ProductDetail },
-    {path: "/doctor", component: Doctor },
-    {path: "/all-doctor", component: AllDoctor },
-    {path: "/doctor-detail/:id", component: DoctorDetail },
-    {path: "/community", component: Community },
-    {path: "/booking-appointment", component: BookingAppointment},
-    {path: "/booking-payment", component: AppointmentPayment},
-    {path: "/add-coin", component: AddCoin},
-    {path: "/cart", component: Cart},
-    {path: "/order", component: Order}
-]
+// export const  publicRoutes = [
+//     {path: "/", component: Homepage},
+//     {path: "/category", component: Category},
+//     {path: "/store", component: Store},
+//     {path: "/product-detail/:type/:id", component: ProductDetail },
+//     {path: "/doctor", component: Doctor },
+//     {path: "/all-doctor", component: AllDoctor },
+//     {path: "/doctor-detail/:id", component: DoctorDetail },
+//     {path: "/community", component: Community },
+//     {path: "/booking-appointment", component: BookingAppointment},
+//     {path: "/booking-payment", component: AppointmentPayment},
+//     {path: "/add-coin", component: AddCoin},
+//     {path: "/cart", component: Cart},
+//     {path: "/order", component: Order}
+// ]
 
-export const  customerRoutes = [
-    {path: "/health-records", component: HealthRecord},
-    {path: "/history-appointment", component: AppointmentHistory},
+// export const  customerRoutes = [
+//     {path: "/health-records", component: HealthRecord},
+//     {path: "/history-appointment", component: AppointmentHistory},
     
-]
+// ]
 
-export const  doctorRoutes = [
-    {path: "/doctor-chat", component: DoctorChat, layout: DoctorChatLayout},
-    {path: "/workspace", component: Workspace},
-    {path: "/create-schedule", component: DoctorSchedule},
-    {path: "/list-appointment", component: ListAppointment},
-    {path: "/doctor-history-appointment", component: AppointmentHistory_Doctor},
-]
+// export const  doctorRoutes = [
+//     {path: "/doctor-chat", component: DoctorChat, layout: DoctorChatLayout},
+//     {path: "/workspace", component: Workspace},
+//     {path: "/create-schedule", component: DoctorSchedule},
+//     {path: "/list-appointment", component: ListAppointment},
+//     {path: "/doctor-history-appointment", component: AppointmentHistory_Doctor},
+// ]
 
-export const  adminRoutes = [
-    // {path: "/manage-application", component: , layout: null},
-    // {path: "/manage-appointment", component: , layout: null},
-    // {path: "/manage-user", component: , layout: null}
+ export const  adminRoutes = [
+//     {path: "/manage-application", component: , layout: null},
+//     {path: "/manage-appointment", component: , layout: null},
+//     {path: "/manage-user", component: , layout: null} 
 ]
 
 export const  defaultLayoutRoutes = [
@@ -101,5 +102,6 @@ export const  defaultLayoutRoutes = [
     {path: "/manage", component: Manage, role: [1]},
     {path: "/manage-job-application", component: ManageJobApplication, role: [1]},
     {path: "/manage-order", component: ManageOrder, role: [1]},
+    {path: "/manage-payment", component: ManagePayment, role: [1]},
 ]
 

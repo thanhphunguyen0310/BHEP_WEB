@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Card, Col, Row, Typography } from "antd";
-import { FaUserCircle, FaMailBulk, FaShoppingBag } from "react-icons/fa";
+import { FaUserCircle, FaMailBulk, FaShoppingBag, FaMoneyBillWave } from "react-icons/fa";
 import { MdDisabledByDefault } from "react-icons/md";
 import { IoLogoWechat } from "react-icons/io5";
-import Calendar from "../../assets/icon/calendar.svg";
-import Clock from "../../assets/icon/clock.svg";
-import History from "../../assets/icon/history.svg";
-import Chat from "../../assets/icon/chat.svg";
-import Question from "../../assets/icon/question.svg";
 import DoctorSchedule from "../../components/Doctor/DoctorSchedule";
 import "../../styles/Manage.scss"
 
@@ -95,12 +90,13 @@ const Manage = () => {
             <Col xs={24} sm={12} md={8} lg={6}>
               <Card className="workspace-card" hoverable>
                 <div className="card-content">
-                  <MdDisabledByDefault className="icon disable-account-icon"/>
+                  <FaMoneyBillWave className="icon manage-payment-icon"/>
                   <Typography.Title level={4}>
-                    Vô hiệu hóa tài khoản
+                    Quản lí giao dịch
                   </Typography.Title>
                   <Button 
                   type="primary"
+                  onClick={() => {navigate(`/manage-payment`)}}
                   >Xem</Button>
                 </div>
               </Card>
@@ -127,6 +123,19 @@ const Manage = () => {
                     Danh sách lịch hẹn
                   </Typography.Title>
                   <Button type="primary">Xem</Button>
+                </div>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Card className="workspace-card" hoverable>
+                <div className="card-content">
+                  <MdDisabledByDefault className="icon disable-account-icon"/>
+                  <Typography.Title level={4}>
+                    Vô hiệu hóa tài khoản
+                  </Typography.Title>
+                  <Button 
+                  type="primary"
+                  >Xem</Button>
                 </div>
               </Card>
             </Col>

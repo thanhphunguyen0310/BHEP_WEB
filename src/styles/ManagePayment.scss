@@ -1,0 +1,90 @@
+.paymentcontainer{
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  background-color: #F5FEFE;
+  padding: 20px;
+    .paymentcontent {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 20px;
+    }
+  
+    .ant-table {
+      border-radius: 8px;
+      overflow: hidden;
+  
+      .ant-table-thead > tr > th {
+        background-color: #218df2;
+        color: #fff;
+        font-weight: 600;
+      }
+      .ant-table-thead > tr > th:hover {
+        background-color: #0577e0;
+      }
+      
+  
+      .ant-table-tbody > tr > td {
+        background-color: #fff;
+      }
+  
+      .ant-pagination-item-active {
+        border-color: #1890ff;
+      }
+  
+      .ant-pagination-item-active a {
+        color: #1890ff;
+      }
+  
+      .ant-pagination-item:hover {
+        border-color: #40a9ff;
+      }
+  
+      .ant-pagination-item:hover a {
+        color: #40a9ff;
+      }
+  
+      .ant-table-column-sorters {
+        justify-content: flex-start;
+      }
+  
+      .ant-table-column-title {
+        margin-right: 8px;
+      }
+  
+      .ant-table-column-sorter {
+        margin-left: auto;
+      }
+    }
+  }
+  .payment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 20px;
+    .avatar-container {
+      display: flex;
+      justify-content: center;
+    }
+  
+    .ant-descriptions-item-label {
+      font-weight: 500;
+      background-color: #fafafa;
+    }
+  
+    .ant-descriptions-item-content {
+      background-color: #fff;
+    }
+    .ant-space{
+        display: flex;
+        justify-content: center;
+        .ant-btn{
+            width: 100px;
+        }
+    }
+  }
+  

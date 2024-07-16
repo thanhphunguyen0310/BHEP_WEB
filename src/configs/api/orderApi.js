@@ -46,6 +46,22 @@ export const getAllOrder = async (pageIndex, pageSize) => {
       throw error;
   }
 }
+// admin manage payments
+export const getAllPayment = async (pageIndex, pageSize) => {
+  try {
+      const response = await apiClient.get(`/CoinTransaction`,{
+          params: {
+              pageIndex,
+              pageSize,
+              Type: 3
+            },
+      })
+      return response.data.data;
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+  }
+}
 // admin manage order details
 export const getOrderById = async (OrderId) => {
   try {
