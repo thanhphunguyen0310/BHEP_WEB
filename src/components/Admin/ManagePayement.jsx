@@ -97,6 +97,15 @@ const ManagePayment = () => {
       }),
     },
     {
+      title: "Nội dung giao dịch",
+      dataIndex: "description",
+      onHeaderCell: () => ({
+        style: {
+          textAlign: "center",
+        },
+      }),
+    },
+    {
       title:   "Số tiền",
       dataIndex: "amount",
       render: (_, record) => formatPrice(record.amount),
@@ -126,48 +135,48 @@ const ManagePayment = () => {
         <span style={{ color: "#23db2c", fontWeight:"bold"}}>{text}</span>
       )
     },
-    {
-      title: "",
-      dataIndex: "actions",
-      render: (_, record) => (
-        <EyeOutlined
-          style={{ cursor: "pointer", color: "#1890ff" }}
-            onClick={() => fetchPaymentDetail(record.id)}
-        />
-      ),
-    },
+    // {
+    //   title: "",
+    //   dataIndex: "actions",
+    //   render: (_, record) => (
+    //     <EyeOutlined
+    //       style={{ cursor: "pointer", color: "#1890ff" }}
+    //         onClick={() => fetchPaymentDetail(record.id)}
+    //     />
+    //   ),
+    // },
   ];
 
-  const renderOrderDetails = (order) => {
-    return (
-      <div style={{ minWidth: "800px" }}>
-        <Descriptions
-          labelStyle={{ width: "20%", fontWeight: "bold" }}
-          style={{ width: "100%" }}
-          bordered
-          column={1}
-        >
-          <Descriptions.Item label="Mã giao dịch">{order.id}</Descriptions.Item>
-          <Descriptions.Item label="ID khách hàng">
-            {order.userId}
-          </Descriptions.Item>
-          <Descriptions.Item label="Khách hàng"><UserName userId={order.userId} /></Descriptions.Item>
-          <Descriptions.Item label="Số tiền">
-            {formatPrice(order.amount)}
-          </Descriptions.Item>
-          <Descriptions.Item label="Nội dung">
-            {order.description}
-          </Descriptions.Item>
-          <Descriptions.Item label="Ngày giao dịch">
-            {order.createdDate}
-          </Descriptions.Item>
-          <Descriptions.Item label="Trạng thái">
-            <span style={{ color: "#23db2c", fontWeight:"bold"}}>{order.title}</span>
-          </Descriptions.Item>
-        </Descriptions>
-      </div>
-    );
-  };
+  // const renderOrderDetails = (order) => {
+  //   return (
+  //     <div style={{ minWidth: "800px" }}>
+  //       <Descriptions
+  //         labelStyle={{ width: "20%", fontWeight: "bold" }}
+  //         style={{ width: "100%" }}
+  //         bordered
+  //         column={1}
+  //       >
+  //         <Descriptions.Item label="Mã giao dịch">{order.id}</Descriptions.Item>
+  //         <Descriptions.Item label="ID khách hàng">
+  //           {order.userId}
+  //         </Descriptions.Item>
+  //         <Descriptions.Item label="Khách hàng"><UserName userId={order.userId} /></Descriptions.Item>
+  //         <Descriptions.Item label="Số tiền">
+  //           {formatPrice(order.amount)}
+  //         </Descriptions.Item>
+  //         <Descriptions.Item label="Nội dung">
+  //           {order.description}
+  //         </Descriptions.Item>
+  //         <Descriptions.Item label="Ngày giao dịch">
+  //           {order.createdDate}
+  //         </Descriptions.Item>
+  //         <Descriptions.Item label="Trạng thái">
+  //           <span style={{ color: "#23db2c", fontWeight:"bold"}}>{order.title}</span>
+  //         </Descriptions.Item>
+  //       </Descriptions>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="paymentcontainer">
@@ -184,7 +193,7 @@ const ManagePayment = () => {
           }}
           onChange={handleTableChange}
         /> 
-         {selectedPayment && (
+         {/* {selectedPayment && (
           <Modal
             title={`Chi tiết giao dịch ${selectedPayment.id}`}
             open={openModal}
@@ -194,7 +203,7 @@ const ManagePayment = () => {
           >
             {renderOrderDetails(selectedPayment)}
           </Modal>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -14,10 +14,10 @@ export const addCoin = async ( userId, amount) => {
     const addCoin = await apiClient.post(`/Payment/PayOS`, {
       userId: userId,
       amount: amount,
-      description: `Người dùng ${userId} nạp xu`,
+      description: `Nạp tiền hệ thống BHEP`,
       items: items,
-      returnURL: "https://bhep.vn/success-payment",
-      cancelURL: "https://bhep.vn/fail-payment",
+      returnURL: "https://www.bhep.vn/success-payment",
+      cancelURL: "https://www.bhep.vn/fail-payment",
       expireAt: expireAt.toISOString(),
     });
     return addCoin.data;
