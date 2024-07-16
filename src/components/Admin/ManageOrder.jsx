@@ -136,7 +136,7 @@ const ManageOrder = () => {
                 <Divider>Thiết bị</Divider>
                 {order.devices.map((device) => (
                   <Descriptions labelStyle={{width:"20%", fontWeight:"bold"}} style={{width: "100%"}} bordered column={1} key={device.id}>
-                    <Descriptions.Item label="Device Code" key={device.id}>
+                    <Descriptions.Item label="Mã thiết bị" key={device.id}>
                       {device.code}
                     </Descriptions.Item>
                   </Descriptions>
@@ -152,11 +152,17 @@ const ManageOrder = () => {
               <Descriptions.Item label="Tên dịch vụ">
                 {order.service.name}
               </Descriptions.Item>
-              {order.service.type === 2 && (
+              {/* {order.service.type === 2 && (
                 <Descriptions.Item label="Thời hạn dịch vụ">
                   {order.service.duration} tháng
                 </Descriptions.Item>
-              )}
+              )} */}
+              <Descriptions.Item label="Thời hạn dịch vụ">
+                {order.service.duration} tháng
+              </Descriptions.Item>
+              <Descriptions.Item label="Giá">
+              {formatPrice(order.service.price)}
+              </Descriptions.Item>
             </Descriptions>
           </>
         )}
