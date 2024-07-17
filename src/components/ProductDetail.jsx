@@ -9,6 +9,7 @@ import {
   Rate,
   Row,
   Select,
+  Skeleton,
   Spin,
   Typography,
   message,
@@ -16,7 +17,11 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/ProductDetail.scss";
 import { useCallback, useEffect, useState } from "react";
-import { getDeviceById, getServiceById } from "../configs/api/productApi";
+import {
+  getDeviceById,
+  getServiceById,
+  getService,
+} from "../configs/api/productApi";
 import { ShoppingFilled } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../store/productSlice";
@@ -37,16 +42,18 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   const items = useSelector((state) => state?.cart);
+
   useEffect(() => {
+    fetchAllService();
     fetchProduct();
   }, [id, type]);
 
-  // useEffect(() => {
-  //   if (type == 1 || type == 2) {
-  //     fetchServiceByDuration();
-  //     console.log(product,"update product")
-  //   }
-  // }, [duration]);
+  const fetchAllService = async () => {
+    if (products.payload.products.length === 0) {
+      let res = await getService();
+      dispatch(setProducts(res.items));
+    }
+  };
 
   const fetchProduct = async () => {
     try {
@@ -61,7 +68,16 @@ const ProductDetail = () => {
       console.error("Error fetching product details:", error);
     }
   };
-
+  const handleDurationChange = (value) => {
+    setDuration(value);
+    // get the service base on type (1,2) and duration
+    const filteredService = products.payload.products.find(
+      (p) => p.type == type && p.duration === value
+    );
+    fetchServiceByDuration(filteredService);
+    setService(filteredService);
+    setProduct(filteredService);
+  };
   const fetchServiceByDuration = async (serviceDuration) => {
     const id = serviceDuration?.id;
     try {
@@ -92,9 +108,13 @@ const ProductDetail = () => {
       }
       if (type == 2) {
         // Family service requires group item or valid group code
-        const groupItem = items?.cartItems.find((item) => item.id.startsWith("group-"));
+        const groupItem = items?.cartItems.find((item) =>
+          item.id.startsWith("group-")
+        );
         if (!groupItem && !groupCode) {
-          message.error("Vui lòng tạo nhóm hoặc nhập mã nhóm để thêm gói dịch vụ gia đình vào giỏ hàng.");
+          message.error(
+            "Vui lòng tạo nhóm hoặc nhập mã nhóm để thêm gói dịch vụ gia đình vào giỏ hàng."
+          );
           return;
         }
       }
@@ -110,34 +130,17 @@ const ProductDetail = () => {
       dispatch(addToCart(item));
       navigate("/cart");
     } else {
-      message.error("Bạn không thể thêm sản phẩm này!")
+      message.error("Bạn không thể thêm sản phẩm này!");
     }
   };
-  // const handleBuyNow = () => {
-  //   console.log("aaaaaaaaaaaaa")
-  //   let quantityToAdd = 1;
-  //     if (type === "device") {
-  //       quantityToAdd = quantity; // Nếu là "device" thì lấy quantity mà người dùng chọn
-  //     }
-  //     const item = {
-  //       id: product.id,
-  //       name: product.name,
-  //       image: product.image,
-  //       price: product.price,
-  //       duration: product.duration,
-  //       type: type,
-  //       quantity: quantityToAdd,
-  //     };
-  //     console.log(item)
-  //     dispatch(addToCart(item));
-  //     navigate("/cart");
-  // }
+
   const handleCreateGroup = () => {
-    const isExistType1 = items?.cartItems.some(item => item.type === "1");
-  
+    const isExistType1 = items?.cartItems.some((item) => item.type === "1");
     if (isExistType1) {
       // Display error message or handle accordingly
-      message.error("Bạn không thể tạo mã gia đình vì bạn đã thêm Gói dịch vụ cá nhân ở giỏ hàng.");
+      message.error(
+        "Bạn không thể tạo mã gia đình vì bạn đã thêm Gói dịch vụ cá nhân ở giỏ hàng."
+      );
     } else {
       // If no item with type === "1" exists, proceed to add the group item
       const groupItem = {
@@ -151,11 +154,11 @@ const ProductDetail = () => {
       message.success("Mã gia đình đã được tạo và thêm vào giỏ hàng.");
     }
   };
-  
+
   const debounceUpdateGroupCode = useCallback(
     debounce((code) => {
       dispatch(updateGroupCode(code));
-    }, 500),
+    }, 2000),
     []
   );
 
@@ -163,16 +166,6 @@ const ProductDetail = () => {
     const code = e.target.value;
     setGroupCode(code);
     debounceUpdateGroupCode(code);
-  };
-  const handleDurationChange = (value) => {
-    setDuration(value);
-    // get the service base on type (1,2) and duration
-    const filteredService = products.payload.products.find(
-      (p) => p.type == type && p.duration === value
-    );
-    fetchServiceByDuration(filteredService);
-    setService(filteredService);
-    setProduct(filteredService);
   };
   // format display price
   const formatPrice = (price) => {
@@ -183,9 +176,11 @@ const ProductDetail = () => {
   };
 
   if (!product) {
-    return <div>
-      <Spin />
-      </div>;
+    return (
+      <div>
+        <Spin />
+      </div>
+    );
   }
   //Device Component
   const Device = ({ product }) => {
@@ -326,6 +321,7 @@ const ProductDetail = () => {
       </>
     );
   };
+
   const renderContent = () => {
     if (type === "device") {
       return <Device product={product} />;
@@ -364,38 +360,47 @@ const ProductDetail = () => {
           </Badge>
         </Flex>
         <Row justify={"center"} className="product-detail-header">
-          {type == 2 && (
-            <Row className="note">
-              <Text type="secondary">
-                Lưu ý <br />
-                <ul className="note-list">
-                  <li>
-                    Nếu chưa có bạn vui lòng tạo nhóm để sử dụng dịch vụ. Phí{" "}
-                    <span className="highlight">500.000VNĐ</span>/năm
-                  </li>
-                  <li>
-                    Nếu đã có, bạn vui lòng nhập mã nhóm (do chủ nhóm cung cấp)
-                    vào ô bên dưới để sử dụng
-                  </li>
-                </ul>
-              </Text>
-            </Row>
+          {!product ? (
+            <Skeleton />
+          ) : (
+            <>
+              {type == 2 && (
+                <Row className="note">
+                  <Text type="secondary">
+                    Lưu ý <br />
+                    <ul className="note-list">
+                      <li>
+                        Nếu chưa có bạn vui lòng tạo nhóm để sử dụng dịch vụ.
+                        Phí <span className="highlight">500.000VNĐ</span>/năm
+                      </li>
+                      <li>
+                        Nếu đã có, bạn vui lòng nhập mã nhóm (do chủ nhóm cung
+                        cấp) vào ô bên dưới để sử dụng
+                      </li>
+                    </ul>
+                  </Text>
+                </Row>
+              )}
+              <Row className="content">
+                <Col
+                  span={8}
+                  className={type === "device" ? "device-img" : "product-img"}
+                >
+                  {/* <Col span={8} className='product-img'> */}
+                  <Avatar
+                    shape="square"
+                    src={product.image}
+                    alt="Product-image"
+                    className="custom-image"
+                  />
+                  {/* <Row>Ảnh dưới</Row> */}
+                </Col>
+                <Col span={12} className="product-content">
+                  {renderContent()}
+                </Col>
+              </Row>
+            </>
           )}
-          <Row className="content">
-            <Col span={8} className={type === "device"? 'device-img': 'product-img'}>
-            {/* <Col span={8} className='product-img'> */}
-              <Avatar
-                shape="square"
-                src={product.image}
-                alt="Product-image"
-                className="custom-image"
-              />
-              {/* <Row>Ảnh dưới</Row> */}
-            </Col>
-            <Col span={12} className="product-content">
-              {renderContent()}
-            </Col>
-          </Row>
         </Row>
         <Row className="product-feedback">
           <div className="feedback-content">
@@ -439,3 +444,29 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+
+// useEffect(() => {
+//   if (type == 1 || type == 2) {
+//     fetchServiceByDuration();
+//     console.log(product,"update product")
+//   }
+// }, [duration]);
+// const handleBuyNow = () => {
+//   console.log("aaaaaaaaaaaaa")
+//   let quantityToAdd = 1;
+//     if (type === "device") {
+//       quantityToAdd = quantity; // Nếu là "device" thì lấy quantity mà người dùng chọn
+//     }
+//     const item = {
+//       id: product.id,
+//       name: product.name,
+//       image: product.image,
+//       price: product.price,
+//       duration: product.duration,
+//       type: type,
+//       quantity: quantityToAdd,
+//     };
+//     console.log(item)
+//     dispatch(addToCart(item));
+//     navigate("/cart");
+// }
