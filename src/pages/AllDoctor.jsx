@@ -160,15 +160,15 @@ const AllDoctor = () => {
   return (
     <>
       {/* banner doctor */}
-      <Carousel style={{ width: "100vw" }} infinite={false}>
+      <Carousel draggable={true} autoplay autoplaySpeed={1500} speed={500} style={{ width: "100vw" }} infinite={true}>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner1} />
+          <img style={{ width: "100%" }} src={DoctorBanner1} />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner2} />
+          <img style={{ width: "100%" }} src={DoctorBanner2} />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner3} />
+          <img style={{ width: "100%" }} src={DoctorBanner3} />
         </div>
       </Carousel>
 
