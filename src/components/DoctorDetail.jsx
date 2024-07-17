@@ -109,6 +109,7 @@ const DoctorDetail = () => {
     const localDate = date.tz(vietnamTimezone);
     setSelectedDate(localDate);
     try {
+      setLoading(true);
       const doctorTime = await getDoctorSchedule(id);
       const filteredSchedule = doctorTime.filter((appointment) =>
         dayjs(appointment.date, dateFormat).isSame(date, "day")
@@ -116,6 +117,8 @@ const DoctorDetail = () => {
       setSchedule(filteredSchedule);
     } catch (error) {
       console.error("Error fetching schedule:", error);
+    } finally {
+      setLoading(false);
     }
   };
   // get doctor data
@@ -125,7 +128,7 @@ const DoctorDetail = () => {
       setDoctorDetail(doctorData.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -166,15 +169,15 @@ const DoctorDetail = () => {
   return (
     <>
       {/* banner doctor */}
-      <Carousel style={{ width: "100vw" }} infinite={false}>
+      <Carousel draggable={true} autoplay autoplaySpeed={1500} speed={500} style={{ width: "100vw" }} infinite={true}>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner1} />
+          <img style={{ width: "100%" }} src={DoctorBanner1} />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner2} />
+          <img style={{ width: "100%" }} src={DoctorBanner2} />
         </div>
         <div>
-          <img style={{ width: "100vw" }} src={DoctorBanner3} />
+          <img style={{ width: "100%" }} src={DoctorBanner3} />
         </div>
       </Carousel>
       {/* doctor infor */}
