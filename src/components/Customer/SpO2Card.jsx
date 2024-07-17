@@ -2,12 +2,15 @@ import { Card, Col, Image, Row, Typography } from "antd";
 import SpO2Icon from "../../assets/img/spo2.png";
 
 const SpO2Card = ({ data }) => {
-  const getFontSize = (data) => {
-    if (data.length >= 3) {
-      return "20px"; // Kích thước nhỏ hơn nếu dữ liệu dài
+  const getFontSize = (dataString) => {
+    if (dataString.length >= 3) {
+      return "20px"; // Smaller size if data is long
     }
-    return "25px"; // Kích thước mặc định
+    return "25px"; // Default size
   };
+
+  const formattedData = data.toFixed(2); // Format data to 2 decimal places and round
+  const dataString = formattedData.toString(); // Convert formatted data to string
   return (
     <Card
       hoverable
@@ -26,7 +29,7 @@ const SpO2Card = ({ data }) => {
               fontSize: getFontSize(data.toString()), // Áp dụng kích thước font
             }}
           >
-            {data} %
+            {dataString} %
           </Typography.Text>
         </Col>
         <Col span={8}>
