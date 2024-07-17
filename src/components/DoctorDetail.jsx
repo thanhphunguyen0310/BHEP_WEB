@@ -8,6 +8,7 @@ import {
   Menu,
   Modal,
   Row,
+  Spin,
   Typography,
   message,
 } from "antd";
@@ -48,17 +49,7 @@ const formatPrice = (price) => {
     currency: "VND",
   }).format(price);
 };
-const data = [
-  "(1986 - 1994) Bác sĩ nội khoa truyền nhiễm,Bệnh viện Nhân Dân Gia Định",
-  "(1994 - 1997) Phó trưởng phòng Kế hoach tổng hợp, Bác sĩ tim mach, Bệnh viện Nhân Dân Gia Định",
-  "(1997 - 1999) Phó trưởng khoa Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
-  "(2004 - 2007) Phó phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
-  "(2007 - 2008) Trưởng phòng Tổ chức cán bộ, Bệnh viện Nhân Dân Gia Định",
-  "(2008 - 2010) Phó giám đốc bệnh viện, Bệnh viện Nhân Dân Gia Định",
-  "(2010 - 2016) Giám đốc Trung tâm Cơ Xương khớp, Bệnh viện Nhân Dân Gia Định",
-  "(2016 - 2018) Tiến sĩ Nội xương khớp, Bệnh viện Nhân Dân Gia Định",
-  "(2020 - Hiện nay) Giám đốc Phòng khám, Tổ hợp y tế Mediplus",
-];
+
 const getSpecialistState = (specialistId) => {
   switch (specialistId) {
     case 1:
@@ -112,6 +103,7 @@ const DoctorDetail = () => {
   const [schedule, setSchedule] = useState([]);
   const [doctorDetail, setDoctorDetail] = useState("");
   const [openLoginForm, setOpenLoginForm] = useState(false)
+  const [loading, setLoading] = useState(true);
 
   const handleDateChange = async (date) => {
     const localDate = date.tz(vietnamTimezone);
@@ -133,6 +125,8 @@ const DoctorDetail = () => {
       setDoctorDetail(doctorData.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -166,6 +160,9 @@ const DoctorDetail = () => {
   const closeLoginModal = () => {
     setOpenLoginForm(false);
   };
+  if (loading) {
+    return <Spin size="large" />;
+  }
   return (
     <>
       {/* banner doctor */}
@@ -453,53 +450,6 @@ const DoctorDetail = () => {
           </Row>
         </Row>
       </Row>
-      {/* doctor experience */}
-      {/* <Row
-        className="doctor-experience-container"
-        justify={"center"}
-        style={{ width: "100vw", padding: "24px 0px" }}
-      >
-        <Row
-          className="doctor-experience-content"
-          style={{ marginTop: "1rem", width: "60%" }}
-        >
-          <Row
-            align={"top"}
-            className="work-experience"
-            style={{ display: "flex", flexDirection: "column", width: "80%" }}
-          >
-            <Typography.Title level={5.5}>
-              Kinh nghiệm làm việc
-            </Typography.Title>
-            <p>
-              Giám đốc Phòng khám Tổ hợp Y tế Mediplus Nguyên Phó Giám đốc Bệnh
-              viện Nhân Dân Gia Định. Hơn 30 năm kinh nghiệm khám và điều trị
-              các bệnh nội cơ xương khớp Bác sĩ nhận khám bệnh nhân từ 16 tuổi
-              trở lên
-            </p>
-          </Row>
-          <Row
-            align={"top"}
-            className="work-experience"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              width: "80%",
-              marginTop: "1.5rem",
-            }}
-          >
-            <Typography.Title level={5.5}>Quá trình công tác</Typography.Title>
-            <List
-              dataSource={data}
-              renderItem={(item) => (
-                <List.Item>
-                  <Typography.Text>{item}</Typography.Text>
-                </List.Item>
-              )}
-            />
-          </Row>
-        </Row>
-      </Row> */}
       <Modal
         title="Đăng nhập"
         open={openLoginForm}
