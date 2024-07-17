@@ -8,6 +8,7 @@ import {
   Menu,
   Modal,
   Row,
+  Skeleton,
   Spin,
   Typography,
   message,
@@ -35,7 +36,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.locale(viLocale);
-
 
 const dateFormat = "DD-MM-YYYY";
 const vietnamTimezone = "Asia/Ho_Chi_Minh";
@@ -83,11 +83,11 @@ const getMajorState = (majorId) => {
     case 2:
       return "Dược sĩ";
     case 3:
-        return "Y tá";
+      return "Y tá";
     case 4:
-        return "Điều dưỡng";
+      return "Điều dưỡng";
     case 5:
-        return "Kỹ thuật viên y tế";
+      return "Kỹ thuật viên y tế";
     default:
       return " ";
   }
@@ -102,7 +102,7 @@ const DoctorDetail = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [doctorDetail, setDoctorDetail] = useState("");
-  const [openLoginForm, setOpenLoginForm] = useState(false)
+  const [openLoginForm, setOpenLoginForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const handleDateChange = async (date) => {
@@ -141,35 +141,40 @@ const DoctorDetail = () => {
     handleDateChange(today);
   }, [id]);
   const handleBookingAppointment = () => {
-    if(!userRole) {
-      message.error("Vui lòng đăng nhập để đặt lịch hẹn!")
+    if (!userRole) {
+      message.error("Vui lòng đăng nhập để đặt lịch hẹn!");
       setOpenLoginForm(true);
     } else if (selectedDate && selectedTimeSlot) {
       const schedule = {
         date: selectedDate.format(dateFormat),
-        time: selectedTimeSlot
+        time: selectedTimeSlot,
       };
       const doctor = {
         id,
         workPlace: doctorDetail?.workProfile?.workPlace,
         fullName: doctorDetail?.fullName,
-        price: doctorDetail?.workProfile?.price
+        price: doctorDetail?.workProfile?.price,
       };
-      navigate('/booking-appointment', { state: { doctor, schedule } });
+      navigate("/booking-appointment", { state: { doctor, schedule } });
     } else {
-      message.error('Bạn chưa chọn lịch hẹn');
+      message.error("Bạn chưa chọn lịch hẹn");
     }
   };
   const closeLoginModal = () => {
     setOpenLoginForm(false);
   };
-  if (loading) {
-    return <Spin size="large" />;
-  }
+
   return (
     <>
       {/* banner doctor */}
-      <Carousel draggable={true} autoplay autoplaySpeed={1500} speed={500} style={{ width: "100vw" }} infinite={true}>
+      <Carousel
+        draggable={true}
+        autoplay
+        autoplaySpeed={1500}
+        speed={500}
+        style={{ width: "100vw" }}
+        infinite={true}
+      >
         <div>
           <img style={{ width: "100%" }} src={DoctorBanner1} />
         </div>
@@ -181,7 +186,7 @@ const DoctorDetail = () => {
         </div>
       </Carousel>
       {/* doctor infor */}
-        <Row
+      <Row
         justify={"center"}
         style={{ backgroundColor: "#D7ECFF", width: "100vw" }}
       >
@@ -200,117 +205,146 @@ const DoctorDetail = () => {
             lg: 32,
           }}
         >
-          <Col
-            span={8}
-            style={{
-              justifyContent: "flex-end",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Avatar src={doctorDetail.avatar} size={160} shape="square" />
-          </Col>
-
-          <Col style={{ padding: "24px 20px" }} span={16}>
-            <Row
-              style={{
-                justifyContent: "flex-start",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Row style={{display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
-              <Typography.Title
+          {loading ? (
+            <Skeleton style={{padding:"20px 20px"}} avatar active paragraph={{ rows: 3 }} />
+          ) : (
+            <>
+              <Col
+                span={8}
                 style={{
-                  marginBottom: "0px",
-                  fontSize: "20px",
-                  fontWeight: "500",
+                  justifyContent: "flex-end",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-              {getMajorState(doctorDetail?.workProfile?.majorId)}{". "} {doctorDetail?.fullName}
-              </Typography.Title>
-              <Typography.Text style={{fontSize:"20px", fontWeight:"500", color:"#3058A6"}}>
-                {formatPrice(doctorDetail?.workProfile?.price)}
-              </Typography.Text>
+                <Avatar src={doctorDetail.avatar} size={160} shape="square" />
+              </Col>
+              <Col style={{ padding: "24px 20px" }} span={16}>
+                <Row
+                  style={{
+                    justifyContent: "flex-start",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Row
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Typography.Title
+                      style={{
+                        marginBottom: "0px",
+                        fontSize: "20px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {getMajorState(doctorDetail?.workProfile?.majorId)}
+                      {". "} {doctorDetail?.fullName}
+                    </Typography.Title>
+                    <Typography.Text
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "500",
+                        color: "#3058A6",
+                      }}
+                    >
+                      {formatPrice(doctorDetail?.workProfile?.price)}
+                    </Typography.Text>
+                  </Row>
+                  <Row align={"middle"}>
+                    <Col span={12}>
+                      <Row
+                        style={{ padding: "10px 0px" }}
+                        align="middle"
+                        gutter={8}
+                      >
+                        <Col>
+                          <Image
+                            height={"20px"}
+                            width={"20px"}
+                            preview={false}
+                            src={stethoscope}
+                          />
+                        </Col>
+                        <Col>
+                          <p style={{ margin: 0 }}>
+                            {getSpecialistState(
+                              doctorDetail?.workProfile?.specialistId
+                            )}
+                          </p>
+                        </Col>
+                      </Row>
+
+                      <Row
+                        style={{ padding: "10px 0px" }}
+                        align="middle"
+                        gutter={8}
+                      >
+                        <Col>
+                          <Image
+                            height={"20px"}
+                            width={"20px"}
+                            preview={false}
+                            src={hospital}
+                          />
+                        </Col>
+                        <Col>
+                          <p style={{ margin: 0 }}>
+                            {doctorDetail?.workProfile?.workPlace}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={12}>
+                      <Row
+                        style={{ padding: "10px 0px" }}
+                        align="middle"
+                        gutter={8}
+                      >
+                        <Col>
+                          <Image
+                            height={"20px"}
+                            width={"20px"}
+                            preview={false}
+                            src={briefcase}
+                          />
+                        </Col>
+                        <Col>
+                          <p style={{ margin: 0 }}>
+                            Lượt đặt:{" "}
+                            {doctorDetail?.workProfile?.appointmentDone}
+                          </p>
+                        </Col>
+                      </Row>
+
+                      <Row
+                        style={{ padding: "10px 0px" }}
+                        align="middle"
+                        gutter={8}
+                      >
+                        <Col>
+                          <Image
+                            height={"20px"}
+                            width={"20px"}
+                            preview={false}
+                            src={star}
+                          />
+                        </Col>
+                        <Col>
+                          <p style={{ margin: 0 }}>
+                            Đánh giá: {doctorDetail?.rate}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
                 </Row>
-              <Row align={"middle"}>
-                <Col span={12}>
-                  <Row
-                    style={{ padding: "10px 0px" }}
-                    align="middle"
-                    gutter={8}
-                  >
-                    <Col>
-                      <Image
-                        height={"20px"}
-                        width={"20px"}
-                        preview={false}
-                        src={stethoscope}
-                      />
-                    </Col>
-                    <Col>
-                      <p style={{ margin: 0 }}>{getSpecialistState(doctorDetail?.workProfile?.specialistId)}</p>
-                    </Col>
-                  </Row>
-
-                  <Row
-                    style={{ padding: "10px 0px" }}
-                    align="middle"
-                    gutter={8}
-                  >
-                    <Col>
-                      <Image
-                        height={"20px"}
-                        width={"20px"}
-                        preview={false}
-                        src={hospital}
-                      />
-                    </Col>
-                    <Col>
-                      <p style={{ margin: 0 }}>{doctorDetail?.workProfile?.workPlace}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={12}>
-                  <Row
-                    style={{ padding: "10px 0px" }}
-                    align="middle"
-                    gutter={8}
-                  >
-                    <Col>
-                      <Image
-                        height={"20px"}
-                        width={"20px"}
-                        preview={false}
-                        src={briefcase}
-                      />
-                    </Col>
-                    <Col>
-                      <p style={{ margin: 0 }}>Lượt đặt: {doctorDetail?.workProfile?.appointmentDone}</p>
-                    </Col>
-                  </Row>
-
-                  <Row
-                    style={{ padding: "10px 0px" }}
-                    align="middle"
-                    gutter={8}
-                  >
-                    <Col>
-                      <Image
-                        height={"20px"}
-                        width={"20px"}
-                        preview={false}
-                        src={star}
-                      />
-                    </Col>
-                    <Col>
-                      <p style={{ margin: 0 }}>Đánh giá: {doctorDetail?.rate}</p>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Row>
-          </Col>
+              </Col>
+            </>
+          )}
         </Row>
       </Row>
       {/* doctor schedule */}
@@ -430,7 +464,9 @@ const DoctorDetail = () => {
               justify={"start"}
               gutter={[8, 8]}
             >
-              {schedule.length > 0 ? (
+              {loading ? (
+                <Spin />
+              ) : schedule.length > 0 ? (
                 schedule[0].time.map((time, index) => (
                   <Col key={index}>
                     <Button
