@@ -50,7 +50,7 @@ const ProductDetail = () => {
 
   const fetchAllService = async () => {
     if (products.payload.products.length === 0) {
-      let res = await getService();
+      let res = await getService(undefined, undefined, type);
       dispatch(setProducts(res.items));
     }
   };
