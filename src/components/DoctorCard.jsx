@@ -11,7 +11,9 @@ const DoctorCard = (props) => {
         hoverable
         bordered={false}
         style={{
-          width: "256px",
+        width: "256px",
+        maxHeight: "242.850px",
+        overflow: "hidden",
           // border: "1px solid #9ea4b0",
         }}
       >
@@ -22,8 +24,8 @@ const DoctorCard = (props) => {
               style={{
                 fontSize: "13px",
                 maxWidth: "200px",
-                whiteSpace: "normal",
-                wordWrap: "break-word",
+                // whiteSpace: "normal",
+                // wordWrap: "break-word",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",

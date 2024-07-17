@@ -109,7 +109,7 @@ const AllDoctor = () => {
   const handleSearch = useCallback(
     debounce((value) => {
       const lowercasedValue = removeAccents(value.toLowerCase());
-  
+
       if (!selectedSpecialist && !value) {
         // Trường hợp không chọn chuyên khoa và không nhập từ khóa
         setDisplayedDoctors(allDoctors.slice(0, pageSize));
@@ -125,8 +125,12 @@ const AllDoctor = () => {
         // Trường hợp chỉ nhập từ khóa không chọn chuyên khoa
         const filteredDoctors = allDoctors.filter(
           (doctor) =>
-            removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-            removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue)
+            removeAccents(doctor.fullName.toLowerCase()).includes(
+              lowercasedValue
+            ) ||
+            removeAccents(
+              getSpecialistState(doctor.specialistId).toLowerCase()
+            ).includes(lowercasedValue)
         );
         setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
         setTotalDoctors(filteredDoctors.length);
@@ -135,8 +139,12 @@ const AllDoctor = () => {
         const filteredDoctors = allDoctors.filter(
           (doctor) =>
             doctor.specialistId === selectedSpecialist &&
-            (removeAccents(doctor.fullName.toLowerCase()).includes(lowercasedValue) ||
-              removeAccents(getSpecialistState(doctor.specialistId).toLowerCase()).includes(lowercasedValue))
+            (removeAccents(doctor.fullName.toLowerCase()).includes(
+              lowercasedValue
+            ) ||
+              removeAccents(
+                getSpecialistState(doctor.specialistId).toLowerCase()
+              ).includes(lowercasedValue))
         );
         setDisplayedDoctors(filteredDoctors.slice(0, pageSize));
         setTotalDoctors(filteredDoctors.length);
@@ -144,7 +152,7 @@ const AllDoctor = () => {
     }, 300),
     [allDoctors, selectedSpecialist, pageSize]
   );
-  
+
   const handleSpecialistChange = (value) => {
     setSelectedSpecialist(value);
     handleSearch(searchValue);
@@ -198,7 +206,7 @@ const AllDoctor = () => {
           }
         />
       </Row>
-
+      {/* doctor card */}
       <div className="doctor-container">
         <div className="title">
           <Typography.Title level={6}>Tất cả bác sĩ</Typography.Title>
@@ -218,6 +226,7 @@ const AllDoctor = () => {
                   style={{
                     width: "256px",
                     margin: "10px",
+                    overflow: "hidden",
                   }}
                 >
                   <Meta
@@ -233,14 +242,18 @@ const AllDoctor = () => {
                         style={{
                           fontSize: "13px",
                           maxWidth: "200px",
-                          whiteSpace: "normal",
-                          wordWrap: "break-word",
+                          // whiteSpace: "normal",
+                          // wordWrap: "break-word",
                           display: "flex",
                           justifyContent: "flex-start",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis"
                         }}
                       >
                         <span>
-                          <p style={{fontWeight:400}}>{doctor.workProfile.major.name}</p>
+                          <p style={{ fontWeight: 400 }}>
+                            {doctor.workProfile.major.name}
+                          </p>
                           <p>{doctor.fullName}</p>
                         </span>
                       </div>
@@ -249,8 +262,8 @@ const AllDoctor = () => {
                       <div
                         style={{
                           fontSize: "12px",
-                          display: "flex",
-                          justifyContent: "flex-start",
+                          // display: "flex",
+                          // justifyContent: "flex-start",
                         }}
                       >
                         <Row align="middle" gutter={8}>
@@ -278,7 +291,7 @@ const AllDoctor = () => {
                         </p>
                       </Col>
                     </Row>
-                    <Row style={{height:"50px"}} align="middle" gutter={8}>
+                    <Row style={{ height: "50px" }} align="middle" gutter={8}>
                       <Col>
                         <Image
                           height={"10px"}
@@ -288,7 +301,9 @@ const AllDoctor = () => {
                         />
                       </Col>
                       <Col span={20}>
-                        <p style={{ margin: 0 }}>{doctor.workProfile.workPlace}</p>
+                        <p style={{ margin: 0 }}>
+                          {doctor.workProfile.workPlace}
+                        </p>
                       </Col>
                     </Row>
                   </div>
