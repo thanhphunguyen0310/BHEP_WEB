@@ -11,6 +11,7 @@ import {
   Button,
   Divider,
   Input,
+  List,
   Modal,
   Radio,
   Row,
@@ -48,6 +49,7 @@ const UserInfo = () => {
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
+      console.log(res.data);
       setUser(res.data);
       setFormData({
         avatar: res.data.avatar,
@@ -112,6 +114,29 @@ const UserInfo = () => {
       console.log("Error: ", error);
     }
   };
+  const renderDeviceCodes = (codes) => {
+    return (
+      <List
+        dataSource={codes}
+        renderItem={(device) => (
+          <List.Item key={device.id}>
+            {device.code}
+          </List.Item>
+        )}
+      />
+    );
+  };
+  const renderFamilyCodes = (codes) => (
+    <List
+    
+      dataSource={codes}
+      renderItem={(code, index) => (
+        <List.Item key={index}>
+          {code}
+        </List.Item>
+      )}
+    />
+  );
 
   const formatBalance = (balance) => {
     return new Intl.NumberFormat("de-DE").format(balance);
@@ -188,7 +213,6 @@ const UserInfo = () => {
             <Avatar shape="circle" src={user?.avatar || ALT_AVATAR} />
           </Row>
         )}
-
         <Row className="user-info">
           <Typography.Text>Họ và Tên:</Typography.Text>
           {editMode ? (
@@ -252,12 +276,13 @@ const UserInfo = () => {
         <Divider />
         <Row className="user-info">
           <Typography.Text>Mã thiết bị:</Typography.Text>
-          <Typography.Text>{user?.deviceCodes}</Typography.Text>
+          {renderDeviceCodes(user?.deviceCodes)}
         </Row>
         <Divider />
         <Row className="user-info">
           <Typography.Text>Mã gia đình:</Typography.Text>
-          <Typography.Text>{user?.familyCodes}</Typography.Text>
+          {renderFamilyCodes(user?.familyCodes)}
+          {/* <Typography.Text>{user?.familyCodes}</Typography.Text> */}
         </Row>
         <Divider />
         <Row className="user-info">
