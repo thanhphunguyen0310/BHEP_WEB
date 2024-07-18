@@ -30,12 +30,13 @@ export const getDevice = async (pageIndex, pageSize) => {
     }
 }
 
-export const getService = async (pageIndex, pageSize) => {
+export const getService = async (pageIndex, pageSize, ServiceType) => {
     try {
         const response = await apiClient.get(`/Service`,{
             params: {
                 pageIndex,
                 pageSize,
+                ServiceType,
               },
         })
         return response.data.data;

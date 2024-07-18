@@ -197,7 +197,7 @@ const ProductDetail = () => {
         </Typography.Text>
         <Row justify={"start"} align={"middle"} className="select-quantity">
           <Typography.Text>Số lượng</Typography.Text>
-          <InputNumber value={quantity} onChange={(e) => setQuantity(e)} />
+          <InputNumber min={1} value={quantity} onChange={(e) => setQuantity(e)} />
         </Row>
         <Row className="btn-selection">
           <Button
