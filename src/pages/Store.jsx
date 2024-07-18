@@ -74,7 +74,7 @@ const Store = () => {
       setProduct(combinedData);
       // Sort by rate and get top rated items
       combinedData.sort((a, b) => b.rate - a.rate);
-      const topItems = combinedData.slice(0, 3);
+      const topItems = combinedData.slice(0, 2);
       //store to redux
       dispatch(setProducts(combinedData));
       setTopRatedItems(topItems);
@@ -300,31 +300,7 @@ const Store = () => {
           {loading ? (
             <Spin />
           ) : (
-            <Carousel
-            className="carousel"
-            additionalTransfrom={0}
-            autoPlaySpeed={3000}
-            centerMode={false}
-            draggable
-            focusOnSelect={false}
-            infinite
-            keyBoardControl
-            minimumTouchDrag={80}
-            pauseOnHover
-            renderArrowsWhenDisabled={false}
-            renderButtonGroupOutside={false}
-            renderDotsOutside={false}
-            arrows
-            responsive={responsiveProductCart}
-            containerClass="carousel-container"
-            rewind={false}
-            rewindWithAnimation={false}
-            rtl={false}
-            shouldResetAutoplay
-            showDots={false}
-            slidesToSlide={1}
-            swipeable
-          >
+            <div className="top-card-list">
             {filterTopRatedItemsByCategory().map((item) => (
               <div
                 key={item.id}
@@ -374,7 +350,7 @@ const Store = () => {
                 </Card>
               </div>
             ))}
-          </Carousel>
+          </div>
           )}
 
         </Row>

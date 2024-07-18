@@ -13,7 +13,7 @@ const SuccessPayment = () => {
     const updateTransactionStatus = async () => {
         try {
             if (transaction) {
-                let id = transaction?.id
+                let id = transaction?.id                
                 await updateStatusPayment(id, 2);
             }
         } catch (error) {
