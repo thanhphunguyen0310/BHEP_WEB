@@ -49,7 +49,6 @@ const UserInfo = () => {
   const userDetail = async () => {
     try {
       const res = await getUserDetail(userId);
-      console.log(res.data);
       setUser(res.data);
       setFormData({
         avatar: res.data.avatar,
@@ -128,7 +127,7 @@ const UserInfo = () => {
   };
   const renderFamilyCodes = (codes) => (
     <List
-    
+
       dataSource={codes}
       renderItem={(code, index) => (
         <List.Item key={index}>
