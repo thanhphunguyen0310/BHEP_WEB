@@ -104,21 +104,26 @@ const DoctorDetail = () => {
   const [doctorDetail, setDoctorDetail] = useState("");
   const [openLoginForm, setOpenLoginForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingTime, setLoadingTime] = useState(true);
 
   const handleDateChange = async (date) => {
     const localDate = date.tz(vietnamTimezone);
     setSelectedDate(localDate);
     try {
-      setLoading(true);
+      setLoadingTime(true);
       const doctorTime = await getDoctorSchedule(id);
       const filteredSchedule = doctorTime.filter((appointment) =>
         dayjs(appointment.date, dateFormat).isSame(date, "day")
       );
       setSchedule(filteredSchedule);
     } catch (error) {
-      console.error("Error fetching schedule:", error);
+      if (error.response && error.response.status === 404) {
+        setSchedule([]); // Clear the schedule to trigger the "not working" message
+      } else {
+        console.error("Error fetching schedule:", error);
+      }
     } finally {
-      setLoading(false);
+      setLoadingTime(false);
     }
   };
   // get doctor data
@@ -464,7 +469,7 @@ const DoctorDetail = () => {
               justify={"start"}
               gutter={[8, 8]}
             >
-              {loading ? (
+              {loadingTime ? (
                 <Spin />
               ) : schedule.length > 0 ? (
                 schedule[0].time.map((time, index) => (
