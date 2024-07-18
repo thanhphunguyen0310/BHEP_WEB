@@ -15,7 +15,7 @@ const TemperatureCard = ({ data }) => {
   return (
     <Card
       hoverable
-      style={{ border: "1px solid #3285a8" }}
+      style={{ border: "1px solid #3285a8", height: "153px" }}
       title={
         <>
           <Typography.Title level={5}>Nhiệt độ</Typography.Title>

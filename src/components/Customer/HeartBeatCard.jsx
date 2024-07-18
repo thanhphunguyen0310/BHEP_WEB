@@ -6,14 +6,14 @@ const HealthTrackingCard = ({ data }) => {
     if (dataString.length >= 3) {
       return "20px"; // Kích thước nhỏ hơn nếu dữ liệu dài
     }
-    return "25px"; // Kích thước mặc định
+    return "20px"; // Kích thước mặc định
   };
   const formattedData = data.toFixed(2); // Format data to 2 decimal places and round
   const dataString = formattedData.toString(); 
   return (
     <Card
       hoverable
-      style={{ border: "1px solid #3285a8" }}
+      style={{ border: "1px solid #3285a8", height: "153px"}}
       title={
         <>
           <Typography.Title level={5}>Chỉ số nhịp tim</Typography.Title>
