@@ -15,7 +15,7 @@ const UserHealthTracking = () => {
   const userId = useSelector((state) => state.auth?.user?.data?.user?.id);
 
   useEffect(() => {
-    const userHealthRef = ref(database, "Device1");
+    const userHealthRef = ref(database, "Device2");
     const unsubscribe = onValue(userHealthRef, (snapshot) => {
       if (snapshot.exists()) {
         setIsUpdating(true);
