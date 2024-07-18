@@ -338,6 +338,7 @@ const Store = () => {
                     flexDirection: "column",
                     width: 220,
                   }}
+                  onClick={() => handleProductClick(item)}
                   cover={
                     <img
                     style={{
@@ -367,7 +368,6 @@ const Store = () => {
                         style={{ width: "16px", height: "16px" }}
                       />
                     }
-                    onClick={() => handleProductClick(item)}
                   >
                     Xem chi tiết
                   </Button>
@@ -412,6 +412,7 @@ const Store = () => {
                     alignItems: "center",
                     flexDirection: "column",
                   }}
+                  onClick={() => handleProductClick(product)}
                   cover={
                     <img
                       style={{
@@ -438,7 +439,6 @@ const Store = () => {
                         style={{ width: "16px", height: "16px" }}
                       />
                     }
-                    onClick={() => handleProductClick(product)}
                   >
                     Xem chi tiết
                   </Button>
